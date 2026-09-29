@@ -5,6 +5,32 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject snapshot destinations that overlap any input or the theme before
+  cleanup, including the running tools checkout when a different theme is
+  selected; continue consumer inventory after individual discovery failures.
+- Close PDF publication's indirect network and navigation paths with a
+  flag-dependent CSP, sandbox, refresh rejection, and symlink boundary checks.
+- Keep Landing content visible without JavaScript and preserve authored metric
+  formatting after animation. Restore clipboard fallback focus and selection
+  direction, keep shortcuts out of other dialogs (including fixed ARIA dialogs),
+  and separate Draw.io Edit from Zoom.
+- Align explicit sidebar, pager, and NAVJSON behavior for empty navigation,
+  hidden subtrees, and manual references. Use page-specific pagination
+  canonicals and emit language alternates only for actual translations.
+- Preserve explicit featured images even when equal to inherited values;
+  ignore malformed resource alt metadata with a warning. Validate diagram
+  endpoints before loading runtimes, reject backslash URL separators, and
+  preserve source when disabled.
+- Match build-time KaTeX classes to the vendored CSS on the Hugo 0.160.1
+  compatibility floor. Check processed image dimensions without fixed hashes,
+  normalize insignificant KaTeX measurement precision in output goldens, and
+  wrap numbered-equation captions on narrow screens.
+- Preserve code examples nested in Markdown lists during migration, including
+  literal quote/fence markers inside those examples; document
+  actual plural catalog shapes and the theme's inline CSP requirements.
+
 ## [1.1.0] - 2026-09-20
 
 OINK 1.1.0 adds native interface catalogs, reliable navigation state, and
