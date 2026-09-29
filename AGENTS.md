@@ -44,6 +44,21 @@ make -C ../oink.pgsty.com dev
 - A local replacement build, a committed change, a public tag, a consumer pin,
   and a deployment are separate completion states.
 
+## After a theme release
+
+- Include downstream adoption when releasing a new OINK version. Inventory
+  the primary Hugo checkouts under `~/www` and `~/pgsty` with
+  `python3 bin/update-consumers.py <tag>`, then update and validate them with
+  `--write --check`. Read each site's instructions and preserve unrelated work.
+- The inventory skips linked worktrees, non-default branches, hidden copies,
+  and nested archives. Review every blocked or skipped result; use `--sites`
+  for an explicitly selected checkout. Review vendored changes before using
+  `--refresh-vendor`; a go.mod bump alone does not upgrade vendored output.
+- Check exact published module resolution with local replacements and both
+  workspace mechanisms disabled. Update current version references in site
+  READMEs/configuration, and run each site's relevant checks. Keep historical
+  release notes unchanged. Commit, push, and deployment remain separate steps.
+
 ## Theme contracts
 
 - Hugo Extended 0.160.1 is the compatibility floor. On 0.160.x, configure a
