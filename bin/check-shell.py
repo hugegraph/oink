@@ -51,6 +51,7 @@ def check_sources() -> list[str]:
     content_styles = (ROOT / "assets/scss/td/_content.scss").read_text()
     comments_styles = (ROOT / "assets/scss/td/_giscus.scss").read_text()
     blog_list = (ROOT / "layouts/blog/list.html").read_text()
+    blog_state = (ROOT / "layouts/_partials/shell/blog-index-state.html").read_text()
     blog_card = (ROOT / "layouts/_partials/shell/blog-card.html").read_text()
     blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
     page_context_styles = (ROOT / "assets/scss/td/shell/_page-context.scss").read_text()
@@ -369,12 +370,12 @@ def check_sources() -> list[str]:
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
     # Blog form and width remain page-overridable parameters.
-    require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_list
-            and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_list,
+    require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_state
+            and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_state,
             "blog index form or column count is not a ui-param with a front matter override", errors)
-    require('"allowed" (slice "list" "cards" "table")' in blog_list
-            and '"key" "params.ui.blog_index"' in blog_list
-            and '"fallback" "list"' in blog_list,
+    require('"allowed" (slice "list" "cards" "table")' in blog_state
+            and '"key" "params.ui.blog_index"' in blog_state
+            and '"fallback" "list"' in blog_state,
             "blog index form is not validated against its enum with a documented fallback", errors)
 
     # The switch renders every form and records the published default.
@@ -446,8 +447,8 @@ def check_sources() -> list[str]:
             "the card order is no longer date, tags, description", errors)
     require(".Description | default" in blog_card,
             "the card summarises the body where the author wrote a description", errors)
-    require('"key" "blog_index_size"' in blog_list
-            and "$blogPages.ByDate.Reverse) $size" in blog_list,
+    require('"key" "blog_index_size"' in blog_state
+            and "$blogPages.ByDate.Reverse) $size" in blog_state,
             "the blog index no longer passes its own pager size, which Hugo ignores from a theme", errors)
     require("td-blog-cards" in blog_styles and "forced-colors: active" in blog_styles,
             "blog card styles lost the shared grid or forced-colours support", errors)

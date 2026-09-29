@@ -8,6 +8,9 @@
 {{- $home := . -}}
 {{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{- $explicitSections := index $docsNav "sections" -}}
+{{- if and (isset $docsNav "sections") (not $explicitSections) -}}
+  {{- warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
+{{- end -}}
 {{- $children := slice -}}
 {{- range $section := partial "shell/nav-children.html" (dict "section" $home) -}}
   {{- if and $explicitSections

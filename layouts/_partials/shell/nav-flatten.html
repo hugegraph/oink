@@ -8,8 +8,11 @@
 {{- $explicit := and
       (in (slice "docs" "book") $page.Type)
       (ne $root $page.Site.Home)
-      (isset $docsNav "sections")
+      (index $docsNav "sections")
   -}}
+{{- if and (isset $docsNav "sections") (not (index $docsNav "sections")) -}}
+  {{- warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
+{{- end -}}
 
 {{- if $explicit -}}
   {{- /* A real docs section index is part of the reading sequence. A site
