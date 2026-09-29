@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from html import unescape
 from pathlib import Path
 import re
 import subprocess
@@ -531,6 +532,40 @@ echo preview
     return errors
 
 
+def check_metric_display(hugo: str) -> list[str]:
+    errors: list[str] = []
+    data = """sections:
+  - type: metrics
+    key: animated
+    data:
+      animate: true
+      items:
+        - {value: 2189, compact: true, label: Stars}
+        - {value: 32, suffix: '+', label: Languages}
+        - {value: '12.50', prefix: '$', suffix: '/day', label: Cost}
+  - type: metrics
+    key: static
+    data:
+      items:
+        - {value: 2189, compact: true, label: Stars}
+        - {value: 32, suffix: '+', label: Languages}
+        - {value: '12.50', prefix: '$', suffix: '/day', label: Cost}
+"""
+    with tempfile.TemporaryDirectory(prefix="oink-landing-metrics-") as temp:
+        site = Path(temp)
+        create_site(site, data)
+        result = run(hugo, site, panic_on_warning=True)
+        if result.returncode != 0:
+            return [f"metric display fixture failed: {result.stdout}{result.stderr}"]
+        source = (site / "public/test/index.html").read_text(encoding="utf-8")
+        for display in ("2.2k", "32+", "$12.50/day"):
+            require(unescape(source).count(f">{display}</strong>") == 2,
+                    f"static and animated metrics disagree on {display}", errors)
+            require(f'data-td-count-display="{display}"' in unescape(source),
+                    f"animated metric lost its final display {display}", errors)
+    return errors
+
+
 def check_rss(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="td-landing-components-landing-rss-") as temp:
@@ -579,6 +614,7 @@ def main() -> int:
         + check_localized_fields(args.hugo)
         + check_centered_hero(args.hugo)
         + check_preview_scopes(args.hugo)
+        + check_metric_display(args.hugo)
         + check_rss(args.hugo)
     )
     if errors:

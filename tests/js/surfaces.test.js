@@ -76,6 +76,7 @@ function element(overrides = {}) {
       offsetParent: {},
       textContent: '',
       hidden: false,
+      getClientRects() { return this.hidden ? [] : [{}]; },
       addEventListener(type, callback) {
         const callbacks = listeners.get(type) || [];
         callbacks.push(callback);

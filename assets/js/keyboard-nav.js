@@ -107,7 +107,7 @@
       var style = win.getComputedStyle(element);
       if (style.display === 'none' || style.visibility === 'hidden') return false;
     }
-    return element.offsetParent !== null;
+    return element.getClientRects().length > 0;
   }
 
   function init(options) {

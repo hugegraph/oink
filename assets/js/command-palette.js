@@ -47,14 +47,14 @@
       var style = global.getComputedStyle(element);
       if (style.display === 'none' || style.visibility === 'hidden') return false;
     }
-    return element.offsetParent !== null;
+    return element.getClientRects().length > 0;
   }
 
-  function hasOpenDialog() {
+  function hasOpenDialog(except) {
     if (document.querySelector('dialog[open]')) return true;
     return Array.prototype.some.call(
       document.querySelectorAll('[role="dialog"]'),
-      isRendered,
+      function (dialog) { return dialog !== except && isRendered(dialog); },
     );
   }
 
@@ -83,7 +83,7 @@
       if (event.shiftKey && (active === first || !container.contains(active))) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && active === last) {
+      } else if (!event.shiftKey && (active === last || !container.contains(active))) {
         event.preventDefault();
         first.focus();
       }
@@ -738,6 +738,7 @@
     document.addEventListener('keydown', function (event) {
       if (event.isComposing || composing || event.keyCode === 229) return;
       if ((event.metaKey || event.ctrlKey) && String(event.key).toLowerCase() === 'k') {
+        if (!isOpen() && hasOpenDialog(root)) return;
         event.preventDefault();
         if (isOpen()) close();
         else open();

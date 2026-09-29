@@ -513,15 +513,14 @@
 }
 
 [data-td-reveal] {
+  transition: opacity 480ms ease, transform 480ms ease;
+}
+
+// Only the running enhancement may hide content; no-JS and failed scripts
+// retain the complete static page.
+[data-td-reveal-pending] {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity 480ms ease, transform 480ms ease;
-
-  &.td-is-revealed,
-  &[data-td-revealed] {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 [data-td-copy-text].td-is-copied {

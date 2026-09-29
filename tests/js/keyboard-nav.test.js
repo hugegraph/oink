@@ -92,6 +92,7 @@ class Element {
   click() { this.clicks += 1; if (this.onclick) this.onclick(); }
   scrollIntoView() {}
   getBoundingClientRect() { return { top: 0 }; }
+  getClientRects() { return this.hidden ? [] : [{}]; }
 }
 
 function link(href, className = '') {
@@ -343,6 +344,7 @@ function press(harness, values) {
 
   const ariaDialog = new Element('div');
   ariaDialog.setAttribute('role', 'dialog');
+  ariaDialog.offsetParent = null;
   guard.root.appendChild(ariaDialog);
   press(guard, { key: 'j' });
   assert.equal(guard.win.scrolled.length, 0, 'visible ARIA dialog did not suppress shortcuts');
@@ -842,6 +844,19 @@ function press(harness, values) {
   const cEvent = press(fc, { key: 'c' });
   assert.deepEqual(opens, [undefined, '>'], 'c opens the palette in command mode');
   assert.equal(cEvent.defaultPrevented, true, 'c swallows the literal character');
+
+  const fixedDialog = new Element('div');
+  fixedDialog.setAttribute('role', 'dialog');
+  fixedDialog.offsetParent = null;
+  fc.root.appendChild(fixedDialog);
+  for (const key of ['f', 'c']) {
+    const ignored = press(fc, { key });
+    assert.notEqual(ignored.defaultPrevented, true, `${key} stole a fixed dialog's shortcut`);
+  }
+  assert.equal(opens.length, 2, 'f/c opened the Palette through a fixed dialog');
+  fixedDialog.hidden = true;
+  press(fc, { key: 'f' });
+  assert.equal(opens.length, 3, 'a hidden fixed dialog blocked f');
 
   const noPalette = setup();
   const idle = press(noPalette, { key: 'f' });

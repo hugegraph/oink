@@ -122,6 +122,7 @@ def main() -> int:
                 )
 
         for script in (
+            "clipboard.test.js",
             "palette-model.test.js",
             "command-palette.test.js",
         ):

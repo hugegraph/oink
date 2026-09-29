@@ -16,12 +16,13 @@
         {{- if isset $item "value" }}
           {{- $display := printf "%v" $item.value -}}
           {{- if $item.compact }}{{ $display = partial "landing/compact-number.html" $item.value }}{{ end -}}
+          {{- $display = printf "%s%s%s" ($item.prefix | default "") $display ($item.suffix | default "") -}}
           {{- if and $animate $interactive }}
             {{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` (printf "%v" $item.value)) -}}
               {{- warnf "%s: metrics item %d animate requires a numeric value; leaving it static" $page.Path (add $index 1) -}}
         <strong>{{ $display }}</strong>
             {{- else -}}
-        <strong data-td-count="{{ $item.value }}"{{ with $item.prefix }} data-td-count-prefix="{{ . }}"{{ end }}{{ with $item.suffix }} data-td-count-suffix="{{ . }}"{{ end }}>{{ $display }}</strong>
+        <strong data-td-count="{{ $item.value }}" data-td-count-display="{{ $display }}"{{ with $item.prefix }} data-td-count-prefix="{{ . }}"{{ end }}{{ with $item.suffix }} data-td-count-suffix="{{ . }}"{{ end }}>{{ $display }}</strong>
             {{- end -}}
           {{- else }}<strong>{{ $display }}</strong>{{ end -}}
         {{- end }}

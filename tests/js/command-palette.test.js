@@ -67,6 +67,7 @@ class Element {
   setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
   select() {}
   scrollIntoView() {}
+  getClientRects() { return this.hidden ? [] : [{}]; }
   contains(candidate) {
     return candidate === this || this.children.some((child) => child.contains && child.contains(candidate));
   }
@@ -520,6 +521,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
 
   const roleDialog = new Element('div');
   roleDialog.setAttribute('role', 'dialog');
+  roleDialog.offsetParent = null; // A visible fixed dialog has no offset parent.
   const originalQuerySelectorAll = global.document.querySelectorAll;
   global.document.querySelectorAll = (selector) =>
     selector === '[role="dialog"]'
@@ -528,6 +530,35 @@ function setup({ controlledAnimationFrame = false } = {}) {
   const blockedByDialog = pressKey(slash, { key: '/' });
   assert.equal(slash.controller.isOpen(), false, 'slash opened over an ARIA dialog');
   assert.notEqual(blockedByDialog.defaultPrevented, true);
+  for (const modifiers of [{ ctrlKey: true }, { metaKey: true }]) {
+    const ignored = pressKey(slash, { key: 'k', ...modifiers });
+    assert.equal(slash.controller.isOpen(), false, 'Palette opened under an ARIA dialog');
+    assert.notEqual(ignored.defaultPrevented, true, 'Palette stole a modal shortcut');
+  }
+  roleDialog.hidden = true;
+  pressKey(slash, { key: 'k', ctrlKey: true });
+  assert.equal(slash.controller.isOpen(), true, 'A hidden ARIA dialog blocked the Palette');
+  slash.controller.close();
+  global.document.querySelectorAll = originalQuerySelectorAll;
+
+  const originalQuerySelector = global.document.querySelector;
+  global.document.querySelector = (selector) => selector === 'dialog[open]'
+    ? new Element('dialog') : originalQuerySelector.call(global.document, selector);
+  for (const modifiers of [{ ctrlKey: true }, { metaKey: true }]) {
+    const ignored = pressKey(slash, { key: 'k', ...modifiers });
+    assert.equal(slash.controller.isOpen(), false, 'Palette opened under a native dialog');
+    assert.notEqual(ignored.defaultPrevented, true);
+  }
+  global.document.querySelector = originalQuerySelector;
+
+  // A fading Palette is itself an ARIA dialog. It must not block its own
+  // shortcut from reopening, and the shortcut must still close it normally.
+  global.document.querySelectorAll = (selector) => selector === '[role="dialog"]'
+    ? [slash.root] : originalQuerySelectorAll.call(global.document, selector);
+  pressKey(slash, { key: 'k', ctrlKey: true });
+  assert.equal(slash.controller.isOpen(), true);
+  pressKey(slash, { key: 'k', ctrlKey: true });
+  assert.equal(slash.controller.isOpen(), false);
   global.document.querySelectorAll = originalQuerySelectorAll;
 
   slash.controller.open({ currentTarget: slash.opener });
