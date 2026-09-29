@@ -2,7 +2,7 @@ div.drawio {
   display: inline-block;
   position: relative;
 
-  button {
+  > .drawiobtn {
     @extend .btn;
     @extend .btn-outline-primary;
     position: absolute;
@@ -10,11 +10,18 @@ div.drawio {
     right: 5px;
     padding: 0.4em 0.5em;
     font-size: 0.8em;
-    display: none;
+    opacity: 0;
   }
 
-  &:hover button {
-    display: inline;
+  &:hover > .drawiobtn,
+  > .drawiobtn:focus-visible {
+    opacity: 1;
+  }
+}
+
+@media (hover: none), (forced-colors: active) {
+  div.drawio > .drawiobtn {
+    opacity: 1;
   }
 }
 

@@ -10,7 +10,6 @@
 {{ $plantumlEnabled := partial "config-enabled.html" (dict "value" .Site.Params.plantuml "key" "params.plantuml") -}}
 {{ $drawioEnabled := partial "config-enabled.html" (dict "value" .Site.Params.drawio "key" "params.drawio") -}}
 {{ $hasMarkmap := and $markmapEnabled (.Page.Store.Get "hasMarkmap") -}}
-{{ $hasPlantuml := and $plantumlEnabled (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{ $keyboardNavParam := (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) -}}
@@ -118,12 +117,23 @@ window.markmap = {
 {{ if and $plantumlEnabled (not $plantumlSVGURL) -}}
   {{ warnf "params.plantuml.enable requires an explicit params.plantuml.svg_image_url; the theme does not default to a public PlantUML service, so PlantUML stays off" -}}{{ $plantumlEnabled = false -}}
 {{ end -}}
+{{ if $plantumlEnabled -}}
+  {{ $endpoint := partial "content/url.html" (dict "label" "params.plantuml" "parameter" "svg_image_url" "position" "site configuration" "value" $plantumlSVGURL "kind" "image") -}}
+  {{ $plantumlEnabled = $endpoint.valid -}}
+  {{ $plantumlSVGURL = $endpoint.href -}}
+{{ end -}}
+{{ $hasPlantuml := and $interactiveOutput $plantumlEnabled (.Page.Store.Get "hasPlantuml") -}}
 {{ $drawioServer := "" -}}
 {{ if reflect.IsMap .Site.Params.drawio }}{{ $drawioServer = index .Site.Params.drawio "drawio_server" | default "" }}{{ end -}}
 {{ if and $drawioEnabled (not $drawioServer) -}}
   {{ warnf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service, so Diagrams.net stays off" -}}{{ $drawioEnabled = false -}}
 {{ end -}}
-{{ $drawioActive := and $drawioEnabled (.Store.Get "hasDrawio") -}}
+{{ if $drawioEnabled -}}
+  {{ $endpoint := partial "content/url.html" (dict "label" "params.drawio" "parameter" "drawio_server" "position" "site configuration" "value" $drawioServer "kind" "image") -}}
+  {{ $drawioEnabled = $endpoint.valid -}}
+  {{ $drawioServer = $endpoint.href -}}
+{{ end -}}
+{{ $drawioActive := and $interactiveOutput $drawioEnabled (.Store.Get "hasDrawio") -}}
 {{ if $drawioActive -}}
 <script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
 {{ end -}}
@@ -168,7 +178,7 @@ window.markmap = {
 {{ if $hasPlantuml -}}
   {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
   {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
-  {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate (printf "js/generated/plantuml-%s.js" .Site.Language.Lang) .Site.Home -}}
+  {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate (printf "js/generated/plantuml-%s.js" .Site.Language.Lang) (dict "server" $plantumlSVGURL "svg" $plantumlSVG) -}}
   {{ $members := slice $jsPako -}}
   {{ if $plantumlSVG }}{{ $members = $members | append $jsSvgLoader }}{{ end -}}
   {{ $members = $members | append $jsPlantuml -}}

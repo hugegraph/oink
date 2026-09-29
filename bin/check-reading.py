@@ -99,6 +99,7 @@ def build_example(hugo: str, destination: Path) -> subprocess.CompletedProcess[s
             *fixture_config_args(),
             "--logLevel",
             "warn",
+            "--panicOnWarning",
         ],
         cwd=ROOT,
         capture_output=True,
@@ -144,6 +145,19 @@ def check_math(public: Path) -> list[str]:
     require("$$" not in math_page, "math fixture leaked literal dollar delimiters", errors)
     require("third_party/katex/katex.min." in math_page, "math page did not load local KaTeX CSS", errors)
     require("third_party/katex/katex.min." not in plain_page, "formula-free page loaded KaTeX CSS", errors)
+    renamed_classes = {
+        "accent", "base", "fix", "hdashline", "hline", "inner", "newline", "overlay",
+        "overline", "root", "rule", "sizing", "smash", "sout", "stretchy", "strut",
+        "tag", "thinbox", "underline", "vbox",
+    }
+    for label, html in (("HTML", math_page), ("Print", print_page)):
+        # Inspect the math spans, not prose, code examples, or TeX annotations.
+        classes = {token for attr in re.findall(r'<span class="([^"]*)"', html)
+                   for token in attr.split()}
+        require(not (classes & renamed_classes),
+                f"{label} math uses classes absent from vendored KaTeX CSS: {classes & renamed_classes}", errors)
+        require({"katex-base", "katex-strut", "katex-sizing"} <= classes,
+                f"{label} math lacks compatible base, strut, or sizing classes", errors)
     require('class="katex-display"' in print_page, "print output lost block mathematics", errors)
     require(
         'class="katex-display" tabindex="0"' not in print_page,

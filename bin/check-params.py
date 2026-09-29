@@ -628,6 +628,59 @@ def check_print_params(hugo: str) -> list[str]:
     return errors
 
 
+def check_diagram_endpoints(hugo: str) -> list[str]:
+    """Invalid integrations warn, retain source, and publish no runtime."""
+    errors: list[str] = []
+    cases = (
+        ("missing", "", "requires an explicit", False),
+        ("script", "javascript:alert(1)//", "unsupported", False),
+        ("type", "[https://example.org/]", "must be a string", False),
+        ("protocol-relative", "//example.org/", "protocol-relative", False),
+        ("mixed-slashes", r"'/\example.org/render/'", "must not contain backslashes", False),
+        ("backslashes", r"'\\example.org/render/'", "must not contain backslashes", False),
+        ("no-host", "https:///render/", "requires a host", False),
+        ("fragment", "'#render'", "requires an image path", False),
+        ("https", "https://example.org/render/", "", True),
+        ("local", "/render/", "", True),
+    )
+    with tempfile.TemporaryDirectory(prefix="oink-diagram-endpoints-") as temp:
+        source = Path(temp)
+        (source / "content/docs").mkdir(parents=True)
+        (source / "content/docs/page.md").write_text(
+            '---\ntitle: Diagrams\n---\n\n```plantuml\nAlice -> Bob: Hello\n```\n\n'
+            '![Diagram](/diagram.drawio.svg)\n', encoding="utf-8")
+        command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                   "--destination", str(source / "public"), "--logLevel", "warn"]
+        for name, value, warning, enabled in cases:
+            params = "plantuml:\n  enable: true\ndrawio:\n  enable: true"
+            if value:
+                params = (f"plantuml:\n  enable: true\n  svg_image_url: {value}\n"
+                          f"drawio:\n  enable: true\n  drawio_server: {value}")
+            (source / "hugo.yaml").write_text(site_config(params), encoding="utf-8")
+            result = run_hugo_process(command + (["--panicOnWarning"] if enabled else []),
+                                      capture_output=True, text=True, check=False)
+            log = result.stdout + result.stderr
+            require(result.returncode == 0, f"diagram {name} failed ordinary build: {log[-600:]}", errors)
+            page = source / "public/docs/page/index.html"
+            html = page.read_text() if page.exists() else ""
+            require('language-plantuml' in html, f"diagram {name} lost PlantUML source", errors)
+            for marker in ("js/chunks/plantuml-", "js/chunks/drawio", 'id="td-drawio-config"'):
+                require((marker in html) == enabled,
+                        f"diagram {name}: runtime marker {marker!r} enabled={enabled}", errors)
+            if enabled:
+                require("WARN" not in log, f"valid diagram {name} warned: {log[-600:]}", errors)
+                chunks = list((source / "public/js/chunks").glob("plantuml-*.js"))
+                require(any(value in path.read_text() for path in chunks),
+                        f"diagram {name} did not receive the validated endpoint", errors)
+            else:
+                require(warning in log and "params.plantuml" in log and "params.drawio" in log,
+                        f"diagram {name} did not name both invalid endpoints: {log[-600:]}", errors)
+                strict = run_hugo_process(command + ["--panicOnWarning"], capture_output=True,
+                                          text=True, check=False)
+                require(strict.returncode != 0, f"diagram {name} survived --panicOnWarning", errors)
+    return errors
+
+
 def check_no_errorf() -> list[str]:
     """Author input warns and falls back; strict publication rejects warnings."""
     errors: list[str] = []
@@ -659,7 +712,8 @@ def main() -> int:
     )
     if not args.source_only:
         errors += (check_builds(args.hugo) + check_blog_index_enum(args.hugo)
-                   + check_blog_numeric_params(args.hugo) + check_print_params(args.hugo))
+                   + check_blog_numeric_params(args.hugo) + check_print_params(args.hugo)
+                   + check_diagram_endpoints(args.hugo))
 
     if errors:
         print("Parameter contract check failed:")
