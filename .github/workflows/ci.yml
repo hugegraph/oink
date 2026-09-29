@@ -100,6 +100,9 @@ jobs:
             sudo sysctl --write kernel.apparmor_restrict_unprivileged_userns=0
           fi
 
+      - name: Check PDF publication isolation
+        run: python3 tests/test_book_pdf_safety.py
+
       - name: Package and validate the Book fixture
         shell: bash
         run: |
@@ -308,6 +311,11 @@ jobs:
 
       - name: Check migration toolkit
         run: python3 -m unittest discover -s tests/migrations -t .
+
+      - name: Check snapshot and consumer tooling
+        run: |
+          python3 tests/test_snapshot_safety.py
+          python3 tests/test_update_consumers.py
 
       - name: Check output structure and security
         run: |
