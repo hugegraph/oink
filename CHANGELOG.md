@@ -5,6 +5,16 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+Planned for **1.2.0**; release notes remain a draft. No 1.2.0 tag or release
+is created by this changelog update. Hugo Extended 0.160.1 remains the floor.
+
+### Added
+
+- A guarded consumer upgrade tool, `bin/update-consumers.py`, for read-only
+  inventory, explicit module updates, exact-version checks without local
+  workspaces, and opt-in vendor refresh. The tool preserves unrelated work,
+  reports skipped or failed sites, and never commits, pushes, or deploys.
+
 ### Fixed
 
 - Reject snapshot destinations that overlap any input or the theme before
