@@ -128,6 +128,11 @@ COMPATIBILITY_NOOP_PAGE_KEYS = {"scroll_spy"}
 # The converged shapes must build; the bare-boolean shorthand of every kept
 # on/off map is part of the contract.
 ACCEPTED_SITE_CASES = [
+    "ui:\n  preset: slate\n  preset_menu: true",
+    "ui:\n  preset: ink\n  preset_menu: true",
+    "ui:\n  preset: terminal\n  preset_menu: [paper, slate, ink, terminal]",
+    "ui:\n  preset: paper\n  preset_menu: [paper, slate]\n  fonts:\n    brand: sans-serif",
+    "ui:\n  preset: slate\n  preset_menu: [slate]",
     "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
@@ -163,6 +168,12 @@ ACCEPTED_PAGE_CASES = [
 ]
 
 INVALID_SITE_CASES = [
+    ("ui:\n  preset: folio", "reserved preset name"),
+    ("ui:\n  preset: unknown", "invalid params.ui.preset"),
+    ("ui:\n  preset: false", "invalid params.ui.preset"),
+    ("ui:\n  preset_menu: always", "params.ui.preset_menu must be a boolean or a list"),
+    ("ui:\n  preset_menu: [paper, canvas]", "not an available preset"),
+    ("ui:\n  preset_menu: [slate]", "must include the site preset"),
     ("comments: definitely", "params.comments must be a boolean or a map"),
     # Discord publishes no share-intent URL, so it stays outside the set no
     # matter how often it is asked for; WeChat below is the same case.

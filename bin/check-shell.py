@@ -249,10 +249,12 @@ def check_sources() -> list[str]:
             "bottom-bar language control is expanded or no longer opens upward", errors)
     require("dropdown.show()" in base_js and "menu.addEventListener('pointerenter'" in base_js,
             "bottom-bar version menu no longer opens on pointer hover", errors)
-    require(all(f'data-bs-theme-value="{value}"' in footer_line
-                for value in ("light", "dark", "auto"))
-            and "data-td-nav-hover" in footer_line,
-            "bottom-bar theme trigger no longer exposes its three-mode menu", errors)
+    appearance = (ROOT / "layouts/_partials/shell/appearance-menu.html").read_text()
+    require('shell/appearance-menu.html' in footer_line
+            and 'type="radio"' in appearance and '<fieldset' in appearance
+            and 'slice "light" "sun"' in appearance and 'slice "dark" "moon"' in appearance
+            and 'slice "auto" "contrast"' in appearance,
+            "bottom-bar Appearance control lost its native three-mode group", errors)
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
             and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>')),
@@ -294,7 +296,6 @@ def check_sources() -> list[str]:
             and "margin-inline-start: auto" not in navbar_styles,
             "compact navbar no longer true-centers its generated menu", errors)
     require("> .td-nav-version-menu" in navbar_styles
-            and "> .td-nav-theme-menu" in navbar_styles
             and "> .td-nav-github" in navbar_styles
             and ".td-site-header .td-site-drawer-toggle {\n    display: inline-flex;\n  }"
             in navbar_styles,
@@ -971,7 +972,7 @@ def build_example(hugo: str) -> list[str]:
             footline = source.find('class="td-shell-footline d-print-none"')
             require(footline >= 0
                     and source.find("td-shell-footline__language", footline) >= 0
-                    and source.find('class="td-shell-footline__theme', footline) >= 0
+                    and source.find('td-shell-footline__theme', footline) >= 0
                     and source.find('class="td-shell-keyboard td-nav-hover-menu"', footline) >= 0,
                     "rendered bottom bar lost its language/theme/help controls", errors)
             require('aria-label="breadcrumb"' in source,

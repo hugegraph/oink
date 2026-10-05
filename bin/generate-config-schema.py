@@ -10,7 +10,8 @@ Their authorities are:
    consume, which is what keeps the schema honest about keys that carry no
    declared default; and
 3. its explicit 1.x compatibility no-op list, whose keys remain accepted but
-   deliberately have no template read point.
+   deliberately have no template read point; and
+4. ``preset-config.html`` -- available preset names for the preset/menu union.
 
 ``--check`` regenerates in memory and fails when the committed files drift,
 which is what keeps this a projection of the existing authorities rather than
@@ -239,6 +240,23 @@ def build(check_params) -> dict[str, str]:
                 node["properties"] = {}
             properties = node["properties"]
         properties.setdefault(parts[-1], {"description": read_only_note})
+
+    # The resolver owns the available names. Derive this union from its slices,
+    # rather than duplicating an enum in an authoring schema.
+    resolver = (ROOT / "layouts/_partials/preset-config.html").read_text()
+    presets = []
+    for group in ("stable", "experimental"):
+        names = re.search(r'\$' + group + r'\s*:=\s*slice((?:\s+"[a-z]+")+)', resolver)
+        if not names:
+            raise SystemExit(f"preset resolver has no {group}-name slice")
+        presets.extend(re.findall(r'"([a-z]+)"', names[1]))
+    ui = params_schema["properties"]["ui"]["properties"]
+    ui["preset"]["enum"] = presets
+    ui["preset_menu"].pop("type", None)
+    ui["preset_menu"]["anyOf"] = [
+        {"type": "boolean"},
+        {"type": "array", "items": {"type": "string", "enum": presets}},
+    ]
 
     for key, reason in FRONT_SCHEMA_EXCLUDES.items():
         if key not in page_keys:

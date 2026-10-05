@@ -39,6 +39,7 @@ BUILTINS = [
     "print",
     "switch_version",
     "switch_language",
+    "switch_preset",
     "switch_theme",
     "open_github",
 ]

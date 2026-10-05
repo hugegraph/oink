@@ -263,6 +263,38 @@
               "type": "boolean",
               "default": false
             },
+            "preset": {
+              "description": "Visual preset: the site's default look. paper (warm editorial reading, the default) | slate (the technical look of OINK 1.1 and earlier). Experimental, explicitly selected: ink | terminal. Reserved: folio | canvas.",
+              "type": "string",
+              "default": "paper",
+              "enum": [
+                "paper",
+                "slate",
+                "ink",
+                "terminal"
+              ]
+            },
+            "preset_menu": {
+              "description": "Reader choice of preset in the Appearance menu: false (site preset only) | true (Paper, Slate and the site default) | an explicit list. Ink and Terminal are experimental: opt in with preset: ink/terminal or preset_menu: [paper, slate, ink, terminal]. No additional fonts. Lists must include `preset`. The menu also hosts the dark_mode switch.",
+              "default": false,
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "paper",
+                      "slate",
+                      "ink",
+                      "terminal"
+                    ]
+                  }
+                }
+              ]
+            },
             "typography": {
               "type": "string",
               "default": "technical"

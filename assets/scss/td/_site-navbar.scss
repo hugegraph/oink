@@ -170,7 +170,7 @@
     background: var(--td-brand-mark-gradient);
     background-clip: text;
     color: transparent;
-    font-family: var(--td-display-font-family);
+    font-family: var(--td-brand-font-family);
     font-size: 1.05rem;
     font-weight: 700;
     line-height: 1;
@@ -903,13 +903,12 @@
   }
 
   // Phone chrome has one deliberately small right-hand contract: search and
-  // the relevant drawer/menu opener. Version, language, theme, and GitHub
+  // appearance and the relevant drawer/menu opener. Version, language, and GitHub
   // remain available in the drawer footer instead of competing for this row.
   .td-site-header .td-nav-util-zone {
     > .td-nav-version-menu,
     > .td-site-nav__language,
     > .td-nav-alt-site,
-    > .td-nav-theme-menu,
     > .td-nav-github {
       display: none;
     }

@@ -201,6 +201,9 @@ jobs:
       - name: Verify vendored dependency inventory
         run: python3 bin/check-vendor.py
 
+      - name: Check visual presets
+        run: python3 bin/check-presets.py
+
       - name: Check typography token boundaries
         run: python3 bin/check-font-tokens.py
 

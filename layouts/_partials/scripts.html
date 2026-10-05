@@ -294,6 +294,11 @@ window.markmap = {
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}
 {{ end -}}
+{{- /* The Appearance menu (style and/or mode) renders only when the site offers
+     a choice; its runtime follows the same condition. */ -}}
+{{ if and $interactiveOutput (or $darkMode.showMenu (partialCached "preset-config.html" "preset-global").menu) -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/appearance.js" "members" (slice (resources.Get "js/appearance.js"))) -}}
+{{ end -}}
 {{ if and $interactiveOutput $hasGiscus -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/giscus.js" "members" (slice (resources.Get "js/giscus.js"))) -}}
 {{ end -}}

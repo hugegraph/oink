@@ -184,9 +184,10 @@ limitations under the License.
         });
     }
 
-    // Hover popovers (theme, version): hover or focus reveals the options
-    // while the trigger keeps its own click action (dark-mode.js binds the
-    // theme toggle; the version trigger toggles the popover for touch).
+    // Hover popovers (version, keyboard help, and any site markup that still
+    // uses the pattern): hover or focus reveals the options while the trigger
+    // keeps its own click action. The Appearance menu is a click disclosure
+    // owned by appearance.js instead.
     function initThemeMenus() {
         document.querySelectorAll('[data-td-nav-hover]').forEach(function(menu, index) {
             const trigger = menu.querySelector('[data-td-nav-hover-trigger], .td-nav-util');

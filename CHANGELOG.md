@@ -10,12 +10,28 @@ is created by this changelog update. Hugo Extended 0.160.1 remains the floor.
 
 ### Added
 
+- Add local Paper (default) and Slate visual presets with an opt-in Appearance
+  menu, independent persisted mode/style state, keyboard and mobile controls,
+  and local IBM Plex Sans. Set `params.ui.preset: slate` to retain the previous
+  appearance; `params.ui.preset_menu` defaults to false. This is unreleased
+  and does not change consumer pins.
+- Add explicit Ink and Terminal experiments: black/white/red typography and
+  mono/teal/amber controls with sans prose, scoped geometry, Giscus and print
+  palettes. Select them with `preset` or an explicit `preset_menu` list;
+  `true` retains Paper/Slate plus the site default. No additional font files.
+
 - A guarded consumer upgrade tool, `bin/update-consumers.py`, for read-only
   inventory, explicit module updates, exact-version checks without local
   workspaces, and opt-in vendor refresh. The tool preserves unrelated work,
   reports skipped or failed sites, and never commits, pushes, or deploys.
 
 ### Fixed
+
+- Show the current light/dark state on sun/moon controls, including system
+  changes. Simplify Appearance to Style/Light groups and two-column style
+  buttons with colored icons, without preview tiles or experiment badges.
+- Improve the shared Mermaid dark edge-label contrast while preserving authored
+  theme variables and mode-only chart palettes.
 
 - Reject snapshot destinations that overlap any input or the theme before
   cleanup, including the running tools checkout when a different theme is
