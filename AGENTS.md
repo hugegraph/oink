@@ -6,10 +6,10 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-As checked on 2026-10-04, the latest published theme is `v1.1.0`; this checkout
-contains the unreleased `1.2.0` work recorded in `CHANGELOG.md`. The sibling
-site's `draft-v1.2.0` contracts describe local behavior, not a published tag.
-Refresh Git state, public tags, and consumer pins before making release claims.
+The current release is `v1.2.0`, dated 2026-10-05 in `CHANGELOG.md`. The sibling
+site's `v1.2.0` Design contracts describe this release. Refresh Git state,
+public tags, and consumer pins before making claims about later releases or
+downstream adoption.
 
 ## Repository boundary
 

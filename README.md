@@ -51,6 +51,10 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 - **Local-first delivery.** Search, fonts, icons, syntax highlighting, and
   interactive runtimes are vendored; a normal build performs no remote asset
   fetch.
+- **Four visual styles.** Paper is the warm, reading-focused default; Slate
+  preserves the original look. Ink and Terminal are explicit opt-ins. Style
+  and light/dark mode can be selected independently, with local fonts and saved
+  reader preferences. See [what's new in 1.2](https://oink.pgsty.com/blog/release/1.2.0/).
 - **Multilingual by design.** Language-aware routing, translated-page peers,
   RTL support, alternate-site links, and localized search work across large
   documentation trees.

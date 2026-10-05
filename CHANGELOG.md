@@ -3,18 +3,17 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## [Unreleased]
+## [1.2.0] — 2026-10-05
 
-Planned for **1.2.0**; release notes remain a draft. No 1.2.0 tag or release
-is created by this changelog update. Hugo Extended 0.160.1 remains the floor.
+Four visual styles with local fonts and independent appearance controls.
+Hugo Extended 0.160.1 remains the compatibility floor.
 
 ### Added
 
 - Add local Paper (default) and Slate visual presets with an opt-in Appearance
   menu, independent persisted mode/style state, keyboard and mobile controls,
   and local IBM Plex Sans. Set `params.ui.preset: slate` to retain the previous
-  appearance; `params.ui.preset_menu` defaults to false. This is unreleased
-  and does not change consumer pins.
+  appearance; `params.ui.preset_menu` defaults to false.
 - Add explicit Ink and Terminal experiments: black/white/red typography and
   mono/teal/amber controls with sans prose, scoped geometry, Giscus and print
   palettes. Select them with `preset` or an explicit `preset_menu` list;
@@ -33,6 +32,13 @@ is created by this changelog update. Hugo Extended 0.160.1 remains the floor.
 - Improve the shared Mermaid dark edge-label contrast while preserving authored
   theme variables and mode-only chart palettes.
 
+- Show a page description or excerpt for CJK keyword-only search matches,
+  keeping synonym lists out of result summaries.
+- Normalize Windows and mounted source paths before deriving repository actions;
+  suppress edit/history/create-child links when a mapping still yields an
+  absolute, drive-qualified, or parent-escaping path.
+- Keep outline tracking consistent for literal heading IDs containing malformed
+  percent sequences, including requested headings near the page end.
 - Reject snapshot destinations that overlap any input or the theme before
   cleanup, including the running tools checkout when a different theme is
   selected; continue consumer inventory after individual discovery failures.
@@ -2122,7 +2128,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.1.0...HEAD
+[1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
 [0.8.2]: https://github.com/pgsty/oink/compare/v0.8.1...v0.8.2

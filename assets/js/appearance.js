@@ -4,14 +4,14 @@
  * Two independent dimensions share one menu. Style (the visual preset) lives
  * on <html data-td-preset> and in localStorage['td-preset']; this file owns
  * it. Mode (light / dark / system) lives on data-bs-theme and in
- * localStorage['td-color-theme']; dark-mode.js owns it and binds the Mode
+ * localStorage['td-color-theme']; dark-mode.js owns it and binds the Light
  * radios. Neither writes the other's key.
  *
  * The server renders the site default on data-td-preset and keeps it on
  * data-td-site-preset. The inline head script has already applied a valid
  * stored choice before first paint; this file handles later changes: radio
  * input, other tabs (the storage event), and restoring
- * the default (choosing the "Default" card removes the stored key so a later
+ * the default (choosing the site's default preset removes the stored key so a later
  * change of the site default reaches the reader).
  */
 (function () {

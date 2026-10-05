@@ -20,8 +20,8 @@
 // - preset-specific rules are scoped to `[data-td-preset=X]`, screen only, so
 //   the shared print stylesheet owns the light print palettes.
 //
-// Reserved preset names (`ink`, `terminal`, `folio`, `canvas`) have no blocks
-// yet and are rejected by the configuration resolver.
+// Explicit Ink and Terminal experiments live in `_experimental-presets.scss`.
+// Reserved names (`folio`, `canvas`) are rejected by the configuration resolver.
 
 // While the runtime swaps presets, no element animates its colors: a theme
 // switch should land in one frame, not ripple through every transition.

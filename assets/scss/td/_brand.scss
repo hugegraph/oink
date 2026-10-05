@@ -71,7 +71,7 @@
   // Bootstrap link family, so prose links and external URLs keep the brand
   // blue in every section. The accent's job is grounds and hovers. A visual
   // preset that wants an accent apart from its links sets the optional
-  // `--td-preset-accent` trio; none of the shipped presets does yet.
+  // `--td-preset-accent` trio, as the Ink and Terminal experiments do.
   --td-accent: var(--td-preset-accent, var(--bs-link-color));
   --td-accent-rgb: var(--td-preset-accent-rgb, var(--bs-link-color-rgb));
   --td-accent-hover: var(--td-preset-accent-hover, var(--bs-link-hover-color));

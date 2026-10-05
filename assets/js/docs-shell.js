@@ -839,7 +839,8 @@
       try {
         id = decodeURIComponent(hash.slice(1));
       } catch (e) {
-        return -1;
+        // Use the same literal-id fallback as the TOC's link map.
+        id = hash.slice(1);
       }
       var a = linkById.get(id);
       if (!a) return -1;
