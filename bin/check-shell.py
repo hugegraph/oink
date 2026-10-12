@@ -282,6 +282,12 @@ def check_sources() -> list[str]:
     alignment = "var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem)"
     require(alignment in layout_styles and alignment in toc_styles,
             "collapsed rail controls no longer align with the article topline", errors)
+    fixed_toc = scss_block(toc_styles, "\n.td-shell-toc__panel {")
+    flow_toc = scss_block(toc_styles, "  .td-shell-layout--toc-flow .td-shell-toc__panel {")
+    require("inset-block-end: var(--td-shell-footer-offset, 0px)" in fixed_toc
+            and "position: sticky" in flow_toc
+            and "inset-block-end: auto" in flow_toc,
+            "fixed TOC must avoid the visible footer while flow keeps its sticky boundary", errors)
     require("@media (min-width: 768px) and (hover: hover) and (pointer: fine)" in navbar_styles,
             "drawer-width viewports no longer disable auto-hide", errors)
     require("@media (max-width: 767.98px)" in navbar_styles

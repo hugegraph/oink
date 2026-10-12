@@ -23,7 +23,8 @@
   @include media-breakpoint-up(xl) {
     position: fixed;
     inset-block-start: var(--td-shell-nav-h);
-    inset-block-end: 0;
+    // Share the sidebar's available height when the footer enters view.
+    inset-block-end: var(--td-shell-footer-offset, 0px);
     inset-inline-end: 0;
     width: 286px;
     z-index: 20;

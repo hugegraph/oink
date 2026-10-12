@@ -134,10 +134,12 @@
 
   /* --------------------------------------------------------- footerOffset */
 
-  // Shorten the fixed sidebar as the footer enters the viewport.
+  // Shorten fixed rails as the footer enters the viewport.
   function initFooterOffset() {
     var footer = document.querySelector('[data-td-shell-footer]');
-    var panel = document.querySelector('.td-shell-sidebar__panel');
+    var panel = document.querySelector(
+      '.td-shell-sidebar__panel, .td-shell-toc__panel',
+    );
     if (!footer || !panel) return;
     var frame = 0;
 
