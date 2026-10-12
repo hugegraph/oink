@@ -233,6 +233,16 @@
   --term-color-7: #5d7189;
 }
 
+// Markmap declares its text token on both the wrapper and the generated SVG.
+// Override both inside article content, with enough specificity to survive
+// the vendor stylesheet injected after ours. The body token follows live
+// mode/preset changes; keep the vendor's dark ink when printing on white.
+@media screen {
+  .td-content .markmap {
+    --markmap-text-color: var(--bs-body-color);
+  }
+}
+
 // Markmap highlights fenced code inside its nodes with highlight.js, whose
 // vendored `default.min.css` is a light-only theme with no dark counterpart --
 // unlike Swagger UI and DocSearch, which carry their own and only need the
