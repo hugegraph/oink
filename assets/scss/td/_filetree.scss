@@ -153,7 +153,8 @@
   display: grid;
   grid-template-columns: minmax(0, var(--td-filetree-split)) minmax(0, 1fr);
   align-items: center;
-  block-size: var(--td-filetree-row);
+  block-size: auto;
+  min-block-size: var(--td-filetree-row);
   padding-inline: var(--td-filetree-gutter);
   // Indent guides: one hairline per ancestor level, ending under the parent
   // entry's icon centre. Physical direction; the RTL block below flips it.
@@ -281,7 +282,7 @@
   color: var(--td-filetree-muted);
   font-size: 0.86em;
   gap: 0.75ch;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .td-filetree__hash {
@@ -291,11 +292,11 @@
 
 .td-filetree__comment-text {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // Keep descriptions readable without hover, including unbroken identifiers.
+  overflow-wrap: anywhere;
 }
 
-// Narrow viewports: the comment drops under the name instead of truncating.
+// Narrow viewports: the comment drops under the name.
 @include media-breakpoint-down(sm) {
   .td-filetree__row {
     grid-template-columns: minmax(0, 1fr);
