@@ -1,0 +1,461 @@
+{
+  "browser": "155.0.8059.39",
+  "zoom": "100%",
+  "deviceScaleFactor": 1,
+  "preset": "slate",
+  "screenshots": [
+    {
+      "phase": "before",
+      "language": "en",
+      "width": 1440,
+      "filename": "before-en-1440.png",
+      "treeWidth": 772,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 348,
+          "scrollWidth": 441,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 348,
+          "scrollWidth": 385,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 348,
+          "scrollWidth": 441,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        }
+      ]
+    },
+    {
+      "phase": "before",
+      "language": "en",
+      "width": 768,
+      "filename": "before-en-768.png",
+      "treeWidth": 438.5625,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 181,
+          "scrollWidth": 441,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 181,
+          "scrollWidth": 385,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 181,
+          "scrollWidth": 441,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        }
+      ]
+    },
+    {
+      "phase": "before",
+      "language": "en",
+      "width": 390,
+      "filename": "before-en-390.png",
+      "treeWidth": 358,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "before",
+      "language": "zh",
+      "width": 1440,
+      "filename": "before-zh-1440.png",
+      "treeWidth": 772,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 348,
+          "scrollWidth": 366,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 348,
+          "scrollWidth": 360,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        }
+      ]
+    },
+    {
+      "phase": "before",
+      "language": "zh",
+      "width": 768,
+      "filename": "before-zh-768.png",
+      "treeWidth": 438.5625,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 181,
+          "scrollWidth": 324,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 181,
+          "scrollWidth": 366,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 181,
+          "scrollWidth": 360,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": true,
+          "contained": false
+        }
+      ]
+    },
+    {
+      "phase": "before",
+      "language": "zh",
+      "width": 390,
+      "filename": "before-zh-390.png",
+      "treeWidth": 358,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "en",
+      "width": 1440,
+      "filename": "after-en-1440.png",
+      "treeWidth": 772,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 348,
+          "scrollWidth": 348,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 348,
+          "scrollWidth": 348,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 348,
+          "scrollWidth": 348,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "en",
+      "width": 768,
+      "filename": "after-en-768.png",
+      "treeWidth": 438.5625,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 53.203125,
+          "lines": 3,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 53.203125,
+          "lines": 3,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 53.203125,
+          "lines": 3,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "en",
+      "width": 390,
+      "filename": "after-en-390.png",
+      "treeWidth": 358,
+      "comments": [
+        {
+          "text": "schema store: property keys, vertex/edge/index labels, counters",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "graph store: vertices, edges, index tables, olap tables",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "system store: tasks, server info, backend meta (driver version)",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "zh",
+      "width": 1440,
+      "filename": "after-zh-1440.png",
+      "treeWidth": 772,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "rowHeight": 30.390625,
+          "lines": 1,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 348,
+          "scrollWidth": 348,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 348,
+          "scrollWidth": 348,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "zh",
+      "width": 768,
+      "filename": "after-zh-768.png",
+      "treeWidth": 438.5625,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 53.203125,
+          "lines": 3,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 181,
+          "scrollWidth": 181,
+          "rowHeight": 35.46875,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "language": "zh",
+      "width": 390,
+      "filename": "after-zh-390.png",
+      "treeWidth": 358,
+      "comments": [
+        {
+          "text": "元数据存储：属性键、顶点标签、边标签、索引标签和计数器",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        },
+        {
+          "text": "系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据",
+          "clientWidth": 266,
+          "scrollWidth": 266,
+          "rowHeight": 65.328125,
+          "lines": 2,
+          "clipped": false,
+          "contained": true
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "hugo": "0.165.0 Extended",
+    "go": "1.27.0",
+    "playwright": "1.62.1",
+    "node": "24.19.0",
+    "baseline": "f8f476e660cf053a2645b7b923ae8d08d5448fce",
+    "candidate": "466b5eb6a52edebc89bd5540dfe37ca2798f0646",
+    "documentation_base": "edeb45b",
+    "cjk_font": "Noto Sans CJK SC Regular",
+    "cjk_font_source": "https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf"
+  },
+  "validation": {
+    "candidate_browser_cases_passed": 14,
+    "baseline_regression_cases_failed": 1,
+    "baseline_failure": "comment.clipped: Expected false, Received true",
+    "owning_checker": "passed",
+    "filetree_runtime": "passed",
+    "strict_documentation_builds": "baseline and candidate passed",
+    "documentation_style": "passed",
+    "documentation_translation_coverage": "143/143 files; 1197 source headings"
+  }
+}

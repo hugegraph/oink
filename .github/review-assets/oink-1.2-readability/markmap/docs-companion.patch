@@ -1,0 +1,248 @@
+From 79db861b41ebd9d1c44fc8578dae00839f61f6f4 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Mon, 12 Oct 2026 10:35:11 -0700
+Subject: [PATCH] test(markmap): cover theme text contrast and print behavior
+
+---
+ content/docs/design/components.md             |   8 ++
+ content/docs/design/components.zh.md          |   6 +
+ package.json                                  |   2 +-
+ tests/browser/markmap-theme.spec.mjs          | 109 ++++++++++++++++++
+ tests/fixtures/browser.yml                    |   2 +
+ .../fixtures/browser/content/markmap-theme.md |  18 +++
+ .../browser/content/markmap-theme.zh.md       |  18 +++
+ 7 files changed, 162 insertions(+), 1 deletion(-)
+ create mode 100644 tests/browser/markmap-theme.spec.mjs
+ create mode 100644 tests/fixtures/browser/content/markmap-theme.md
+ create mode 100644 tests/fixtures/browser/content/markmap-theme.zh.md
+
+diff --git a/content/docs/design/components.md b/content/docs/design/components.md
+index 79fdf65..0e3a80c 100644
+--- a/content/docs/design/components.md
++++ b/content/docs/design/components.md
+@@ -149,6 +149,14 @@ All code highlighting uses Chroma. Common fence attributes include `title`,
+ of visual presets. The default dark edge-label background is `#404040` for
+ AA text contrast; authored `params.mermaid.themeVariables` remain authoritative.
+ 
++Unreleased Markmap correction: ordinary node text on screens follows the
++active preset's `--bs-body-color` through Markmap's `--markmap-text-color` API,
++including live light/dark changes and restored preferences. The mapping is
++scoped to article content and covers the generated SVG as well as its wrapper;
++later site CSS at the same specificity and inline SVG tokens remain usable.
++Printing keeps Markmap's dark ink on the white print canvas. No additional
++theme listener or replacement of vendored assets is required.
++
+ ECharts input is declarative
+ JSON/YAML; callbacks use `$fn:<name>` from `window.OinkEchartsFunctions`, never
+ embedded script execution.
+diff --git a/content/docs/design/components.zh.md b/content/docs/design/components.zh.md
+index 407b1c5..27094da 100644
+--- a/content/docs/design/components.zh.md
++++ b/content/docs/design/components.zh.md
+@@ -134,6 +134,12 @@ Draw.io 与图片缩放共用一张图片时，编辑与缩放是同级的独立
+ 背景使用 `#404040`，使标签文字达到 AA 对比度。显式
+ `params.mermaid.themeVariables` 配置仍然优先。
+ 
++尚未发布的 Markmap 修正：屏幕上的普通节点文字通过 Markmap 的
++`--markmap-text-color` API 跟随当前预设的 `--bs-body-color`，包括即时明暗切换与
++已保存偏好的恢复。映射只作用于正文内容，同时覆盖生成的 SVG 与外层容器；站点
++仍可使用后加载且同等优先级的 CSS，或 SVG 内联令牌进行覆盖。打印时保留 Markmap
++的深色文字，适配白色打印背景。无需增加主题切换监听器或替换随主题内置的依赖。
++
+ ECharts 输入是声明式 JSON/YAML；回调使用
+ `window.OinkEchartsFunctions` 中的 `$fn:<name>`，绝不执行嵌入脚本。
+ 
+diff --git a/package.json b/package.json
+index ff27460..284609c 100644
+--- a/package.json
++++ b/package.json
+@@ -33,7 +33,7 @@
+     "test:community-feedback": "playwright test tests/browser/community-feedback.spec.mjs",
+     "test:command-palette": "playwright test tests/browser/command-palette.spec.mjs",
+     "test:code-blocks": "playwright test tests/browser/code-blocks.spec.mjs",
+-    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs",
++    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs tests/browser/markmap-theme.spec.mjs",
+     "test:extra": "npm run seq -- test:hugo-build test:alt-site test:md-output test:favicons test:rendered-links test:release-pin-contract",
+     "test:favicons": "node --test 'tests/favicons/**/*.test.mjs'",
+     "test:hugo-build": "node --test 'tests/hugo-build/**/*.test.mjs'",
+diff --git a/tests/browser/markmap-theme.spec.mjs b/tests/browser/markmap-theme.spec.mjs
+new file mode 100644
+index 0000000..0b8d725
+--- /dev/null
++++ b/tests/browser/markmap-theme.spec.mjs
+@@ -0,0 +1,109 @@
++import { expect, test } from '@playwright/test';
++
++const diagramSelector = '.td-content > .markmap > svg.markmap';
++
++function contrast(first, second) {
++  const luminance = (rgb) => {
++    const values = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map((value) => {
++      const channel = value / 255;
++      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
++    });
++    return values.reduce((total, value, index) => total + value * [0.2126, 0.7152, 0.0722][index], 0);
++  };
++  const values = [luminance(first), luminance(second)].sort((a, b) => a - b);
++  return (values[1] + 0.05) / (values[0] + 0.05);
++}
++
++async function nodeColors(diagram) {
++  return diagram.locator('.markmap-foreign').evaluateAll((nodes) => ({
++    ink: [...new Set(nodes.map((node) => getComputedStyle(node).color))],
++    body: getComputedStyle(document.body).color,
++    canvas: getComputedStyle(document.body).backgroundColor,
++  }));
++}
++
++async function expectReadable(diagram, followsBody = true) {
++  await expect(diagram.locator('.markmap-node')).toHaveCount(7);
++  if (followsBody) {
++    await expect.poll(async () => {
++      const colors = await nodeColors(diagram);
++      return colors.ink.every((ink) => ink === colors.body);
++    }).toBe(true);
++  }
++  const colors = await nodeColors(diagram);
++  for (const ink of colors.ink) expect(contrast(ink, colors.canvas)).toBeGreaterThanOrEqual(4.5);
++}
++
++async function appearance(page) {
++  // The footer entry stays actionable after the SVG screenshot scrolls the
++  // autohiding navbar away. Exercise the same native Appearance controls.
++  await page.locator('[aria-controls="td-appearance-footer"]').click();
++  const panel = page.locator('dialog.td-appearance__panel[open]');
++  await expect(panel).toBeVisible();
++  return panel;
++}
++
++for (const locale of ['', '/zh']) {
++  for (const width of [390, 1440]) {
++    test(`Markmap plain labels track appearance, ${locale || 'en'} ${width}`, async ({ page }, info) => {
++      const errors = [];
++      page.on('pageerror', (error) => errors.push(error.message));
++      await page.route('https://giscus.app/**', (route) => route.abort());
++      await page.setViewportSize({ width, height: 1000 });
++      await page.addInitScript(() => {
++        if (!sessionStorage.getItem('markmap-seeded')) {
++          localStorage.setItem('td-preset', 'slate');
++          localStorage.setItem('td-color-theme', 'dark');
++          sessionStorage.setItem('markmap-seeded', 'yes');
++        }
++      });
++      await page.goto(`${locale}/tests/markmap-theme/`);
++      const diagram = page.locator(diagramSelector);
++      await expectReadable(diagram);
++      await diagram.screenshot({ path: info.outputPath('slate-dark.png') });
++
++      // Use the real controls; CSS must update without recreating the SVG.
++      await diagram.evaluate((svg) => { svg.dataset.markmapTestIdentity = 'original'; });
++      for (const preset of ['paper', 'ink', 'terminal', 'slate']) {
++        const panel = await appearance(page);
++        await panel.locator(`[data-td-preset-value="${preset}"]`).check();
++        for (const mode of ['light', 'dark']) {
++          await panel.locator(`[data-bs-theme-value="${mode}"]`).check();
++          await expect(page.locator('html')).toHaveAttribute('data-td-preset', preset);
++          await expect(page.locator('html')).toHaveAttribute('data-bs-theme', mode);
++          await expectReadable(diagram);
++        }
++        await page.keyboard.press('Escape');
++      }
++      await expect(diagram).toHaveAttribute('data-markmap-test-identity', 'original');
++      await page.reload();
++      await expect(page.locator('html')).toHaveAttribute('data-bs-theme', 'dark');
++      await expectReadable(diagram);
++
++      const server = diagram.locator('.markmap-node').filter({ hasText: /^server$/ });
++      await server.locator('circle').click();
++      await expect(diagram.locator('.markmap-node')).toHaveCount(4);
++      await server.locator('circle').click();
++      await expectReadable(diagram);
++      const transform = await diagram.locator(':scope > g').getAttribute('transform');
++      await diagram.hover();
++      await page.mouse.wheel(0, -120);
++      await expect.poll(() => diagram.locator(':scope > g').getAttribute('transform')).not.toBe(transform);
++
++      // Dark-mode preferences must not turn a white print canvas into white-on-white text.
++      await page.emulateMedia({ media: 'print' });
++      await expectReadable(diagram, false);
++      await page.goto(`${locale}/_print/tests/markmap-theme/`);
++      await expectReadable(page.locator(diagramSelector), false);
++      await page.emulateMedia({ media: 'screen' });
++
++      // A normal site stylesheet can still customize the public vendor token.
++      await page.goto(`${locale}/tests/markmap-theme/`);
++      const siteStyle = await page.addStyleTag({ content: '.td-content .markmap { --markmap-text-color: rgb(12, 123, 210); }' });
++      await expect(page.locator(diagramSelector).locator('.markmap-foreign').first()).toHaveCSS('color', 'rgb(12, 123, 210)');
++      await siteStyle.evaluate((element) => element.remove());
++      await expectReadable(page.locator(diagramSelector));
++      expect(errors).toEqual([]);
++    });
++  }
++}
+diff --git a/tests/fixtures/browser.yml b/tests/fixtures/browser.yml
+index 1b784c7..d425eb2 100644
+--- a/tests/fixtures/browser.yml
++++ b/tests/fixtures/browser.yml
+@@ -2,8 +2,10 @@ module:
+   mounts:
+     - source: content
+       target: content
++      sites: { matrix: { languages: [en, zh] } }
+     - source: tests/fixtures/browser/content
+       target: content/tests
++      sites: { matrix: { languages: [en, zh] } }
+ 
+ params:
+   ui:
+diff --git a/tests/fixtures/browser/content/markmap-theme.md b/tests/fixtures/browser/content/markmap-theme.md
+new file mode 100644
+index 0000000..c58ec74
+--- /dev/null
++++ b/tests/fixtures/browser/content/markmap-theme.md
+@@ -0,0 +1,18 @@
++---
++title: Markmap text contrast
++type: docs
++outputs: [HTML, print, markdown]
++search_exclude: true
++---
++
++Short node names isolate text contrast from automatic fitting of long labels.
++
++```markmap
++# HugeGraph
++## server
++### core
++### api
++### dist
++## pd
++## store
++```
+diff --git a/tests/fixtures/browser/content/markmap-theme.zh.md b/tests/fixtures/browser/content/markmap-theme.zh.md
+new file mode 100644
+index 0000000..8b4a532
+--- /dev/null
++++ b/tests/fixtures/browser/content/markmap-theme.zh.md
+@@ -0,0 +1,18 @@
++---
++title: Markmap 文字对比度
++type: docs
++outputs: [HTML, print, markdown]
++search_exclude: true
++---
++
++使用短节点名称，排除长标签自动缩放的影响，独立检查文字对比度。
++
++```markmap
++# HugeGraph
++## server
++### core
++### api
++### dist
++## pd
++## store
++```
+-- 
+2.51.1
+

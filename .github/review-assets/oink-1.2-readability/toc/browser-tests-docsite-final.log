@@ -1,0 +1,16 @@
+
+Running 8 tests using 1 worker
+
+(node:25) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/8] tests/browser/rail-footer.spec.mjs:73:3 › English light: wheel and keyboard reach the final taxonomy link above the footer
+[2/8] tests/browser/rail-footer.spec.mjs:73:3 › English dark: wheel and keyboard reach the final taxonomy link above the footer
+[3/8] tests/browser/rail-footer.spec.mjs:73:3 › Chinese light: wheel and keyboard reach the final taxonomy link above the footer
+[4/8] tests/browser/rail-footer.spec.mjs:73:3 › Chinese dark: wheel and keyboard reach the final taxonomy link above the footer
+[5/8] tests/browser/rail-footer.spec.mjs:73:3 › without sidebar: wheel and keyboard reach the final taxonomy link above the footer
+[6/8] tests/browser/rail-footer.spec.mjs:112:1 › rail and fat-footer collapse restore the correct available height
+[7/8] tests/browser/rail-footer.spec.mjs:136:1 › flow stays sticky, no-footer stays full height, and Print hides the rails
+[8/8] tests/browser/rail-footer.spec.mjs:151:1 › phone keeps one movable aside in the drawer with usable taxonomy controls
+  8 passed (1.8m)

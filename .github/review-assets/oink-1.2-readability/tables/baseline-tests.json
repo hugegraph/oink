@@ -1,0 +1,233 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/scratch/8c4592f1f41d/tooling/browser/node_modules/@playwright/test/cli.js",
+      "test",
+      "--config",
+      "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-readability-baseline.config.mjs",
+      "--grep",
+      "en technical columns remain readable at 1440px"
+    ],
+    "configFile": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-readability-baseline.config.mjs",
+    "rootDir": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "table-readability.spec.mjs"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "table-readability.spec.mjs"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/workspace/scratch/8c4592f1f41d/evidence/tables/baseline-tests.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "table-readability.spec.mjs",
+      "file": "table-readability.spec.mjs",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "en technical columns remain readable at 1440px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 3404,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.375\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.375\u001b[39m\n    at expectReadable (/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:27:31)\n    at /workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:46:23",
+                    "location": {
+                      "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                      "column": 31,
+                      "line": 27
+                    },
+                    "snippet": "  25 | async function expectReadable(page) {\n  26 |   const parameters = await geometry(page.locator('#configuration-parameters'));\n> 27 |   expect(parameters.keyWidth).toBeGreaterThan(150);\n     |                               ^\n  28 |   expect(parameters.keyLines).toBe(1);\n  29 |   expect(parameters.rowHeight).toBeLessThan(100);\n  30 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                        "column": 31,
+                        "line": 27
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.375\u001b[39m\n\n  25 | async function expectReadable(page) {\n  26 |   const parameters = await geometry(page.locator('#configuration-parameters'));\n> 27 |   expect(parameters.keyWidth).toBeGreaterThan(150);\n     |                               ^\n  28 |   expect(parameters.keyLines).toBe(1);\n  29 |   expect(parameters.rowHeight).toBeLessThan(100);\n  30 |\n    at expectReadable (/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:27:31)\n    at /workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:46:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T17:46:28.676Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-test-results/table-readability-en-techn-3120a-s-remain-readable-at-1440px-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                    "column": 31,
+                    "line": 27
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1360e75341a36a2953ba-63684587d7bd618929d1",
+          "file": "table-readability.spec.mjs",
+          "line": 42,
+          "column": 5
+        },
+        {
+          "title": "en technical columns remain readable at 1440px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6765,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.71665954589844\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.71665954589844\u001b[39m\n    at expectReadable (/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:27:31)\n    at /workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:46:23",
+                    "location": {
+                      "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                      "column": 31,
+                      "line": 27
+                    },
+                    "snippet": "  25 | async function expectReadable(page) {\n  26 |   const parameters = await geometry(page.locator('#configuration-parameters'));\n> 27 |   expect(parameters.keyWidth).toBeGreaterThan(150);\n     |                               ^\n  28 |   expect(parameters.keyLines).toBe(1);\n  29 |   expect(parameters.rowHeight).toBeLessThan(100);\n  30 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                        "column": 31,
+                        "line": 27
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m150\u001b[39m\nReceived:   \u001b[31m56.71665954589844\u001b[39m\n\n  25 | async function expectReadable(page) {\n  26 |   const parameters = await geometry(page.locator('#configuration-parameters'));\n> 27 |   expect(parameters.keyWidth).toBeGreaterThan(150);\n     |                               ^\n  28 |   expect(parameters.keyLines).toBe(1);\n  29 |   expect(parameters.rowHeight).toBeLessThan(100);\n  30 |\n    at expectReadable (/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:27:31)\n    at /workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs:46:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T17:46:35.102Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tmp/table-test-results/table-readability-en-techn-3120a-s-remain-readable-at-1440px-firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/8c4592f1f41d/oink-docs-tables/tests/browser/table-readability.spec.mjs",
+                    "column": 31,
+                    "line": 27
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1360e75341a36a2953ba-eabb894152466e97548d",
+          "file": "table-readability.spec.mjs",
+          "line": 42,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-12T17:46:23.421Z",
+    "duration": 23381.734,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

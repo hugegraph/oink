@@ -1,0 +1,538 @@
+{
+  "phase": "before",
+  "browser": "155.0.8059.39",
+  "hugo": "0.165.0+extended",
+  "go": "1.27.0",
+  "theme": "f8f476e660cf053a2645b7b923ae8d08d5448fce (v1.2.0)",
+  "cases": [
+    {
+      "name": "fixed-light",
+      "initial": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "wheel": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "name": "fixed-dark",
+      "initial": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "wheel": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "name": "no-sidebar",
+      "initial": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 1867,
+        "docHeight": 2867,
+        "offset": "",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.015625,
+          "bottom": 999.8125,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "wheel": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 1867,
+        "docHeight": 2867,
+        "offset": "",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.015625,
+          "bottom": 999.8125,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n4",
+          "href": "/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "Content",
+            "expanded": "true"
+          },
+          {
+            "text": "Categories",
+            "expanded": "true"
+          },
+          {
+            "text": "Series",
+            "expanded": "true"
+          },
+          {
+            "text": "Tags",
+            "expanded": "true"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "name": "fixed-zh",
+      "initial": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n1",
+          "href": "/zh/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "\u76ee\u5f55",
+            "expanded": "true"
+          },
+          {
+            "text": "\u5206\u7c7b",
+            "expanded": "true"
+          },
+          {
+            "text": "\u7cfb\u5217",
+            "expanded": "true"
+          },
+          {
+            "text": "\u6807\u7b7e",
+            "expanded": "true"
+          }
+        ]
+      },
+      "wheel": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "scrollY": 2247,
+        "docHeight": 3247,
+        "offset": "364.359375px",
+        "panel": {
+          "x": 1154,
+          "top": 50,
+          "bottom": 1000,
+          "width": 286,
+          "height": 950,
+          "position": "fixed",
+          "inset": "0px"
+        },
+        "footer": {
+          "x": 0,
+          "top": 636.640625,
+          "bottom": 1000.4375,
+          "width": 1440,
+          "height": 363.796875
+        },
+        "aside": {
+          "x": 1162,
+          "top": 94,
+          "bottom": 988,
+          "width": 258,
+          "height": 894,
+          "scrollTop": 0,
+          "scrollHeight": 894,
+          "clientHeight": 894
+        },
+        "tag": {
+          "x": 1168,
+          "top": 902,
+          "bottom": 928,
+          "width": 140,
+          "height": 26,
+          "text": "Troubleshooting\n1",
+          "href": "/zh/tags/troubleshooting/",
+          "hit": false
+        },
+        "groups": [
+          {
+            "text": "\u76ee\u5f55",
+            "expanded": "true"
+          },
+          {
+            "text": "\u5206\u7c7b",
+            "expanded": "true"
+          },
+          {
+            "text": "\u7cfb\u5217",
+            "expanded": "true"
+          },
+          {
+            "text": "\u6807\u7b7e",
+            "expanded": "true"
+          }
+        ]
+      },
+      "errors": []
+    }
+  ],
+  "font": "Noto Sans CJK SC installed before final capture; fresh Chromium process"
+}

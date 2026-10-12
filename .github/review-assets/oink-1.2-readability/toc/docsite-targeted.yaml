@@ -1,0 +1,10 @@
+outputs:
+  home: [HTML]
+  page: [HTML]
+  section: [HTML]
+params:
+  comments:
+    giscus:
+      enable: false
+  ui:
+    backlinks: false

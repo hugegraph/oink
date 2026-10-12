@@ -1,0 +1,158 @@
+{
+  "baselineCommit": "f8f476e660cf053a2645b7b923ae8d08d5448fce",
+  "baselineTag": "v1.2.0",
+  "baselineIdentity": "Tag, fork main, and upstream main resolve to the same commit; local module replacements identify each build.",
+  "browser": "155.0.8059.39",
+  "node": "v24.19.0",
+  "deviceScaleFactor": 1,
+  "zoom": "100%",
+  "preset": "slate",
+  "mode": "dark",
+  "cjkFont": "Noto Sans CJK SC Regular",
+  "samples": [
+    {
+      "stage": "before",
+      "locale": "en",
+      "width": 1440,
+      "screenshot": "before-en-1440.png",
+      "nodeColors": [
+        "rgb(51, 51, 51)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(51, 51, 51)",
+      "token": "#333",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "contrast": 1.4995,
+      "pageErrors": []
+    },
+    {
+      "stage": "before",
+      "locale": "en",
+      "width": 390,
+      "screenshot": "before-en-390.png",
+      "nodeColors": [
+        "rgb(51, 51, 51)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(51, 51, 51)",
+      "token": "#333",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "contrast": 1.4995,
+      "pageErrors": []
+    },
+    {
+      "stage": "after",
+      "locale": "en",
+      "width": 1440,
+      "screenshot": "after-en-1440.png",
+      "nodeColors": [
+        "rgb(232, 238, 246)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(232, 238, 246)",
+      "token": "#e8eef6",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "contrast": 16.2315,
+      "pageErrors": []
+    },
+    {
+      "stage": "after",
+      "locale": "en",
+      "width": 390,
+      "screenshot": "after-en-390.png",
+      "nodeColors": [
+        "rgb(232, 238, 246)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(232, 238, 246)",
+      "token": "#e8eef6",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "contrast": 16.2315,
+      "pageErrors": []
+    },
+    {
+      "stage": "before",
+      "locale": "zh",
+      "width": 1440,
+      "screenshot": "before-zh-1440.png",
+      "nodeColors": [
+        "rgb(51, 51, 51)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(51, 51, 51)",
+      "token": "#333",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "contrast": 1.4995,
+      "pageErrors": []
+    },
+    {
+      "stage": "before",
+      "locale": "zh",
+      "width": 390,
+      "screenshot": "before-zh-390.png",
+      "nodeColors": [
+        "rgb(51, 51, 51)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(51, 51, 51)",
+      "token": "#333",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "contrast": 1.4995,
+      "pageErrors": []
+    },
+    {
+      "stage": "after",
+      "locale": "zh",
+      "width": 1440,
+      "screenshot": "after-zh-1440.png",
+      "nodeColors": [
+        "rgb(232, 238, 246)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(232, 238, 246)",
+      "token": "#e8eef6",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "contrast": 16.2315,
+      "pageErrors": []
+    },
+    {
+      "stage": "after",
+      "locale": "zh",
+      "width": 390,
+      "screenshot": "after-zh-390.png",
+      "nodeColors": [
+        "rgb(232, 238, 246)"
+      ],
+      "nodeCount": 7,
+      "svgColor": "rgb(232, 238, 246)",
+      "token": "#e8eef6",
+      "bodyColor": "rgb(232, 238, 246)",
+      "canvas": "rgb(11, 17, 25)",
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "contrast": 16.2315,
+      "pageErrors": []
+    }
+  ]
+}

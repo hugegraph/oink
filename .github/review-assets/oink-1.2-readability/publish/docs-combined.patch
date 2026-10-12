@@ -1,0 +1,1516 @@
+From 0176e3d0fb344b7db1de856ec852bcb4ea9c8dfa Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Mon, 12 Oct 2026 10:49:54 -0700
+Subject: [PATCH] test: combine HugeGraph-reported component and rail
+ regressions
+
+---
+ content/docs/components/filetree.md           |  19 +-
+ content/docs/components/filetree.zh.md        |  12 +-
+ content/docs/design/components.md             |  21 ++-
+ content/docs/design/components.zh.md          |  17 +-
+ content/docs/design/shell.md                  |   9 +
+ content/docs/design/shell.zh.md               |   7 +
+ package.json                                  |   4 +-
+ tests/browser/content-components.spec.mjs     |   4 +-
+ tests/browser/filetree-comments.spec.mjs      | 123 +++++++++++++
+ tests/browser/markmap-theme.spec.mjs          | 109 ++++++++++++
+ tests/browser/rail-footer.spec.mjs            | 164 ++++++++++++++++++
+ tests/browser/table-readability.spec.mjs      | 137 +++++++++++++++
+ tests/fixtures/browser.yml                    |   5 +
+ .../browser/content/filetree-comments.md      |  22 +++
+ .../browser/content/filetree-comments.zh.md   |  22 +++
+ .../fixtures/browser/content/markmap-theme.md |  18 ++
+ .../browser/content/markmap-theme.zh.md       |  18 ++
+ .../browser/content/table-readability.md      |  76 ++++++++
+ .../browser/content/table-readability.zh.md   |  76 ++++++++
+ tests/fixtures/rail-footer/fixed.md           |  67 +++++++
+ tests/fixtures/rail-footer/fixed.zh.md        |  67 +++++++
+ tests/fixtures/rail-footer/flow.md            |  67 +++++++
+ tests/fixtures/rail-footer/no-footer.md       |  67 +++++++
+ tests/fixtures/rail-footer/no-sidebar.md      |  67 +++++++
+ 24 files changed, 1176 insertions(+), 22 deletions(-)
+ create mode 100644 tests/browser/filetree-comments.spec.mjs
+ create mode 100644 tests/browser/markmap-theme.spec.mjs
+ create mode 100644 tests/browser/rail-footer.spec.mjs
+ create mode 100644 tests/browser/table-readability.spec.mjs
+ create mode 100644 tests/fixtures/browser/content/filetree-comments.md
+ create mode 100644 tests/fixtures/browser/content/filetree-comments.zh.md
+ create mode 100644 tests/fixtures/browser/content/markmap-theme.md
+ create mode 100644 tests/fixtures/browser/content/markmap-theme.zh.md
+ create mode 100644 tests/fixtures/browser/content/table-readability.md
+ create mode 100644 tests/fixtures/browser/content/table-readability.zh.md
+ create mode 100644 tests/fixtures/rail-footer/fixed.md
+ create mode 100644 tests/fixtures/rail-footer/fixed.zh.md
+ create mode 100644 tests/fixtures/rail-footer/flow.md
+ create mode 100644 tests/fixtures/rail-footer/no-footer.md
+ create mode 100644 tests/fixtures/rail-footer/no-sidebar.md
+
+diff --git a/content/docs/components/filetree.md b/content/docs/components/filetree.md
+index a8c0a0e..6352787 100644
+--- a/content/docs/components/filetree.md
++++ b/content/docs/components/filetree.md
+@@ -73,21 +73,22 @@ tenths. The dashed rule between them is a splitter you can drag, or focus with
+ <kbd>Tab</kbd> and move with the arrow keys (<kbd>Home</kbd> / <kbd>End</kbd> go
+ to the extremes).
+ 
+-Overlong names and comments are truncated with an ellipsis inside their own
+-column, and hovering shows the full text through `title`. The splitter is the
+-file tree's only JavaScript, and only a tree **with comments** loads it.
++Long comments wrap within their column and rows grow to fit them, so the whole
++description is readable without hovering or widening the column. Overlong names
++keep an ellipsis and a `title` tooltip. The splitter is the file tree's only
++JavaScript, and only a tree **with comments** loads it.
+ 
+ ````markdown {title="Source"}
+-```filetree {title="truncation in both columns"}
++```filetree {title="long names and readable comments"}
+ - runbooks/
+-  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # an equally overlong comment, kept on one line so it has to be clipped inside the comment column
++  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # a longer description that wraps inside the comment column and remains readable without hovering
+   - restart.md                                                    # short
+ ```
+ ````
+ 
+-```filetree {title="truncation in both columns"}
++```filetree {title="long names and readable comments"}
+ - runbooks/
+-  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # an equally overlong comment, kept on one line so it has to be clipped inside the comment column
++  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # a longer description that wraps inside the comment column and remains readable without hovering
+   - restart.md                                                    # short
+ ```
+ 
+@@ -296,12 +297,12 @@ A fence carrying `tab=` (and `group=` / `value=`) becomes one panel of a
+ | Output | Shape |
+ | --- | --- |
+ | HTML | `<div class="td-filetree">`, an optional title bar, directories as native `<details>`; a tree with comments also gets the draggable splitter, its only runtime |
+-| Print | The same tree, fully expanded, no splitter, comments wrapped instead of truncated |
++| Print | The same tree, fully expanded, no splitter, comments wrapped |
+ | Markdown | The `filetree` fence, emitted as written |
+ | RSS | The fence source inside a `<pre>` |
+ 
+ Below the `sm` breakpoint the layout collapses to a single column: comments move
+-under the name, stop being truncated, and the splitter is hidden. A tree without
++under the name, and the splitter is hidden. A tree without
+ comments is single-column and loads no script at all.
+ 
+ ## Parameter reference {#reference}
+diff --git a/content/docs/components/filetree.zh.md b/content/docs/components/filetree.zh.md
+index bf31723..9c7923b 100644
+--- a/content/docs/components/filetree.zh.md
++++ b/content/docs/components/filetree.zh.md
+@@ -60,19 +60,19 @@ search_keywords: [文件树, FileTree, 目录树, tree, 目录结构, 仓库结
+ 
+ 注释列的起点在构建期算出，由最宽的一行决定，因此每行的 `#` 从同一列开始，与源码里是否对齐无关。注释列最多占面板的右半边，最少占三成。中间的虚线是分隔条，可以拖动，也可以用 <kbd>Tab</kbd> 聚焦后按方向键调整（<kbd>Home</kbd> / <kbd>End</kbd> 到两端）。
+ 
+-过长的名称与注释各自在本列内用省略号截断，鼠标悬停时由 `title` 提示完整文本。分隔条是文件树唯一的 JavaScript，只有 **带注释** 的树才加载它。
++长注释在列内换行，行高随内容增长，无需悬停或调整列宽即可读全。过长的名称仍保留省略号与 `title` 提示。分隔条是文件树唯一的 JavaScript，只有 **带注释** 的树才加载它。
+ 
+ ````markdown {title="源码"}
+-```filetree {title="两列都发生截断"}
++```filetree {title="长名称与完整可读的注释"}
+ - runbooks/
+-  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # 同样超长的注释，写在一行里，因此必须在注释列内截断
++  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # 一条较长的说明，在注释列内自动换行，无需鼠标悬停也能完整阅读
+   - restart.md                                                    # 短名字
+ ```
+ ````
+ 
+-```filetree {title="两列都发生截断"}
++```filetree {title="长名称与完整可读的注释"}
+ - runbooks/
+-  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # 同样超长的注释，写在一行里，因此必须在注释列内截断
++  - a-deliberately-long-runbook-filename-for-a-failover-drill.md  # 一条较长的说明，在注释列内自动换行，无需鼠标悬停也能完整阅读
+   - restart.md                                                    # 短名字
+ ```
+ 
+@@ -266,7 +266,7 @@ content/docs
+ | Markdown | 原样输出 `filetree` 围栏 |
+ | RSS | 围栏源码放进 `<pre>` |
+ 
+-窄屏（小于 `sm` 断点）时布局收成单列：注释移到名称下方，不再截断，分隔条隐藏。不带注释的树是单列，也不加载任何脚本。
++窄屏（小于 `sm` 断点）时布局收成单列：注释移到名称下方，分隔条隐藏。不带注释的树是单列，也不加载任何脚本。
+ 
+ ## 参数参考 {#reference}
+ 
+diff --git a/content/docs/design/components.md b/content/docs/design/components.md
+index 79fdf65..f0265f3 100644
+--- a/content/docs/design/components.md
++++ b/content/docs/design/components.md
+@@ -117,6 +117,15 @@ column row headers; `.full-width` widens normal or matrix tables. `.fields`
+ cannot combine with matrix, full-width, numbering, or tabs; numbering and tabs
+ are also mutually exclusive.
+ 
++**Unreleased table readability correction:** on screen, technical identifiers
++retain their intrinsic word width and wide tables scroll inside the native
++viewport. Exceptionally long identifiers and links can still wrap within their
++cells. Body cells use a soft `40ch` preferred measure so long prose wraps instead
++of creating one oversized line; automatic table layout can distribute extra
++space. Matrix row headers retain their explicit no-wrap behavior. This applies
++to native table viewports without a new author option and does not change the
++static Print/RSS table contract.
++
+ ### Images, Gallery, FileTree, and fences {#images-gallery-filetree-and-fences}
+ 
+ The Markdown image hook is the ordinary image API. Inline images stay inline;
+@@ -140,7 +149,9 @@ devices and in forced-colors mode.
+ 
+ Gallery accepts one Markdown image per line with optional description, link,
+ and class. FileTree accepts indentation, `- name`, optional `/`, comments, and
+-validated icon/tone/open/type attributes. Markdown preserves authored source;
++validated icon/tone/open/type attributes. FileTree comments wrap by default
++and rows grow to keep the complete description readable without hovering,
++including while the divider is resized. Markdown preserves authored source;
+ print renders expanded static figures and trees.
+ 
+ All code highlighting uses Chroma. Common fence attributes include `title`,
+@@ -149,6 +160,14 @@ All code highlighting uses Chroma. Common fence attributes include `title`,
+ of visual presets. The default dark edge-label background is `#404040` for
+ AA text contrast; authored `params.mermaid.themeVariables` remain authoritative.
+ 
++Unreleased Markmap correction: ordinary node text on screens follows the
++active preset's `--bs-body-color` through Markmap's `--markmap-text-color` API,
++including live light/dark changes and restored preferences. The mapping is
++scoped to article content and covers the generated SVG as well as its wrapper;
++later site CSS at the same specificity and inline SVG tokens remain usable.
++Printing keeps Markmap's dark ink on the white print canvas. No additional
++theme listener or replacement of vendored assets is required.
++
+ ECharts input is declarative
+ JSON/YAML; callbacks use `$fn:<name>` from `window.OinkEchartsFunctions`, never
+ embedded script execution.
+diff --git a/content/docs/design/components.zh.md b/content/docs/design/components.zh.md
+index 407b1c5..5a0b1bb 100644
+--- a/content/docs/design/components.zh.md
++++ b/content/docs/design/components.zh.md
+@@ -106,6 +106,12 @@ HTML 在 JavaScript 运行前暴露所有面板，打印输出展开面板，Mar
+ `.full-width` 加宽普通表格或矩阵表格。`.fields` 不能与 matrix、full-width、
+ 编号或标签页组合；编号与标签页也互斥。
+ 
++**尚未发布的表格可读性修正**：在屏幕上，技术标识符保留其固有单词宽度，
++宽表在原生视口内横向滚动。超长标识符和链接仍可在单元格内换行。正文单元格
++采用柔性的 `40ch` 首选宽度，让长段落换行，避免形成一整条超宽文本；自动表格
++布局仍可分配额外空间。矩阵行表头保留显式不换行的行为。本修正适用于原生
++表格视口，无需新增作者选项，也不改变 Print/RSS 的静态表格契约。
++
+ ### 图片、画廊、FileTree 与围栏 {#images-gallery-filetree-and-fences}
+ 
+ Markdown 图片钩子是普通图片 API。行内图片保持行内；块图片带 `caption` 或 `num`
+@@ -125,8 +131,9 @@ Draw.io 与图片缩放共用一张图片时，编辑与缩放是同级的独立
+ 键盘访问，并在触摸设备和强制颜色模式下保持可见。
+ 
+ 画廊每行接受一张 Markdown 图片，可带描述、链接与 class。FileTree 接受缩进、
+-`- name`、可选 `/`、注释，以及经过校验的 icon、tone、open、type 属性。Markdown
+-保留作者源文；打印输出渲染展开的静态图片与文件树。
++`- name`、可选 `/`、注释，以及经过校验的 icon、tone、open、type 属性。文件树
++注释默认换行，行高随内容增长，无需悬停即可读全；调整分隔条后仍保持完整可读。
++Markdown 保留作者源文；打印输出渲染展开的静态图片与文件树。
+ 
+ 所有代码高亮都使用 Chroma。通用围栏属性包括 `title`、`copy`、`wrap`、
+ `collapse`、`label`、`id`、行选项、标签页，以及 Book 的 `num`/`caption`。复制
+@@ -134,6 +141,12 @@ Draw.io 与图片缩放共用一张图片时，编辑与缩放是同级的独立
+ 背景使用 `#404040`，使标签文字达到 AA 对比度。显式
+ `params.mermaid.themeVariables` 配置仍然优先。
+ 
++尚未发布的 Markmap 修正：屏幕上的普通节点文字通过 Markmap 的
++`--markmap-text-color` API 跟随当前预设的 `--bs-body-color`，包括即时明暗切换与
++已保存偏好的恢复。映射只作用于正文内容，同时覆盖生成的 SVG 与外层容器；站点
++仍可使用后加载且同等优先级的 CSS，或 SVG 内联令牌进行覆盖。打印时保留 Markmap
++的深色文字，适配白色打印背景。无需增加主题切换监听器或替换随主题内置的依赖。
++
+ ECharts 输入是声明式 JSON/YAML；回调使用
+ `window.OinkEchartsFunctions` 中的 `$fn:<name>`，绝不执行嵌入脚本。
+ 
+diff --git a/content/docs/design/shell.md b/content/docs/design/shell.md
+index c0e3492..7a789d9 100644
+--- a/content/docs/design/shell.md
++++ b/content/docs/design/shell.md
+@@ -162,6 +162,15 @@ renders nothing. `notoc` remains the page-level TOC opt-out. These switches do
+ not change bylines, tags, series, pager order, feeds, or page-end composition,
+ and the rail disappears below the `xl` breakpoint.
+ 
++> [!NOTE] Unreleased footer-clearance correction
++> The fixed TOC rail uses the shared visible-footer offset, including when
++> `sidebar_enabled: false`. Its scrollable content ends above the footer, so
++> the last taxonomy links remain reachable with the wheel and keyboard.
++> Collapsing or expanding the fat footer updates that boundary. With no
++> footer the offset is zero; `toc_style: flow` keeps its sticky boundary.
++> Mobile drawer placement and Print visibility are unchanged. This correction
++> is not included in the v1.2.0 release.
++
+ ## Search, actions, and runtime {#search-actions-and-runtime}
+ 
+ `params.offline_search` opts into a local per-language index. When enabled it
+diff --git a/content/docs/design/shell.zh.md b/content/docs/design/shell.zh.md
+index b2e1e79..8c313c3 100644
+--- a/content/docs/design/shell.zh.md
++++ b/content/docs/design/shell.zh.md
+@@ -125,6 +125,13 @@ sidebar_enabled: false
+ 完全不渲染。`notoc` 仍是页面级 TOC 退出键。这些开关不改变署名、标签、系列、
+ 翻页顺序、feed 或页尾组合；导轨在 `xl` 断点以下消失。
+ 
++> [!NOTE] 尚未发布的页脚避让修正
++> 固定 TOC 导轨使用共享的可见页脚偏移，`sidebar_enabled: false` 时也生效。
++> 其滚动内容结束于页脚上方，最后的分类法链接可通过滚轮和键盘访问。
++> 折叠或展开胖页脚时，该边界随之更新。没有页脚时偏移为零；
++> `toc_style: flow` 保持自己的 sticky 边界。移动端抽屉中的放置与 Print
++> 可见性不变。此修正不包含在 v1.2.0 版本中。
++
+ ## 搜索、操作与运行时 {#search-actions-and-runtime}
+ 
+ `params.offline_search` 选择启用各语言的本地索引。启用后默认也在 `hugo server`
+diff --git a/package.json b/package.json
+index ff27460..e01bbd6 100644
+--- a/package.json
++++ b/package.json
+@@ -33,7 +33,7 @@
+     "test:community-feedback": "playwright test tests/browser/community-feedback.spec.mjs",
+     "test:command-palette": "playwright test tests/browser/command-palette.spec.mjs",
+     "test:code-blocks": "playwright test tests/browser/code-blocks.spec.mjs",
+-    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs",
++    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs tests/browser/filetree-comments.spec.mjs tests/browser/markmap-theme.spec.mjs tests/browser/table-readability.spec.mjs",
+     "test:extra": "npm run seq -- test:hugo-build test:alt-site test:md-output test:favicons test:rendered-links test:release-pin-contract",
+     "test:favicons": "node --test 'tests/favicons/**/*.test.mjs'",
+     "test:hugo-build": "node --test 'tests/hugo-build/**/*.test.mjs'",
+@@ -41,7 +41,7 @@
+     "test:md-output": "node --test 'tests/md-output/**/*.test.mjs'",
+     "test:prd5": "playwright test tests/browser/prd5-scenarios.spec.mjs",
+     "test:theme-color": "playwright test tests/browser/theme-color.spec.mjs",
+-    "test:responsive-shell": "playwright test tests/browser/responsive-shell.spec.mjs tests/browser/blog.spec.mjs tests/browser/command-palette.spec.mjs",
++    "test:responsive-shell": "playwright test tests/browser/responsive-shell.spec.mjs tests/browser/blog.spec.mjs tests/browser/command-palette.spec.mjs tests/browser/rail-footer.spec.mjs",
+     "test:release-pin-contract": "node --test 'tests/release-pin/**/*.test.mjs'",
+     "test:rendered-links": "node --test 'tests/rendered-links/**/*.test.mjs'",
+     "test:release-pin": "npm run _check:release-pin",
+diff --git a/tests/browser/content-components.spec.mjs b/tests/browser/content-components.spec.mjs
+index 462b7da..9fe42a0 100644
+--- a/tests/browser/content-components.spec.mjs
++++ b/tests/browser/content-components.spec.mjs
+@@ -134,7 +134,7 @@ test.describe('Everyday content primitive guides', () => {
+     // Long names truncate inside the name column instead of overflowing.
+     const truncationTree = page
+       .locator('#td-main-content .td-filetree')
+-      .filter({ hasText: 'truncation in both columns' })
++      .filter({ hasText: 'long names and readable comments' })
+       .first();
+     const longName = truncationTree
+       .locator('.td-filetree__name', {
+@@ -211,7 +211,7 @@ test.describe('Everyday content primitive guides', () => {
+             scrollWidth: element.scrollWidth,
+             right: element.getBoundingClientRect().right,
+             viewport: document.documentElement.clientWidth,
+-            // Gallery / Fields never overflow; FileTree truncates in place.
++            // Gallery / Fields never overflow; FileTree wraps comments in place.
+             scrolls: ['auto', 'scroll'].includes(
+               getComputedStyle(element).overflowX,
+             ),
+diff --git a/tests/browser/filetree-comments.spec.mjs b/tests/browser/filetree-comments.spec.mjs
+new file mode 100644
+index 0000000..67895b9
+--- /dev/null
++++ b/tests/browser/filetree-comments.spec.mjs
+@@ -0,0 +1,123 @@
++import { expect, test } from '@playwright/test';
++
++test.use({ hasTouch: true });
++
++async function expectReadableComments(tree, count, columns) {
++  const measured = await tree.evaluate((element) => {
++    const rows = [...element.querySelectorAll('.td-filetree__row')]
++      .filter((row) => row.getClientRects().length);
++    return {
++      rows: rows.map((row) => {
++        const box = row.getBoundingClientRect();
++        const icon = row.querySelector('.td-filetree__icon').getBoundingClientRect();
++        return {
++          top: box.top,
++          bottom: box.bottom,
++          height: box.height,
++          minHeight: parseFloat(getComputedStyle(row).minBlockSize),
++          guideHeight: getComputedStyle(row).backgroundSize,
++          iconCentre: (icon.top + icon.bottom) / 2,
++        };
++      }),
++      comments: [...element.querySelectorAll('.td-filetree__comment-text')]
++        .filter((node) => node.getClientRects().length)
++        .map((node) => {
++          const box = node.getBoundingClientRect();
++          const row = node.closest('.td-filetree__row').getBoundingClientRect();
++          const cell = node.parentElement.getBoundingClientRect();
++          const range = document.createRange();
++          range.selectNodeContents(node);
++          const fragments = [...range.getClientRects()];
++          return {
++            text: node.textContent,
++            clipped: node.scrollWidth > node.clientWidth + 1,
++            contained: fragments.every((line) =>
++              line.left >= box.left - 1 && line.right <= box.right + 1 &&
++              line.top >= row.top - 1 && line.bottom <= row.bottom + 1),
++            column: cell.left,
++            cellTop: cell.top,
++            cellBottom: cell.bottom,
++            rowTop: row.top,
++            rowBottom: row.bottom,
++          };
++        }),
++    };
++  });
++  expect(measured.comments).toHaveLength(count);
++  for (const comment of measured.comments) {
++    expect(comment.clipped, comment.text).toBe(false);
++    expect(comment.contained, comment.text).toBe(true);
++    if (columns) {
++      expect(Math.abs(comment.cellTop - comment.rowTop)).toBeLessThanOrEqual(1);
++      expect(Math.abs(comment.cellBottom - comment.rowBottom)).toBeLessThanOrEqual(1);
++    }
++  }
++  if (columns) {
++    const starts = measured.comments.map(({ column }) => Math.round(column));
++    expect(new Set(starts).size).toBe(1);
++  }
++  measured.rows.forEach((row, index) => {
++    expect(row.height).toBeGreaterThanOrEqual(row.minHeight - 1);
++    if (index) expect(row.top).toBeGreaterThanOrEqual(measured.rows[index - 1].bottom - 1);
++    // The indent guides cover the whole variable-height row. Name icons stay
++    // centred beside the description in the two-column layout.
++    expect(row.guideHeight).toMatch(/100%$/);
++    if (columns) expect(Math.abs(row.iconCentre - (row.top + row.bottom) / 2)).toBeLessThanOrEqual(1);
++  });
++}
++
++for (const language of ['', '/zh']) {
++  for (const width of [1440, 768, 390]) {
++    for (const mode of ['light', 'dark']) {
++      test(`${language || 'en'} comments stay readable at ${width}px in ${mode}`, async ({ page }) => {
++        await page.addInitScript((color) => {
++          localStorage.setItem('td-preset', 'slate');
++          localStorage.setItem('td-color-theme', color);
++        }, mode);
++        await page.setViewportSize({ width, height: 1000 });
++        await page.goto(`${language}/tests/filetree-comments/`, { waitUntil: 'domcontentloaded' });
++        await page.evaluate(() => document.fonts.ready);
++        await expect(page.locator('html')).toHaveAttribute('data-bs-theme', mode);
++        const trees = page.locator('.td-content .td-filetree');
++        await expect(trees).toHaveCount(2);
++        const tree = trees.first();
++        await expectReadableComments(tree, 3, width >= 576);
++        await expectReadableComments(trees.nth(1), 1, width >= 576);
++        if (width >= 576) {
++          const divider = tree.getByRole('separator');
++          await divider.focus();
++          for (const [key, value] of [['Home', '50'], ['End', '70']]) {
++            await divider.press(key);
++            await expect(divider).toHaveAttribute('aria-valuenow', value);
++            await expectReadableComments(tree, 3, true);
++          }
++        } else {
++          await expect(tree.getByRole('separator')).toBeHidden();
++        }
++        const folder = tree.locator('details:has(> summary .td-filetree__name[title="data/"])');
++        await folder.locator('> summary').press('Enter');
++        await expect(tree.locator('.td-filetree__comment-text').first()).toBeHidden();
++        await folder.locator('> summary').tap({ position: { x: 24, y: 12 } });
++        await expectReadableComments(tree, 3, width >= 576);
++        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
++      });
++    }
++  }
++
++  test(`${language || 'en'} comments print fully and remain readable without JavaScript`, async ({ browser, baseURL }) => {
++    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 768, height: 1000 } });
++    const page = await context.newPage();
++    await page.goto(`${language}/tests/filetree-comments/`, { waitUntil: 'domcontentloaded' });
++    const trees = page.locator('.td-content .td-filetree');
++    await expectReadableComments(trees.first(), 3, true);
++    await expectReadableComments(trees.nth(1), 1, true);
++    await page.goto(`${language}/_print/tests/filetree-comments/`, { waitUntil: 'domcontentloaded' });
++    await page.emulateMedia({ media: 'print' });
++    const printed = page.locator('.td-filetree--static');
++    await expect(printed).toHaveCount(2);
++    await expect(printed.locator('details, [role="separator"]')).toHaveCount(0);
++    await expectReadableComments(printed.first(), 3, true);
++    await expectReadableComments(printed.nth(1), 1, true);
++    await context.close();
++  });
++}
+diff --git a/tests/browser/markmap-theme.spec.mjs b/tests/browser/markmap-theme.spec.mjs
+new file mode 100644
+index 0000000..0b8d725
+--- /dev/null
++++ b/tests/browser/markmap-theme.spec.mjs
+@@ -0,0 +1,109 @@
++import { expect, test } from '@playwright/test';
++
++const diagramSelector = '.td-content > .markmap > svg.markmap';
++
++function contrast(first, second) {
++  const luminance = (rgb) => {
++    const values = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map((value) => {
++      const channel = value / 255;
++      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
++    });
++    return values.reduce((total, value, index) => total + value * [0.2126, 0.7152, 0.0722][index], 0);
++  };
++  const values = [luminance(first), luminance(second)].sort((a, b) => a - b);
++  return (values[1] + 0.05) / (values[0] + 0.05);
++}
++
++async function nodeColors(diagram) {
++  return diagram.locator('.markmap-foreign').evaluateAll((nodes) => ({
++    ink: [...new Set(nodes.map((node) => getComputedStyle(node).color))],
++    body: getComputedStyle(document.body).color,
++    canvas: getComputedStyle(document.body).backgroundColor,
++  }));
++}
++
++async function expectReadable(diagram, followsBody = true) {
++  await expect(diagram.locator('.markmap-node')).toHaveCount(7);
++  if (followsBody) {
++    await expect.poll(async () => {
++      const colors = await nodeColors(diagram);
++      return colors.ink.every((ink) => ink === colors.body);
++    }).toBe(true);
++  }
++  const colors = await nodeColors(diagram);
++  for (const ink of colors.ink) expect(contrast(ink, colors.canvas)).toBeGreaterThanOrEqual(4.5);
++}
++
++async function appearance(page) {
++  // The footer entry stays actionable after the SVG screenshot scrolls the
++  // autohiding navbar away. Exercise the same native Appearance controls.
++  await page.locator('[aria-controls="td-appearance-footer"]').click();
++  const panel = page.locator('dialog.td-appearance__panel[open]');
++  await expect(panel).toBeVisible();
++  return panel;
++}
++
++for (const locale of ['', '/zh']) {
++  for (const width of [390, 1440]) {
++    test(`Markmap plain labels track appearance, ${locale || 'en'} ${width}`, async ({ page }, info) => {
++      const errors = [];
++      page.on('pageerror', (error) => errors.push(error.message));
++      await page.route('https://giscus.app/**', (route) => route.abort());
++      await page.setViewportSize({ width, height: 1000 });
++      await page.addInitScript(() => {
++        if (!sessionStorage.getItem('markmap-seeded')) {
++          localStorage.setItem('td-preset', 'slate');
++          localStorage.setItem('td-color-theme', 'dark');
++          sessionStorage.setItem('markmap-seeded', 'yes');
++        }
++      });
++      await page.goto(`${locale}/tests/markmap-theme/`);
++      const diagram = page.locator(diagramSelector);
++      await expectReadable(diagram);
++      await diagram.screenshot({ path: info.outputPath('slate-dark.png') });
++
++      // Use the real controls; CSS must update without recreating the SVG.
++      await diagram.evaluate((svg) => { svg.dataset.markmapTestIdentity = 'original'; });
++      for (const preset of ['paper', 'ink', 'terminal', 'slate']) {
++        const panel = await appearance(page);
++        await panel.locator(`[data-td-preset-value="${preset}"]`).check();
++        for (const mode of ['light', 'dark']) {
++          await panel.locator(`[data-bs-theme-value="${mode}"]`).check();
++          await expect(page.locator('html')).toHaveAttribute('data-td-preset', preset);
++          await expect(page.locator('html')).toHaveAttribute('data-bs-theme', mode);
++          await expectReadable(diagram);
++        }
++        await page.keyboard.press('Escape');
++      }
++      await expect(diagram).toHaveAttribute('data-markmap-test-identity', 'original');
++      await page.reload();
++      await expect(page.locator('html')).toHaveAttribute('data-bs-theme', 'dark');
++      await expectReadable(diagram);
++
++      const server = diagram.locator('.markmap-node').filter({ hasText: /^server$/ });
++      await server.locator('circle').click();
++      await expect(diagram.locator('.markmap-node')).toHaveCount(4);
++      await server.locator('circle').click();
++      await expectReadable(diagram);
++      const transform = await diagram.locator(':scope > g').getAttribute('transform');
++      await diagram.hover();
++      await page.mouse.wheel(0, -120);
++      await expect.poll(() => diagram.locator(':scope > g').getAttribute('transform')).not.toBe(transform);
++
++      // Dark-mode preferences must not turn a white print canvas into white-on-white text.
++      await page.emulateMedia({ media: 'print' });
++      await expectReadable(diagram, false);
++      await page.goto(`${locale}/_print/tests/markmap-theme/`);
++      await expectReadable(page.locator(diagramSelector), false);
++      await page.emulateMedia({ media: 'screen' });
++
++      // A normal site stylesheet can still customize the public vendor token.
++      await page.goto(`${locale}/tests/markmap-theme/`);
++      const siteStyle = await page.addStyleTag({ content: '.td-content .markmap { --markmap-text-color: rgb(12, 123, 210); }' });
++      await expect(page.locator(diagramSelector).locator('.markmap-foreign').first()).toHaveCSS('color', 'rgb(12, 123, 210)');
++      await siteStyle.evaluate((element) => element.remove());
++      await expectReadable(page.locator(diagramSelector));
++      expect(errors).toEqual([]);
++    });
++  }
++}
+diff --git a/tests/browser/rail-footer.spec.mjs b/tests/browser/rail-footer.spec.mjs
+new file mode 100644
+index 0000000..d6c45c9
+--- /dev/null
++++ b/tests/browser/rail-footer.spec.mjs
+@@ -0,0 +1,164 @@
++import { expect, test } from '@playwright/test';
++
++const panelSelector = '.td-shell-toc__panel';
++const asideSelector = `${panelSelector} > [data-td-shell-aside]`;
++const tagSelector = '[data-td-taxonomy="tags"] .td-shell-tag';
++
++async function open(page, path = '/docs/rail-footer/fixed/', mode = 'light') {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.addInitScript((mode) => {
++    localStorage.clear();
++    localStorage.setItem('td-color-theme', mode);
++    localStorage.setItem('td-preset', 'slate');
++  }, mode);
++  await page.goto(path, { waitUntil: 'networkidle' });
++  await page.evaluate(() => document.fonts.ready);
++  await expect(page.locator('html')).toHaveAttribute('data-bs-theme', mode);
++  await expect(page.locator('html')).toHaveAttribute('data-td-shell-initialized', '');
++}
++
++async function atBottom(page) {
++  // Use real wheel input over the article. A disclosure resize can change
++  // the document height after a wheel event, so keep scrolling until settled.
++  await page.mouse.move(700, 200);
++  await expect(async () => {
++    await page.mouse.wheel(0, 20000);
++    await expect.poll(() => page.evaluate(() =>
++      Math.abs(scrollY + innerHeight - document.documentElement.scrollHeight),
++    ), { timeout: 1000 }).toBeLessThanOrEqual(2);
++  }).toPass({ timeout: 5000 });
++}
++
++async function geometry(page) {
++  return page.evaluate(({ panelSelector, asideSelector, tagSelector }) => {
++    const panel = document.querySelector(panelSelector);
++    const aside = document.querySelector(asideSelector);
++    const footer = document.querySelector('[data-td-shell-footer]');
++    const tags = panel.querySelectorAll(tagSelector);
++    const tag = tags[tags.length - 1];
++    const bounds = (element) => {
++      const r = element.getBoundingClientRect();
++      return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom };
++    };
++    const r = tag?.getBoundingClientRect();
++    const point = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
++    return {
++      panel: bounds(panel),
++      footer: footer && bounds(footer),
++      aside: aside && {
++        ...bounds(aside), scrollHeight: aside.scrollHeight,
++        clientHeight: aside.clientHeight, scrollTop: aside.scrollTop,
++      },
++      tag: tag && { ...bounds(tag), hit: tag === point || tag.contains(point) },
++      position: getComputedStyle(panel).position,
++      inset: getComputedStyle(panel).insetBlockEnd,
++    };
++  }, { panelSelector, asideSelector, tagSelector });
++}
++
++async function expectAboveFooter(page) {
++  await expect.poll(async () => {
++    const { panel, footer } = await geometry(page);
++    return panel.bottom - footer.y;
++  }).toBeLessThanOrEqual(0);
++}
++
++for (const [name, path, mode] of [
++  ['English light', '/docs/rail-footer/fixed/', 'light'],
++  ['English dark', '/docs/rail-footer/fixed/', 'dark'],
++  ['Chinese light', '/zh/docs/rail-footer/fixed/', 'light'],
++  ['Chinese dark', '/zh/docs/rail-footer/fixed/', 'dark'],
++  ['without sidebar', '/docs/rail-footer/no-sidebar/', 'light'],
++]) {
++  test(`${name}: wheel and keyboard reach the final taxonomy link above the footer`, async ({ page }) => {
++    await open(page, path, mode);
++    const rail = page.locator(panelSelector);
++    await expect(rail).toHaveCSS('position', 'fixed');
++    const groups = rail.locator('[data-td-shell-tree-toggle]');
++    for (const group of await groups.all()) await expect(group).toHaveAttribute('aria-expanded', 'true');
++    await atBottom(page);
++    await expectAboveFooter(page);
++    const before = await geometry(page);
++    expect(before.aside.scrollHeight).toBeGreaterThan(before.aside.clientHeight);
++
++    await page.mouse.move(before.aside.x + before.aside.width / 2, before.aside.y + 50);
++    await page.mouse.wheel(0, 10000);
++    await expect.poll(async () => (await geometry(page)).aside.scrollTop).toBeGreaterThan(0);
++    await expect.poll(async () => (await geometry(page)).tag.hit).toBe(true);
++    const after = await geometry(page);
++    expect(after.tag.bottom).toBeLessThan(after.footer.y);
++
++    const lastTag = rail.locator(tagSelector).last();
++    const href = await lastTag.getAttribute('href');
++    await lastTag.click();
++    await expect(page).toHaveURL(new RegExp(`${href}$`));
++    await expect(page.locator('main h1')).toBeVisible();
++
++    // Revisit and traverse the actual tab order into the obscured final link.
++    await page.goto(path, { waitUntil: 'networkidle' });
++    await atBottom(page);
++    await rail.locator('[data-td-shell-right-toggle]').focus();
++    for (let i = 0; i < 80 && !(await lastTag.evaluate((el) => el === document.activeElement)); i += 1) {
++      await page.keyboard.press('Tab');
++    }
++    await expect(lastTag).toBeFocused();
++    expect((await geometry(page)).tag.hit).toBe(true);
++    await page.keyboard.press('Enter');
++    await expect(page).toHaveURL(new RegExp(`${href}$`));
++    await expect(page.locator('main h1')).toBeVisible();
++  });
++}
++
++test('rail and fat-footer collapse restore the correct available height', async ({ page }) => {
++  await open(page);
++  await atBottom(page);
++  await expectAboveFooter(page);
++  const expanded = await geometry(page);
++  await page.locator('[data-td-footer-toggle]').click();
++  await expect(page.locator('[data-td-footer-toggle]')).toHaveAttribute('aria-expanded', 'false');
++  await atBottom(page);
++  await expectAboveFooter(page);
++  expect((await geometry(page)).panel.height).toBeGreaterThan(expanded.panel.height);
++  await page.locator('[data-td-footer-toggle]').click();
++  await atBottom(page);
++  await expectAboveFooter(page);
++
++  const hide = page.locator(`${panelSelector} [data-td-shell-right-toggle]`);
++  const restore = page.locator('.td-shell-toc-float [data-td-shell-right-toggle]');
++  await hide.click();
++  await expect(page.locator(panelSelector)).toHaveAttribute('inert', '');
++  await expect(restore).toBeFocused();
++  await restore.click();
++  await expect(hide).toBeFocused();
++  await expectAboveFooter(page);
++});
++
++test('flow stays sticky, no-footer stays full height, and Print hides the rails', async ({ page }) => {
++  await open(page, '/docs/rail-footer/flow/');
++  await atBottom(page);
++  await expect(page.locator(panelSelector)).toHaveCSS('position', 'sticky');
++  await expect(page.locator(panelSelector)).toHaveCSS('inset-block-end', 'auto');
++  await expectAboveFooter(page);
++  await page.goto('/docs/rail-footer/no-footer/', { waitUntil: 'networkidle' });
++  await atBottom(page);
++  await expect(page.locator('[data-td-shell-footer]')).toHaveCount(0);
++  expect((await geometry(page)).panel.bottom).toBe(1000);
++  await page.emulateMedia({ media: 'print' });
++  await expect(page.locator('.td-shell-toc')).toBeHidden();
++  await expect(page.locator('.td-shell-sidebar')).toBeHidden();
++});
++
++test('phone keeps one movable aside in the drawer with usable taxonomy controls', async ({ page }) => {
++  await open(page);
++  await page.setViewportSize({ width: 390, height: 844 });
++  await expect(page.locator(panelSelector)).toBeHidden();
++  await page.locator('[data-td-shell-drawer-open]:visible').click();
++  const aside = page.locator('[data-td-shell-aside-slot] > [data-td-shell-aside]');
++  await expect(aside).toHaveCount(1);
++  const tags = aside.locator('[data-td-taxonomy="tags"]');
++  await tags.locator('[data-td-shell-tree-toggle]').click();
++  await tags.locator('.td-shell-tag').last().scrollIntoViewIfNeeded();
++  await expect(tags.locator('.td-shell-tag').last()).toBeInViewport();
++  await tags.locator('.td-shell-tag').last().click();
++  await expect(page).toHaveURL(/\/tags\/[^/]+\/$/);
++});
+diff --git a/tests/browser/table-readability.spec.mjs b/tests/browser/table-readability.spec.mjs
+new file mode 100644
+index 0000000..925a4c1
+--- /dev/null
++++ b/tests/browser/table-readability.spec.mjs
+@@ -0,0 +1,137 @@
++import { expect, test } from '@playwright/test';
++
++const nativePath = process.env.TABLE_READABILITY_PATH || '/tests/table-readability/';
++const urlFor = (language) => `${language === 'zh' ? '/zh' : ''}${nativePath}`;
++
++async function geometry(table) {
++  return table.evaluate((node) => {
++    const row = node.tBodies[0].rows[0];
++    const key = row.cells[0];
++    const description = row.cells[row.cells.length - 1];
++    const range = document.createRange();
++    range.selectNodeContents(key);
++    return {
++      keyWidth: key.getBoundingClientRect().width,
++      keyLines: new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size,
++      descriptionWidth: description.getBoundingClientRect().width,
++      rowHeight: row.getBoundingClientRect().height,
++      tableWidth: node.getBoundingClientRect().width,
++      viewport: node.parentElement.clientWidth,
++      fontSize: parseFloat(getComputedStyle(description).fontSize),
++    };
++  });
++}
++
++async function expectReadable(page) {
++  const parameters = await geometry(page.locator('#configuration-parameters'));
++  expect(parameters.keyWidth).toBeGreaterThan(150);
++  expect(parameters.keyLines).toBe(1);
++  expect(parameters.rowHeight).toBeLessThan(100);
++
++  const environment = await geometry(page.locator('#environment-variables'));
++  expect(environment.descriptionWidth).toBeGreaterThanOrEqual(280);
++  expect(environment.rowHeight).toBeLessThan(120);
++  expect(environment.fontSize).toBeGreaterThanOrEqual(14);
++  expect(environment.tableWidth).toBeGreaterThan(environment.viewport);
++  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
++  return environment;
++}
++
++for (const language of ['en', 'zh']) {
++  for (const width of [1440, 768, 390]) {
++    test(`${language} technical columns remain readable at ${width}px`, async ({ page }) => {
++      await page.setViewportSize({ width, height: 1000 });
++      await page.goto(urlFor(language));
++      await page.evaluate(() => document.fonts.ready);
++      const initial = await expectReadable(page);
++      const wrapper = page.locator('#environment-variables').locator('..');
++      await expect(wrapper).toHaveAttribute('tabindex', '0');
++      await expect(wrapper).toHaveAttribute('role', 'region');
++      await wrapper.focus();
++      await wrapper.press('ArrowRight');
++      await expect.poll(() => wrapper.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
++      if (width === 1440) {
++        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
++        await page.locator('[data-td-shell-right-toggle]').first().click();
++        await expect.poll(() => wrapper.evaluate((node) => node.clientWidth)).toBeGreaterThan(initial.viewport);
++        await expectReadable(page);
++      }
++    });
++  }
++}
++
++test('short tables, prose, long tokens, captions, matrix and full-width keep their layout', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  await page.evaluate(() => document.fonts.ready);
++  const short = await geometry(page.locator('#short-example'));
++  expect(Math.abs(short.tableWidth - short.viewport)).toBeLessThan(2);
++  const prose = await geometry(page.locator('#prose-example'));
++  expect(prose.tableWidth).toBeLessThanOrEqual(prose.viewport + 1);
++  expect(prose.rowHeight).toBeGreaterThan(60);
++  expect(prose.rowHeight).toBeLessThan(240);
++
++  const fits = await page.locator('#long-token-example tbody td:first-child').evaluateAll((cells) => cells.map((cell) => {
++    const box = cell.getBoundingClientRect();
++    const row = cell.closest('tr').getBoundingClientRect();
++    const range = document.createRange();
++    range.selectNodeContents(cell);
++    return [...range.getClientRects()].every((rect) => rect.left >= box.left - 1 && rect.right <= box.right + 1 && rect.top >= row.top - 1 && rect.bottom <= row.bottom + 1);
++  }));
++  expect(fits).toEqual([true, true]);
++  await expect(page.locator('#long-token-example caption')).toHaveText('Long identifiers and links');
++  await expect(page.locator('#matrix-example thead th').first()).toHaveCSS('position', 'sticky');
++  await expect(page.locator('#matrix-example tbody th').first()).toHaveCSS('white-space', 'nowrap');
++  const matrixFits = await page.locator('#matrix-example tbody th').first().evaluate((cell) => cell.scrollWidth <= cell.clientWidth + 1);
++  expect(matrixFits).toBe(true);
++  await expect(page.locator('#full-width-example').locator('..')).toHaveClass(/td-table-scroll--full/);
++  await expect(page.locator('#full-width-example caption')).toHaveText('Author-selected full width');
++  const spanning = await page.locator('#spanning-example').evaluate((table) => ({
++    header: table.tHead.rows[0].cells[0].getBoundingClientRect().width,
++    row: table.tBodies[0].rows[0].getBoundingClientRect().width,
++  }));
++  expect(Math.abs(spanning.header - spanning.row)).toBeLessThan(2);
++});
++
++test('native screen tables work across presets and light/dark modes', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  for (const preset of ['slate', 'paper', 'terminal', 'ink']) {
++    for (const mode of ['light', 'dark']) {
++      await page.evaluate(({ preset, mode }) => {
++        document.documentElement.dataset.tdPreset = preset;
++        document.documentElement.dataset.bsTheme = mode;
++      }, { preset, mode });
++      await page.evaluate(() => document.fonts.ready);
++      await expectReadable(page);
++    }
++  }
++});
++
++test('browser Print and dedicated Print keep wrapping and static wrappers', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  await page.emulateMedia({ media: 'print' });
++  await expect(page.locator('#environment-variables td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++  await expect(page.locator('#environment-variables').locator('..')).toHaveCSS('overflow-x', 'visible');
++  const regular = await geometry(page.locator('#environment-variables'));
++  expect(regular.tableWidth).toBeLessThanOrEqual(regular.viewport + 1);
++  await page.emulateMedia({ media: 'screen' });
++  await page.goto(`/_print${nativePath}`);
++  await expect(page.locator('#environment-variables').locator('..')).toHaveClass(/td-table-scroll--static/);
++  await expect(page.locator('#environment-variables').locator('..')).not.toHaveAttribute('tabindex');
++  await expect(page.locator('#environment-variables td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++});
++
++test('technical tables keep readable native geometry without JavaScript', async ({ browser, baseURL }) => {
++  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1440, height: 1000 } });
++  try {
++    const page = await context.newPage();
++    await page.goto(urlFor('en'));
++    // A promise from the page realm need not settle with page scripts disabled.
++    await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded');
++    await expectReadable(page);
++  } finally {
++    await context.close();
++  }
++});
+diff --git a/tests/fixtures/browser.yml b/tests/fixtures/browser.yml
+index 1b784c7..2dbce32 100644
+--- a/tests/fixtures/browser.yml
++++ b/tests/fixtures/browser.yml
+@@ -2,8 +2,13 @@ module:
+   mounts:
+     - source: content
+       target: content
++      sites: { matrix: { languages: [en, zh] } }
+     - source: tests/fixtures/browser/content
+       target: content/tests
++      sites: { matrix: { languages: [en, zh] } }
++    - source: tests/fixtures/rail-footer
++      target: content/docs/rail-footer
++      sites: { matrix: { languages: [en, zh] } }
+ 
+ params:
+   ui:
+diff --git a/tests/fixtures/browser/content/filetree-comments.md b/tests/fixtures/browser/content/filetree-comments.md
+new file mode 100644
+index 0000000..7280a7e
+--- /dev/null
++++ b/tests/fixtures/browser/content/filetree-comments.md
+@@ -0,0 +1,22 @@
++---
++title: File tree comments
++type: docs
++outputs: [HTML, print, markdown]
++---
++
++```filetree {title="Storage directory comments"}
++rocksdb-data/
++  data/
++    m/    # schema store: property keys, vertex/edge/index labels, counters
++    g/    # graph store: vertices, edges, index tables, olap tables
++    s/    # system store: tasks, server info, backend meta (driver version)
++  wal/
++    m/
++    g/
++    s/
++```
++
++```filetree {title="Unbroken comment"}
++storage/
++  id.txt    # abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
++```
+diff --git a/tests/fixtures/browser/content/filetree-comments.zh.md b/tests/fixtures/browser/content/filetree-comments.zh.md
+new file mode 100644
+index 0000000..2bf58ac
+--- /dev/null
++++ b/tests/fixtures/browser/content/filetree-comments.zh.md
+@@ -0,0 +1,22 @@
++---
++title: 文件树注释
++type: docs
++outputs: [HTML, print, markdown]
++---
++
++```filetree {title="存储目录注释"}
++rocksdb-data/
++  data/
++    m/    # 元数据存储：属性键、顶点标签、边标签、索引标签和计数器
++    g/    # 图数据存储：顶点、边、索引表，以及 OLAP 分析任务使用的数据表
++    s/    # 系统存储：任务、服务器信息，以及包括驱动版本在内的后端元数据
++  wal/
++    m/
++    g/
++    s/
++```
++
++```filetree {title="无空格注释"}
++storage/
++  id.txt    # abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
++```
+diff --git a/tests/fixtures/browser/content/markmap-theme.md b/tests/fixtures/browser/content/markmap-theme.md
+new file mode 100644
+index 0000000..c58ec74
+--- /dev/null
++++ b/tests/fixtures/browser/content/markmap-theme.md
+@@ -0,0 +1,18 @@
++---
++title: Markmap text contrast
++type: docs
++outputs: [HTML, print, markdown]
++search_exclude: true
++---
++
++Short node names isolate text contrast from automatic fitting of long labels.
++
++```markmap
++# HugeGraph
++## server
++### core
++### api
++### dist
++## pd
++## store
++```
+diff --git a/tests/fixtures/browser/content/markmap-theme.zh.md b/tests/fixtures/browser/content/markmap-theme.zh.md
+new file mode 100644
+index 0000000..8b4a532
+--- /dev/null
++++ b/tests/fixtures/browser/content/markmap-theme.zh.md
+@@ -0,0 +1,18 @@
++---
++title: Markmap 文字对比度
++type: docs
++outputs: [HTML, print, markdown]
++search_exclude: true
++---
++
++使用短节点名称，排除长标签自动缩放的影响，独立检查文字对比度。
++
++```markmap
++# HugeGraph
++## server
++### core
++### api
++### dist
++## pd
++## store
++```
+diff --git a/tests/fixtures/browser/content/table-readability.md b/tests/fixtures/browser/content/table-readability.md
+new file mode 100644
+index 0000000..8211535
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-readability.md
+@@ -0,0 +1,76 @@
++---
++title: "Technical table readability"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++Native OINK tables using HugeGraph examples. No HugeGraph layouts, hooks, or styles are loaded.
++
++## Configuration parameters {#parameters}
++
++| config option        | default value       | description                                                                                                                                                                                                                                                                                                                                       |
++|----------------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
++| rocksdb.data_path    | `rocksdb-data/data` | The path for storing data of RocksDB. Must not be empty.                                                                                                                                                                                                                                                                                          |
++| rocksdb.data_disks   | `[]`                | The optimized disks for storing data of RocksDB. The format of each element: `STORE/TABLE: /path/disk`. Allowed keys are [g/vertex, g/edge_out, g/edge_in, g/vertex_label_index, g/edge_label_index, g/range_int_index, g/range_float_index, g/range_long_index, g/range_double_index, g/secondary_index, g/search_index, g/shard_index, g/unique_index, g/olap]. A disk path must differ from `rocksdb.data_path`. |
++| rocksdb.wal_path     | `rocksdb-data/wal`  | The path for storing WAL of RocksDB. Must not be empty.                                                                                                                                                                                                                                                                                           |
++| rocksdb.sst_path     | (empty)             | The path for ingesting SST file into RocksDB. Empty disables ingestion.                                                                                                                                                                                                                                                                           |
++| rocksdb.log_level    | `INFO`              | The info log level of RocksDB. Allowed values: DEBUG, INFO, WARN, ERROR, FATAL, HEADER.                                                                                                                                                                                                                                                            |
++{#configuration-parameters}
++
++## PD environment variables {#environment}
++
++| Variable | Required | Default | Configuration key | Description |
++|------|------|--------|------------|------|
++| `HG_PD_GRPC_HOST` | Yes | None | `grpc.host` | Advertised gRPC hostname/IP; use container hostnames within a container network. |
++| `HG_PD_RAFT_ADDRESS` | Yes | None | `raft.address` | This PD node's Raft address. |
++| `HG_PD_RAFT_PEERS_LIST` | Yes | None | `raft.peers-list` | Raft addresses of every PD node, including this node. |
++| `HG_PD_INITIAL_STORE_LIST` | Yes | None | `pd.initial-store-list` | Expected Store gRPC addresses. |
++| `HG_PD_AUTH_SECRET_KEY` | Yes | None | `auth.secret-key` | REST Basic password shared by all PD REST clients. |
++| `HG_PD_GRPC_PORT` | No | `8686` | `grpc.port` | gRPC service port. |
++| `HG_PD_REST_PORT` | No | `8620` | `server.port` | REST API port. |
++| `HG_PD_DATA_PATH` | No | `/hugegraph-pd/pd_data` | `pd.data-path` | Metadata path. |
++| `HG_PD_INITIAL_STORE_COUNT` | No | `1` | `pd.initial-store-count` | Minimum Store count needed for cluster availability. |
++| `HG_PD_ACTUATOR_EXPOSURE` | No | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | Public Actuator endpoint allowlist; `*` is forbidden. |
++{#environment-variables}
++
++## Short table {#short-table}
++
++| Component | Port | Purpose |
++| --- | --- | --- |
++| Server | 8080 | Graph API |
++| PD | 8686 | Metadata |
++{#short-example}
++
++## Long prose {#long-prose}
++
++| Parameter | Description |
++| --- | --- |
++| ordinary.option | This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. |
++{#prose-example}
++
++## Long tokens {#long-tokens}
++
++| Parameter | Description |
++| --- | --- |
++| `longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_long` | An unusually long key must wrap within its own cell without covering this description. |
++| [https://example.org/longsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlong](https://example.org/) | Long link labels use the same emergency wrapping. |
++{#long-token-example caption="Long identifiers and links"}
++
++## Matrix {#matrix}
++
++| Feature | Linux | macOS | Windows | Documentation | Status |
++| --- | --- | --- | --- | --- | --- |
++| longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_long | yes | yes | yes | available | supported |
++| Standard behavior | yes | yes | yes | available | supported |
++{#matrix-example .matrix}
++
++## Full-width table {#full-width}
++
++| Setting | Default | Description |
++| --- | --- | --- |
++| a.long.configuration.key | enabled | A full-width table continues to use its author's table modifier. |
++{#full-width-example .full-width caption="Author-selected full width"}
++
++## Spanning header {#spanning-header}
++
++<div class="td-table-scroll"><table id="spanning-example"><caption>Spanning columns</caption><thead><tr><th colspan="2">Configuration details with a spanning header</th></tr></thead><tbody><tr><td>configuration.key</td><td>A plain HTML table with a spanning header retains the expected column geometry.</td></tr></tbody></table></div>
+diff --git a/tests/fixtures/browser/content/table-readability.zh.md b/tests/fixtures/browser/content/table-readability.zh.md
+new file mode 100644
+index 0000000..d3c1b89
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-readability.zh.md
+@@ -0,0 +1,76 @@
++---
++title: "技术参数表可读性"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++使用 HugeGraph 示例的原生 OINK 表格，不加载 HugeGraph 模板、Hooks 或样式。
++
++## 配置参数 {#parameters}
++
++| config option        | default value       | description                                                                                                                                                                                                                                                                                                                                       |
++|----------------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
++| rocksdb.data_path    | `rocksdb-data/data` | RocksDB 数据存储路径，不允许为空。                                                                                                                                                                                                                                                                                                                |
++| rocksdb.data_disks   | `[]`                | 为部分表指定独立磁盘，每个元素格式为 `STORE/TABLE: /path/disk`。允许的键为 [g/vertex, g/edge_out, g/edge_in, g/vertex_label_index, g/edge_label_index, g/range_int_index, g/range_float_index, g/range_long_index, g/range_double_index, g/secondary_index, g/search_index, g/shard_index, g/unique_index, g/olap]。磁盘路径不能与 `rocksdb.data_path` 相同。 |
++| rocksdb.wal_path     | `rocksdb-data/wal`  | RocksDB WAL 存储路径，不允许为空。                                                                                                                                                                                                                                                                                                                |
++| rocksdb.sst_path     | （空）              | 待导入 RocksDB 的 SST 文件所在路径，为空表示不导入。                                                                                                                                                                                                                                                                                              |
++| rocksdb.log_level    | `INFO`              | RocksDB 的日志级别，可选值：DEBUG、INFO、WARN、ERROR、FATAL、HEADER。                                                                                                                                                                                                                                                                             |
++{#configuration-parameters}
++
++## PD 环境变量 {#environment}
++
++| 变量 | 必填 | 默认值 | 对应配置项 | 描述 |
++|------|------|--------|------------|------|
++| `HG_PD_GRPC_HOST` | 是 | 无 | `grpc.host` | 本节点对外公布的 gRPC 主机名/IP；容器网络中应使用容器主机名。 |
++| `HG_PD_RAFT_ADDRESS` | 是 | 无 | `raft.address` | 本节点 Raft 地址。 |
++| `HG_PD_RAFT_PEERS_LIST` | 是 | 无 | `raft.peers-list` | 所有 PD 节点的 Raft 地址，含本节点。 |
++| `HG_PD_INITIAL_STORE_LIST` | 是 | 无 | `pd.initial-store-list` | 预期的 Store gRPC 地址。 |
++| `HG_PD_AUTH_SECRET_KEY` | 是 | 无 | `auth.secret-key` | REST Basic 密码；所有 PD REST 客户端都必须使用同一密钥。 |
++| `HG_PD_GRPC_PORT` | 否 | `8686` | `grpc.port` | gRPC 服务端口。 |
++| `HG_PD_REST_PORT` | 否 | `8620` | `server.port` | REST API 端口。 |
++| `HG_PD_DATA_PATH` | 否 | `/hugegraph-pd/pd_data` | `pd.data-path` | 元数据存储路径。 |
++| `HG_PD_INITIAL_STORE_COUNT` | 否 | `1` | `pd.initial-store-count` | 集群可用所需的最小 Store 数量。 |
++| `HG_PD_ACTUATOR_EXPOSURE` | 否 | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | 公开的 Actuator 端点白名单；不允许设置为 `*`。 |
++{#environment-variables}
++
++## Short table {#short-table}
++
++| Component | Port | Purpose |
++| --- | --- | --- |
++| Server | 8080 | Graph API |
++| PD | 8686 | Metadata |
++{#short-example}
++
++## Long prose {#long-prose}
++
++| Parameter | Description |
++| --- | --- |
++| ordinary.option | This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. |
++{#prose-example}
++
++## Long tokens {#long-tokens}
++
++| Parameter | Description |
++| --- | --- |
++| `longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_long` | An unusually long key must wrap within its own cell without covering this description. |
++| [https://example.org/longsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlong](https://example.org/) | Long link labels use the same emergency wrapping. |
++{#long-token-example caption="Long identifiers and links"}
++
++## Matrix {#matrix}
++
++| Feature | Linux | macOS | Windows | Documentation | Status |
++| --- | --- | --- | --- | --- | --- |
++| longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_long | yes | yes | yes | available | supported |
++| Standard behavior | yes | yes | yes | available | supported |
++{#matrix-example .matrix}
++
++## Full-width table {#full-width}
++
++| Setting | Default | Description |
++| --- | --- | --- |
++| a.long.configuration.key | enabled | A full-width table continues to use its author's table modifier. |
++{#full-width-example .full-width caption="Author-selected full width"}
++
++## Spanning header {#spanning-header}
++
++<div class="td-table-scroll"><table id="spanning-example"><caption>Spanning columns</caption><thead><tr><th colspan="2">Configuration details with a spanning header</th></tr></thead><tbody><tr><td>configuration.key</td><td>A plain HTML table with a spanning header retains the expected column geometry.</td></tr></tbody></table></div>
+diff --git a/tests/fixtures/rail-footer/fixed.md b/tests/fixtures/rail-footer/fixed.md
+new file mode 100644
+index 0000000..5ad0b33
+--- /dev/null
++++ b/tests/fixtures/rail-footer/fixed.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: true
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/fixed.zh.md b/tests/fixtures/rail-footer/fixed.zh.md
+new file mode 100644
+index 0000000..b0d146f
+--- /dev/null
++++ b/tests/fixtures/rail-footer/fixed.zh.md
+@@ -0,0 +1,67 @@
++---
++title: 固定目录与页脚避让
++description: 原生 OINK 页脚与分类法回归用例。
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: true
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## 概述 {#overview}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 环境要求 {#requirements}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 下载 {#download}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 准备配置 {#prepare-configuration}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 存储引擎 {#storage-engine}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 导入初始数据 {#load-initial-data}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 创建模式 {#create-a-schema}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 写入顶点 {#insert-vertices}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 写入边 {#insert-edges}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 查询图 {#query-the-graph}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 检查索引 {#inspect-indexes}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 调整选项 {#tune-options}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 故障排查 {#troubleshooting}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 最终检查 {#final-checks}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
+diff --git a/tests/fixtures/rail-footer/flow.md b/tests/fixtures/rail-footer/flow.md
+new file mode 100644
+index 0000000..147df54
+--- /dev/null
++++ b/tests/fixtures/rail-footer/flow.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++footer_style: fat
++sidebar_enabled: true
++toc_style: flow
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/no-footer.md b/tests/fixtures/rail-footer/no-footer.md
+new file mode 100644
+index 0000000..5727b22
+--- /dev/null
++++ b/tests/fixtures/rail-footer/no-footer.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++sidebar_enabled: true
++footer_style: none
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/no-sidebar.md b/tests/fixtures/rail-footer/no-sidebar.md
+new file mode 100644
+index 0000000..84ebc71
+--- /dev/null
++++ b/tests/fixtures/rail-footer/no-sidebar.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: false
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+-- 
+2.51.1
+

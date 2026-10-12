@@ -1,0 +1,632 @@
+From 240f570d72d05a0eb47acf7843ac57612cc8092f Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Mon, 12 Oct 2026 10:39:35 -0700
+Subject: [PATCH] test: cover fixed TOC footer clearance and its layout
+ boundaries
+
+---
+ content/docs/design/shell.md             |   9 ++
+ content/docs/design/shell.zh.md          |   7 +
+ package.json                             |   2 +-
+ tests/browser/rail-footer.spec.mjs       | 164 +++++++++++++++++++++++
+ tests/fixtures/browser.yml               |   5 +
+ tests/fixtures/rail-footer/fixed.md      |  67 +++++++++
+ tests/fixtures/rail-footer/fixed.zh.md   |  67 +++++++++
+ tests/fixtures/rail-footer/flow.md       |  67 +++++++++
+ tests/fixtures/rail-footer/no-footer.md  |  67 +++++++++
+ tests/fixtures/rail-footer/no-sidebar.md |  67 +++++++++
+ 10 files changed, 521 insertions(+), 1 deletion(-)
+ create mode 100644 tests/browser/rail-footer.spec.mjs
+ create mode 100644 tests/fixtures/rail-footer/fixed.md
+ create mode 100644 tests/fixtures/rail-footer/fixed.zh.md
+ create mode 100644 tests/fixtures/rail-footer/flow.md
+ create mode 100644 tests/fixtures/rail-footer/no-footer.md
+ create mode 100644 tests/fixtures/rail-footer/no-sidebar.md
+
+diff --git a/content/docs/design/shell.md b/content/docs/design/shell.md
+index c0e3492..7a789d9 100644
+--- a/content/docs/design/shell.md
++++ b/content/docs/design/shell.md
+@@ -162,6 +162,15 @@ renders nothing. `notoc` remains the page-level TOC opt-out. These switches do
+ not change bylines, tags, series, pager order, feeds, or page-end composition,
+ and the rail disappears below the `xl` breakpoint.
+ 
++> [!NOTE] Unreleased footer-clearance correction
++> The fixed TOC rail uses the shared visible-footer offset, including when
++> `sidebar_enabled: false`. Its scrollable content ends above the footer, so
++> the last taxonomy links remain reachable with the wheel and keyboard.
++> Collapsing or expanding the fat footer updates that boundary. With no
++> footer the offset is zero; `toc_style: flow` keeps its sticky boundary.
++> Mobile drawer placement and Print visibility are unchanged. This correction
++> is not included in the v1.2.0 release.
++
+ ## Search, actions, and runtime {#search-actions-and-runtime}
+ 
+ `params.offline_search` opts into a local per-language index. When enabled it
+diff --git a/content/docs/design/shell.zh.md b/content/docs/design/shell.zh.md
+index b2e1e79..8c313c3 100644
+--- a/content/docs/design/shell.zh.md
++++ b/content/docs/design/shell.zh.md
+@@ -125,6 +125,13 @@ sidebar_enabled: false
+ 完全不渲染。`notoc` 仍是页面级 TOC 退出键。这些开关不改变署名、标签、系列、
+ 翻页顺序、feed 或页尾组合；导轨在 `xl` 断点以下消失。
+ 
++> [!NOTE] 尚未发布的页脚避让修正
++> 固定 TOC 导轨使用共享的可见页脚偏移，`sidebar_enabled: false` 时也生效。
++> 其滚动内容结束于页脚上方，最后的分类法链接可通过滚轮和键盘访问。
++> 折叠或展开胖页脚时，该边界随之更新。没有页脚时偏移为零；
++> `toc_style: flow` 保持自己的 sticky 边界。移动端抽屉中的放置与 Print
++> 可见性不变。此修正不包含在 v1.2.0 版本中。
++
+ ## 搜索、操作与运行时 {#search-actions-and-runtime}
+ 
+ `params.offline_search` 选择启用各语言的本地索引。启用后默认也在 `hugo server`
+diff --git a/package.json b/package.json
+index ff27460..08463df 100644
+--- a/package.json
++++ b/package.json
+@@ -41,7 +41,7 @@
+     "test:md-output": "node --test 'tests/md-output/**/*.test.mjs'",
+     "test:prd5": "playwright test tests/browser/prd5-scenarios.spec.mjs",
+     "test:theme-color": "playwright test tests/browser/theme-color.spec.mjs",
+-    "test:responsive-shell": "playwright test tests/browser/responsive-shell.spec.mjs tests/browser/blog.spec.mjs tests/browser/command-palette.spec.mjs",
++    "test:responsive-shell": "playwright test tests/browser/responsive-shell.spec.mjs tests/browser/blog.spec.mjs tests/browser/command-palette.spec.mjs tests/browser/rail-footer.spec.mjs",
+     "test:release-pin-contract": "node --test 'tests/release-pin/**/*.test.mjs'",
+     "test:rendered-links": "node --test 'tests/rendered-links/**/*.test.mjs'",
+     "test:release-pin": "npm run _check:release-pin",
+diff --git a/tests/browser/rail-footer.spec.mjs b/tests/browser/rail-footer.spec.mjs
+new file mode 100644
+index 0000000..d6c45c9
+--- /dev/null
++++ b/tests/browser/rail-footer.spec.mjs
+@@ -0,0 +1,164 @@
++import { expect, test } from '@playwright/test';
++
++const panelSelector = '.td-shell-toc__panel';
++const asideSelector = `${panelSelector} > [data-td-shell-aside]`;
++const tagSelector = '[data-td-taxonomy="tags"] .td-shell-tag';
++
++async function open(page, path = '/docs/rail-footer/fixed/', mode = 'light') {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.addInitScript((mode) => {
++    localStorage.clear();
++    localStorage.setItem('td-color-theme', mode);
++    localStorage.setItem('td-preset', 'slate');
++  }, mode);
++  await page.goto(path, { waitUntil: 'networkidle' });
++  await page.evaluate(() => document.fonts.ready);
++  await expect(page.locator('html')).toHaveAttribute('data-bs-theme', mode);
++  await expect(page.locator('html')).toHaveAttribute('data-td-shell-initialized', '');
++}
++
++async function atBottom(page) {
++  // Use real wheel input over the article. A disclosure resize can change
++  // the document height after a wheel event, so keep scrolling until settled.
++  await page.mouse.move(700, 200);
++  await expect(async () => {
++    await page.mouse.wheel(0, 20000);
++    await expect.poll(() => page.evaluate(() =>
++      Math.abs(scrollY + innerHeight - document.documentElement.scrollHeight),
++    ), { timeout: 1000 }).toBeLessThanOrEqual(2);
++  }).toPass({ timeout: 5000 });
++}
++
++async function geometry(page) {
++  return page.evaluate(({ panelSelector, asideSelector, tagSelector }) => {
++    const panel = document.querySelector(panelSelector);
++    const aside = document.querySelector(asideSelector);
++    const footer = document.querySelector('[data-td-shell-footer]');
++    const tags = panel.querySelectorAll(tagSelector);
++    const tag = tags[tags.length - 1];
++    const bounds = (element) => {
++      const r = element.getBoundingClientRect();
++      return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom };
++    };
++    const r = tag?.getBoundingClientRect();
++    const point = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
++    return {
++      panel: bounds(panel),
++      footer: footer && bounds(footer),
++      aside: aside && {
++        ...bounds(aside), scrollHeight: aside.scrollHeight,
++        clientHeight: aside.clientHeight, scrollTop: aside.scrollTop,
++      },
++      tag: tag && { ...bounds(tag), hit: tag === point || tag.contains(point) },
++      position: getComputedStyle(panel).position,
++      inset: getComputedStyle(panel).insetBlockEnd,
++    };
++  }, { panelSelector, asideSelector, tagSelector });
++}
++
++async function expectAboveFooter(page) {
++  await expect.poll(async () => {
++    const { panel, footer } = await geometry(page);
++    return panel.bottom - footer.y;
++  }).toBeLessThanOrEqual(0);
++}
++
++for (const [name, path, mode] of [
++  ['English light', '/docs/rail-footer/fixed/', 'light'],
++  ['English dark', '/docs/rail-footer/fixed/', 'dark'],
++  ['Chinese light', '/zh/docs/rail-footer/fixed/', 'light'],
++  ['Chinese dark', '/zh/docs/rail-footer/fixed/', 'dark'],
++  ['without sidebar', '/docs/rail-footer/no-sidebar/', 'light'],
++]) {
++  test(`${name}: wheel and keyboard reach the final taxonomy link above the footer`, async ({ page }) => {
++    await open(page, path, mode);
++    const rail = page.locator(panelSelector);
++    await expect(rail).toHaveCSS('position', 'fixed');
++    const groups = rail.locator('[data-td-shell-tree-toggle]');
++    for (const group of await groups.all()) await expect(group).toHaveAttribute('aria-expanded', 'true');
++    await atBottom(page);
++    await expectAboveFooter(page);
++    const before = await geometry(page);
++    expect(before.aside.scrollHeight).toBeGreaterThan(before.aside.clientHeight);
++
++    await page.mouse.move(before.aside.x + before.aside.width / 2, before.aside.y + 50);
++    await page.mouse.wheel(0, 10000);
++    await expect.poll(async () => (await geometry(page)).aside.scrollTop).toBeGreaterThan(0);
++    await expect.poll(async () => (await geometry(page)).tag.hit).toBe(true);
++    const after = await geometry(page);
++    expect(after.tag.bottom).toBeLessThan(after.footer.y);
++
++    const lastTag = rail.locator(tagSelector).last();
++    const href = await lastTag.getAttribute('href');
++    await lastTag.click();
++    await expect(page).toHaveURL(new RegExp(`${href}$`));
++    await expect(page.locator('main h1')).toBeVisible();
++
++    // Revisit and traverse the actual tab order into the obscured final link.
++    await page.goto(path, { waitUntil: 'networkidle' });
++    await atBottom(page);
++    await rail.locator('[data-td-shell-right-toggle]').focus();
++    for (let i = 0; i < 80 && !(await lastTag.evaluate((el) => el === document.activeElement)); i += 1) {
++      await page.keyboard.press('Tab');
++    }
++    await expect(lastTag).toBeFocused();
++    expect((await geometry(page)).tag.hit).toBe(true);
++    await page.keyboard.press('Enter');
++    await expect(page).toHaveURL(new RegExp(`${href}$`));
++    await expect(page.locator('main h1')).toBeVisible();
++  });
++}
++
++test('rail and fat-footer collapse restore the correct available height', async ({ page }) => {
++  await open(page);
++  await atBottom(page);
++  await expectAboveFooter(page);
++  const expanded = await geometry(page);
++  await page.locator('[data-td-footer-toggle]').click();
++  await expect(page.locator('[data-td-footer-toggle]')).toHaveAttribute('aria-expanded', 'false');
++  await atBottom(page);
++  await expectAboveFooter(page);
++  expect((await geometry(page)).panel.height).toBeGreaterThan(expanded.panel.height);
++  await page.locator('[data-td-footer-toggle]').click();
++  await atBottom(page);
++  await expectAboveFooter(page);
++
++  const hide = page.locator(`${panelSelector} [data-td-shell-right-toggle]`);
++  const restore = page.locator('.td-shell-toc-float [data-td-shell-right-toggle]');
++  await hide.click();
++  await expect(page.locator(panelSelector)).toHaveAttribute('inert', '');
++  await expect(restore).toBeFocused();
++  await restore.click();
++  await expect(hide).toBeFocused();
++  await expectAboveFooter(page);
++});
++
++test('flow stays sticky, no-footer stays full height, and Print hides the rails', async ({ page }) => {
++  await open(page, '/docs/rail-footer/flow/');
++  await atBottom(page);
++  await expect(page.locator(panelSelector)).toHaveCSS('position', 'sticky');
++  await expect(page.locator(panelSelector)).toHaveCSS('inset-block-end', 'auto');
++  await expectAboveFooter(page);
++  await page.goto('/docs/rail-footer/no-footer/', { waitUntil: 'networkidle' });
++  await atBottom(page);
++  await expect(page.locator('[data-td-shell-footer]')).toHaveCount(0);
++  expect((await geometry(page)).panel.bottom).toBe(1000);
++  await page.emulateMedia({ media: 'print' });
++  await expect(page.locator('.td-shell-toc')).toBeHidden();
++  await expect(page.locator('.td-shell-sidebar')).toBeHidden();
++});
++
++test('phone keeps one movable aside in the drawer with usable taxonomy controls', async ({ page }) => {
++  await open(page);
++  await page.setViewportSize({ width: 390, height: 844 });
++  await expect(page.locator(panelSelector)).toBeHidden();
++  await page.locator('[data-td-shell-drawer-open]:visible').click();
++  const aside = page.locator('[data-td-shell-aside-slot] > [data-td-shell-aside]');
++  await expect(aside).toHaveCount(1);
++  const tags = aside.locator('[data-td-taxonomy="tags"]');
++  await tags.locator('[data-td-shell-tree-toggle]').click();
++  await tags.locator('.td-shell-tag').last().scrollIntoViewIfNeeded();
++  await expect(tags.locator('.td-shell-tag').last()).toBeInViewport();
++  await tags.locator('.td-shell-tag').last().click();
++  await expect(page).toHaveURL(/\/tags\/[^/]+\/$/);
++});
+diff --git a/tests/fixtures/browser.yml b/tests/fixtures/browser.yml
+index 1b784c7..2dbce32 100644
+--- a/tests/fixtures/browser.yml
++++ b/tests/fixtures/browser.yml
+@@ -2,8 +2,13 @@ module:
+   mounts:
+     - source: content
+       target: content
++      sites: { matrix: { languages: [en, zh] } }
+     - source: tests/fixtures/browser/content
+       target: content/tests
++      sites: { matrix: { languages: [en, zh] } }
++    - source: tests/fixtures/rail-footer
++      target: content/docs/rail-footer
++      sites: { matrix: { languages: [en, zh] } }
+ 
+ params:
+   ui:
+diff --git a/tests/fixtures/rail-footer/fixed.md b/tests/fixtures/rail-footer/fixed.md
+new file mode 100644
+index 0000000..5ad0b33
+--- /dev/null
++++ b/tests/fixtures/rail-footer/fixed.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: true
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/fixed.zh.md b/tests/fixtures/rail-footer/fixed.zh.md
+new file mode 100644
+index 0000000..b0d146f
+--- /dev/null
++++ b/tests/fixtures/rail-footer/fixed.zh.md
+@@ -0,0 +1,67 @@
++---
++title: 固定目录与页脚避让
++description: 原生 OINK 页脚与分类法回归用例。
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: true
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## 概述 {#overview}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 环境要求 {#requirements}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 下载 {#download}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 准备配置 {#prepare-configuration}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 存储引擎 {#storage-engine}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 导入初始数据 {#load-initial-data}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 创建模式 {#create-a-schema}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 写入顶点 {#insert-vertices}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 写入边 {#insert-edges}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 查询图 {#query-the-graph}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 检查索引 {#inspect-indexes}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 调整选项 {#tune-options}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 故障排查 {#troubleshooting}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
++
++## 最终检查 {#final-checks}
++
++这是普通正文，用于让文章高度超过浏览器视口。展开分类与系列，在页面底部使用最后一个标签链接。胖页脚与目录全部由主题原生渲染，不需要站点模板、渲染钩子或样式。向下滚动正文后，目录内容仍应可以通过滚轮和键盘阅读。
+diff --git a/tests/fixtures/rail-footer/flow.md b/tests/fixtures/rail-footer/flow.md
+new file mode 100644
+index 0000000..147df54
+--- /dev/null
++++ b/tests/fixtures/rail-footer/flow.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++footer_style: fat
++sidebar_enabled: true
++toc_style: flow
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/no-footer.md b/tests/fixtures/rail-footer/no-footer.md
+new file mode 100644
+index 0000000..5727b22
+--- /dev/null
++++ b/tests/fixtures/rail-footer/no-footer.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++sidebar_enabled: true
++footer_style: none
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+diff --git a/tests/fixtures/rail-footer/no-sidebar.md b/tests/fixtures/rail-footer/no-sidebar.md
+new file mode 100644
+index 0000000..84ebc71
+--- /dev/null
++++ b/tests/fixtures/rail-footer/no-sidebar.md
+@@ -0,0 +1,67 @@
++---
++title: Fixed rail footer clearance
++description: Native OINK footer and taxonomy regression fixture.
++comments: false
++toc_style: fixed
++footer_style: fat
++sidebar_enabled: false
++tags: [RocksDB, ToplingDB, JNI, Performance, Storage, Troubleshooting]
++categories: [Graph, Storage]
++series: [ToplingDB]
++---
++
++## Overview
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Requirements
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Download
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Prepare configuration
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Storage engine
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Load initial data
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Create a schema
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert vertices
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Insert edges
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Query the graph
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Inspect indexes
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Tune options
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Troubleshooting
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
++
++## Final checks
++
++This ordinary section keeps the article taller than the viewport. Read the outline, expand the category and series groups, and use the final taxonomy link at the end of the article. The fat footer and every rail element are rendered by the theme.
+-- 
+2.51.1
+

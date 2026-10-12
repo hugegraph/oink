@@ -1,0 +1,49 @@
+✔ footer tracks visible height with {"sidebar":true,"toc":true} (30.46692ms)
+✔ footer tracks visible height with {"sidebar":true,"toc":false} (16.929514ms)
+✖ footer tracks visible height with {"sidebar":false,"toc":true} (15.903392ms)
+✔ scroll bursts share one measurement and a resized footer is observed (8.35983ms)
+✖ the visual viewport owns offset when browser chrome changes its height (2.060695ms)
+✔ no footer measurements without a consumer: {"footer":false} (9.247948ms)
+✔ no footer measurements without a consumer: {"sidebar":false,"toc":false} (3.379377ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 748.123642
+
+✖ failing tests:
+
+test at tests/js/docs-shell-footer.test.js:102:3
+✖ footer tracks visible height with {"sidebar":false,"toc":true} (15.903392ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== '0px'
+  
+      at TestContext.<anonymous> (/workspace/scratch/8c4592f1f41d/evidence/toc/runtime-baseline/tests/js/docs-shell-footer.test.js:104:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '0px',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/js/docs-shell-footer.test.js:137:1
+✖ the visual viewport owns offset when browser chrome changes its height (2.060695ms)
+  TypeError: env.viewportListeners.get(...) is not a function
+      at TestContext.<anonymous> (/workspace/scratch/8c4592f1f41d/evidence/toc/runtime-baseline/tests/js/docs-shell-footer.test.js:140:38)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

@@ -1,0 +1,372 @@
+diff --git a/content/docs/design/components.md b/content/docs/design/components.md
+index 79fdf65..1b472e3 100644
+--- a/content/docs/design/components.md
++++ b/content/docs/design/components.md
+@@ -117,6 +117,15 @@ column row headers; `.full-width` widens normal or matrix tables. `.fields`
+ cannot combine with matrix, full-width, numbering, or tabs; numbering and tabs
+ are also mutually exclusive.
+ 
++**Unreleased table readability correction:** on screen, technical identifiers
++retain their intrinsic word width and wide tables scroll inside the native
++viewport. Exceptionally long identifiers and links can still wrap within their
++cells. Body cells use a soft `40ch` preferred measure so long prose wraps instead
++of creating one oversized line; automatic table layout can distribute extra
++space. Matrix row headers retain their explicit no-wrap behavior. This applies
++to native table viewports without a new author option and does not change the
++static Print/RSS table contract.
++
+ ### Images, Gallery, FileTree, and fences {#images-gallery-filetree-and-fences}
+ 
+ The Markdown image hook is the ordinary image API. Inline images stay inline;
+diff --git a/content/docs/design/components.zh.md b/content/docs/design/components.zh.md
+index 407b1c5..3ac63b3 100644
+--- a/content/docs/design/components.zh.md
++++ b/content/docs/design/components.zh.md
+@@ -106,6 +106,12 @@ HTML 在 JavaScript 运行前暴露所有面板，打印输出展开面板，Mar
+ `.full-width` 加宽普通表格或矩阵表格。`.fields` 不能与 matrix、full-width、
+ 编号或标签页组合；编号与标签页也互斥。
+ 
++**尚未发布的表格可读性修正**：在屏幕上，技术标识符保留其固有单词宽度，
++宽表在原生视口内横向滚动。超长标识符和链接仍可在单元格内换行。正文单元格
++采用柔性的 `40ch` 首选宽度，让长段落换行，避免形成一整条超宽文本；自动表格
++布局仍可分配额外空间。矩阵行表头保留显式不换行的行为。本修正适用于原生
++表格视口，无需新增作者选项，也不改变 Print/RSS 的静态表格契约。
++
+ ### 图片、画廊、FileTree 与围栏 {#images-gallery-filetree-and-fences}
+ 
+ Markdown 图片钩子是普通图片 API。行内图片保持行内；块图片带 `caption` 或 `num`
+diff --git a/package.json b/package.json
+index ff27460..67c21d0 100644
+--- a/package.json
++++ b/package.json
+@@ -33,7 +33,7 @@
+     "test:community-feedback": "playwright test tests/browser/community-feedback.spec.mjs",
+     "test:command-palette": "playwright test tests/browser/command-palette.spec.mjs",
+     "test:code-blocks": "playwright test tests/browser/code-blocks.spec.mjs",
+-    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs",
++    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs tests/browser/table-readability.spec.mjs",
+     "test:extra": "npm run seq -- test:hugo-build test:alt-site test:md-output test:favicons test:rendered-links test:release-pin-contract",
+     "test:favicons": "node --test 'tests/favicons/**/*.test.mjs'",
+     "test:hugo-build": "node --test 'tests/hugo-build/**/*.test.mjs'",
+diff --git a/tests/browser/table-readability.spec.mjs b/tests/browser/table-readability.spec.mjs
+new file mode 100644
+index 0000000..925a4c1
+--- /dev/null
++++ b/tests/browser/table-readability.spec.mjs
+@@ -0,0 +1,137 @@
++import { expect, test } from '@playwright/test';
++
++const nativePath = process.env.TABLE_READABILITY_PATH || '/tests/table-readability/';
++const urlFor = (language) => `${language === 'zh' ? '/zh' : ''}${nativePath}`;
++
++async function geometry(table) {
++  return table.evaluate((node) => {
++    const row = node.tBodies[0].rows[0];
++    const key = row.cells[0];
++    const description = row.cells[row.cells.length - 1];
++    const range = document.createRange();
++    range.selectNodeContents(key);
++    return {
++      keyWidth: key.getBoundingClientRect().width,
++      keyLines: new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size,
++      descriptionWidth: description.getBoundingClientRect().width,
++      rowHeight: row.getBoundingClientRect().height,
++      tableWidth: node.getBoundingClientRect().width,
++      viewport: node.parentElement.clientWidth,
++      fontSize: parseFloat(getComputedStyle(description).fontSize),
++    };
++  });
++}
++
++async function expectReadable(page) {
++  const parameters = await geometry(page.locator('#configuration-parameters'));
++  expect(parameters.keyWidth).toBeGreaterThan(150);
++  expect(parameters.keyLines).toBe(1);
++  expect(parameters.rowHeight).toBeLessThan(100);
++
++  const environment = await geometry(page.locator('#environment-variables'));
++  expect(environment.descriptionWidth).toBeGreaterThanOrEqual(280);
++  expect(environment.rowHeight).toBeLessThan(120);
++  expect(environment.fontSize).toBeGreaterThanOrEqual(14);
++  expect(environment.tableWidth).toBeGreaterThan(environment.viewport);
++  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
++  return environment;
++}
++
++for (const language of ['en', 'zh']) {
++  for (const width of [1440, 768, 390]) {
++    test(`${language} technical columns remain readable at ${width}px`, async ({ page }) => {
++      await page.setViewportSize({ width, height: 1000 });
++      await page.goto(urlFor(language));
++      await page.evaluate(() => document.fonts.ready);
++      const initial = await expectReadable(page);
++      const wrapper = page.locator('#environment-variables').locator('..');
++      await expect(wrapper).toHaveAttribute('tabindex', '0');
++      await expect(wrapper).toHaveAttribute('role', 'region');
++      await wrapper.focus();
++      await wrapper.press('ArrowRight');
++      await expect.poll(() => wrapper.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
++      if (width === 1440) {
++        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
++        await page.locator('[data-td-shell-right-toggle]').first().click();
++        await expect.poll(() => wrapper.evaluate((node) => node.clientWidth)).toBeGreaterThan(initial.viewport);
++        await expectReadable(page);
++      }
++    });
++  }
++}
++
++test('short tables, prose, long tokens, captions, matrix and full-width keep their layout', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  await page.evaluate(() => document.fonts.ready);
++  const short = await geometry(page.locator('#short-example'));
++  expect(Math.abs(short.tableWidth - short.viewport)).toBeLessThan(2);
++  const prose = await geometry(page.locator('#prose-example'));
++  expect(prose.tableWidth).toBeLessThanOrEqual(prose.viewport + 1);
++  expect(prose.rowHeight).toBeGreaterThan(60);
++  expect(prose.rowHeight).toBeLessThan(240);
++
++  const fits = await page.locator('#long-token-example tbody td:first-child').evaluateAll((cells) => cells.map((cell) => {
++    const box = cell.getBoundingClientRect();
++    const row = cell.closest('tr').getBoundingClientRect();
++    const range = document.createRange();
++    range.selectNodeContents(cell);
++    return [...range.getClientRects()].every((rect) => rect.left >= box.left - 1 && rect.right <= box.right + 1 && rect.top >= row.top - 1 && rect.bottom <= row.bottom + 1);
++  }));
++  expect(fits).toEqual([true, true]);
++  await expect(page.locator('#long-token-example caption')).toHaveText('Long identifiers and links');
++  await expect(page.locator('#matrix-example thead th').first()).toHaveCSS('position', 'sticky');
++  await expect(page.locator('#matrix-example tbody th').first()).toHaveCSS('white-space', 'nowrap');
++  const matrixFits = await page.locator('#matrix-example tbody th').first().evaluate((cell) => cell.scrollWidth <= cell.clientWidth + 1);
++  expect(matrixFits).toBe(true);
++  await expect(page.locator('#full-width-example').locator('..')).toHaveClass(/td-table-scroll--full/);
++  await expect(page.locator('#full-width-example caption')).toHaveText('Author-selected full width');
++  const spanning = await page.locator('#spanning-example').evaluate((table) => ({
++    header: table.tHead.rows[0].cells[0].getBoundingClientRect().width,
++    row: table.tBodies[0].rows[0].getBoundingClientRect().width,
++  }));
++  expect(Math.abs(spanning.header - spanning.row)).toBeLessThan(2);
++});
++
++test('native screen tables work across presets and light/dark modes', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  for (const preset of ['slate', 'paper', 'terminal', 'ink']) {
++    for (const mode of ['light', 'dark']) {
++      await page.evaluate(({ preset, mode }) => {
++        document.documentElement.dataset.tdPreset = preset;
++        document.documentElement.dataset.bsTheme = mode;
++      }, { preset, mode });
++      await page.evaluate(() => document.fonts.ready);
++      await expectReadable(page);
++    }
++  }
++});
++
++test('browser Print and dedicated Print keep wrapping and static wrappers', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  await page.emulateMedia({ media: 'print' });
++  await expect(page.locator('#environment-variables td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++  await expect(page.locator('#environment-variables').locator('..')).toHaveCSS('overflow-x', 'visible');
++  const regular = await geometry(page.locator('#environment-variables'));
++  expect(regular.tableWidth).toBeLessThanOrEqual(regular.viewport + 1);
++  await page.emulateMedia({ media: 'screen' });
++  await page.goto(`/_print${nativePath}`);
++  await expect(page.locator('#environment-variables').locator('..')).toHaveClass(/td-table-scroll--static/);
++  await expect(page.locator('#environment-variables').locator('..')).not.toHaveAttribute('tabindex');
++  await expect(page.locator('#environment-variables td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++});
++
++test('technical tables keep readable native geometry without JavaScript', async ({ browser, baseURL }) => {
++  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1440, height: 1000 } });
++  try {
++    const page = await context.newPage();
++    await page.goto(urlFor('en'));
++    // A promise from the page realm need not settle with page scripts disabled.
++    await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded');
++    await expectReadable(page);
++  } finally {
++    await context.close();
++  }
++});
+diff --git a/tests/fixtures/browser.yml b/tests/fixtures/browser.yml
+index 1b784c7..d425eb2 100644
+--- a/tests/fixtures/browser.yml
++++ b/tests/fixtures/browser.yml
+@@ -2,8 +2,10 @@ module:
+   mounts:
+     - source: content
+       target: content
++      sites: { matrix: { languages: [en, zh] } }
+     - source: tests/fixtures/browser/content
+       target: content/tests
++      sites: { matrix: { languages: [en, zh] } }
+ 
+ params:
+   ui:
+diff --git a/tests/fixtures/browser/content/table-readability.md b/tests/fixtures/browser/content/table-readability.md
+new file mode 100644
+index 0000000..8211535
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-readability.md
+@@ -0,0 +1,76 @@
++---
++title: "Technical table readability"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++Native OINK tables using HugeGraph examples. No HugeGraph layouts, hooks, or styles are loaded.
++
++## Configuration parameters {#parameters}
++
++| config option        | default value       | description                                                                                                                                                                                                                                                                                                                                       |
++|----------------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
++| rocksdb.data_path    | `rocksdb-data/data` | The path for storing data of RocksDB. Must not be empty.                                                                                                                                                                                                                                                                                          |
++| rocksdb.data_disks   | `[]`                | The optimized disks for storing data of RocksDB. The format of each element: `STORE/TABLE: /path/disk`. Allowed keys are [g/vertex, g/edge_out, g/edge_in, g/vertex_label_index, g/edge_label_index, g/range_int_index, g/range_float_index, g/range_long_index, g/range_double_index, g/secondary_index, g/search_index, g/shard_index, g/unique_index, g/olap]. A disk path must differ from `rocksdb.data_path`. |
++| rocksdb.wal_path     | `rocksdb-data/wal`  | The path for storing WAL of RocksDB. Must not be empty.                                                                                                                                                                                                                                                                                           |
++| rocksdb.sst_path     | (empty)             | The path for ingesting SST file into RocksDB. Empty disables ingestion.                                                                                                                                                                                                                                                                           |
++| rocksdb.log_level    | `INFO`              | The info log level of RocksDB. Allowed values: DEBUG, INFO, WARN, ERROR, FATAL, HEADER.                                                                                                                                                                                                                                                            |
++{#configuration-parameters}
++
++## PD environment variables {#environment}
++
++| Variable | Required | Default | Configuration key | Description |
++|------|------|--------|------------|------|
++| `HG_PD_GRPC_HOST` | Yes | None | `grpc.host` | Advertised gRPC hostname/IP; use container hostnames within a container network. |
++| `HG_PD_RAFT_ADDRESS` | Yes | None | `raft.address` | This PD node's Raft address. |
++| `HG_PD_RAFT_PEERS_LIST` | Yes | None | `raft.peers-list` | Raft addresses of every PD node, including this node. |
++| `HG_PD_INITIAL_STORE_LIST` | Yes | None | `pd.initial-store-list` | Expected Store gRPC addresses. |
++| `HG_PD_AUTH_SECRET_KEY` | Yes | None | `auth.secret-key` | REST Basic password shared by all PD REST clients. |
++| `HG_PD_GRPC_PORT` | No | `8686` | `grpc.port` | gRPC service port. |
++| `HG_PD_REST_PORT` | No | `8620` | `server.port` | REST API port. |
++| `HG_PD_DATA_PATH` | No | `/hugegraph-pd/pd_data` | `pd.data-path` | Metadata path. |
++| `HG_PD_INITIAL_STORE_COUNT` | No | `1` | `pd.initial-store-count` | Minimum Store count needed for cluster availability. |
++| `HG_PD_ACTUATOR_EXPOSURE` | No | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | Public Actuator endpoint allowlist; `*` is forbidden. |
++{#environment-variables}
++
++## Short table {#short-table}
++
++| Component | Port | Purpose |
++| --- | --- | --- |
++| Server | 8080 | Graph API |
++| PD | 8686 | Metadata |
++{#short-example}
++
++## Long prose {#long-prose}
++
++| Parameter | Description |
++| --- | --- |
++| ordinary.option | This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. |
++{#prose-example}
++
++## Long tokens {#long-tokens}
++
++| Parameter | Description |
++| --- | --- |
++| `longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_long` | An unusually long key must wrap within its own cell without covering this description. |
++| [https://example.org/longsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlong](https://example.org/) | Long link labels use the same emergency wrapping. |
++{#long-token-example caption="Long identifiers and links"}
++
++## Matrix {#matrix}
++
++| Feature | Linux | macOS | Windows | Documentation | Status |
++| --- | --- | --- | --- | --- | --- |
++| longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_long | yes | yes | yes | available | supported |
++| Standard behavior | yes | yes | yes | available | supported |
++{#matrix-example .matrix}
++
++## Full-width table {#full-width}
++
++| Setting | Default | Description |
++| --- | --- | --- |
++| a.long.configuration.key | enabled | A full-width table continues to use its author's table modifier. |
++{#full-width-example .full-width caption="Author-selected full width"}
++
++## Spanning header {#spanning-header}
++
++<div class="td-table-scroll"><table id="spanning-example"><caption>Spanning columns</caption><thead><tr><th colspan="2">Configuration details with a spanning header</th></tr></thead><tbody><tr><td>configuration.key</td><td>A plain HTML table with a spanning header retains the expected column geometry.</td></tr></tbody></table></div>
+diff --git a/tests/fixtures/browser/content/table-readability.zh.md b/tests/fixtures/browser/content/table-readability.zh.md
+new file mode 100644
+index 0000000..d3c1b89
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-readability.zh.md
+@@ -0,0 +1,76 @@
++---
++title: "技术参数表可读性"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++使用 HugeGraph 示例的原生 OINK 表格，不加载 HugeGraph 模板、Hooks 或样式。
++
++## 配置参数 {#parameters}
++
++| config option        | default value       | description                                                                                                                                                                                                                                                                                                                                       |
++|----------------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
++| rocksdb.data_path    | `rocksdb-data/data` | RocksDB 数据存储路径，不允许为空。                                                                                                                                                                                                                                                                                                                |
++| rocksdb.data_disks   | `[]`                | 为部分表指定独立磁盘，每个元素格式为 `STORE/TABLE: /path/disk`。允许的键为 [g/vertex, g/edge_out, g/edge_in, g/vertex_label_index, g/edge_label_index, g/range_int_index, g/range_float_index, g/range_long_index, g/range_double_index, g/secondary_index, g/search_index, g/shard_index, g/unique_index, g/olap]。磁盘路径不能与 `rocksdb.data_path` 相同。 |
++| rocksdb.wal_path     | `rocksdb-data/wal`  | RocksDB WAL 存储路径，不允许为空。                                                                                                                                                                                                                                                                                                                |
++| rocksdb.sst_path     | （空）              | 待导入 RocksDB 的 SST 文件所在路径，为空表示不导入。                                                                                                                                                                                                                                                                                              |
++| rocksdb.log_level    | `INFO`              | RocksDB 的日志级别，可选值：DEBUG、INFO、WARN、ERROR、FATAL、HEADER。                                                                                                                                                                                                                                                                             |
++{#configuration-parameters}
++
++## PD 环境变量 {#environment}
++
++| 变量 | 必填 | 默认值 | 对应配置项 | 描述 |
++|------|------|--------|------------|------|
++| `HG_PD_GRPC_HOST` | 是 | 无 | `grpc.host` | 本节点对外公布的 gRPC 主机名/IP；容器网络中应使用容器主机名。 |
++| `HG_PD_RAFT_ADDRESS` | 是 | 无 | `raft.address` | 本节点 Raft 地址。 |
++| `HG_PD_RAFT_PEERS_LIST` | 是 | 无 | `raft.peers-list` | 所有 PD 节点的 Raft 地址，含本节点。 |
++| `HG_PD_INITIAL_STORE_LIST` | 是 | 无 | `pd.initial-store-list` | 预期的 Store gRPC 地址。 |
++| `HG_PD_AUTH_SECRET_KEY` | 是 | 无 | `auth.secret-key` | REST Basic 密码；所有 PD REST 客户端都必须使用同一密钥。 |
++| `HG_PD_GRPC_PORT` | 否 | `8686` | `grpc.port` | gRPC 服务端口。 |
++| `HG_PD_REST_PORT` | 否 | `8620` | `server.port` | REST API 端口。 |
++| `HG_PD_DATA_PATH` | 否 | `/hugegraph-pd/pd_data` | `pd.data-path` | 元数据存储路径。 |
++| `HG_PD_INITIAL_STORE_COUNT` | 否 | `1` | `pd.initial-store-count` | 集群可用所需的最小 Store 数量。 |
++| `HG_PD_ACTUATOR_EXPOSURE` | 否 | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | 公开的 Actuator 端点白名单；不允许设置为 `*`。 |
++{#environment-variables}
++
++## Short table {#short-table}
++
++| Component | Port | Purpose |
++| --- | --- | --- |
++| Server | 8080 | Graph API |
++| PD | 8686 | Metadata |
++{#short-example}
++
++## Long prose {#long-prose}
++
++| Parameter | Description |
++| --- | --- |
++| ordinary.option | This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. This description deliberately repeats normal prose to check that the fix does not turn an ordinary table into an unnecessarily long horizontal reading strip. |
++{#prose-example}
++
++## Long tokens {#long-tokens}
++
++| Parameter | Description |
++| --- | --- |
++| `longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_longidentifier_long` | An unusually long key must wrap within its own cell without covering this description. |
++| [https://example.org/longsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlongsegmentlong](https://example.org/) | Long link labels use the same emergency wrapping. |
++{#long-token-example caption="Long identifiers and links"}
++
++## Matrix {#matrix}
++
++| Feature | Linux | macOS | Windows | Documentation | Status |
++| --- | --- | --- | --- | --- | --- |
++| longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_longFeature_long | yes | yes | yes | available | supported |
++| Standard behavior | yes | yes | yes | available | supported |
++{#matrix-example .matrix}
++
++## Full-width table {#full-width}
++
++| Setting | Default | Description |
++| --- | --- | --- |
++| a.long.configuration.key | enabled | A full-width table continues to use its author's table modifier. |
++{#full-width-example .full-width caption="Author-selected full width"}
++
++## Spanning header {#spanning-header}
++
++<div class="td-table-scroll"><table id="spanning-example"><caption>Spanning columns</caption><thead><tr><th colspan="2">Configuration details with a spanning header</th></tr></thead><tbody><tr><td>configuration.key</td><td>A plain HTML table with a spanning header retains the expected column geometry.</td></tr></tbody></table></div>

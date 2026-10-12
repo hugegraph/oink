@@ -1,0 +1,182 @@
+[
+  {
+    "phase": "after",
+    "language": "en",
+    "width": 1440,
+    "tables": {
+      "configuration-parameters": {
+        "keyWidth": 177.59375,
+        "keyLines": 1,
+        "descriptionWidth": 417.921875,
+        "rowHeight": 74.5625,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "environment-variables": {
+        "keyWidth": 232.9375,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 74.5625,
+        "tableWidth": 1318.8125,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "short-example": {
+        "keyWidth": 318.203125,
+        "keyLines": 1,
+        "descriptionWidth": 276.71875,
+        "rowHeight": 47.375,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "prose-example": {
+        "keyWidth": 199.078125,
+        "keyLines": 1,
+        "descriptionWidth": 572.921875,
+        "rowHeight": 156.125,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      }
+    },
+    "pageOverflow": false,
+    "errors": []
+  },
+  {
+    "phase": "after",
+    "language": "en",
+    "width": 390,
+    "tables": {
+      "configuration-parameters": {
+        "keyWidth": 170,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 74.5625,
+        "tableWidth": 738.9375,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "environment-variables": {
+        "keyWidth": 232.9375,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 74.5625,
+        "tableWidth": 1318.8125,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "short-example": {
+        "keyWidth": 147.5625,
+        "keyLines": 1,
+        "descriptionWidth": 128.328125,
+        "rowHeight": 47.375,
+        "tableWidth": 358,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "prose-example": {
+        "keyWidth": 139,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 210.5,
+        "tableWidth": 539,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      }
+    },
+    "pageOverflow": false,
+    "errors": []
+  },
+  {
+    "phase": "after",
+    "language": "zh",
+    "width": 1440,
+    "tables": {
+      "configuration-parameters": {
+        "keyWidth": 177.59375,
+        "keyLines": 1,
+        "descriptionWidth": 417.921875,
+        "rowHeight": 47.375,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "environment-variables": {
+        "keyWidth": 232.9375,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 74.5625,
+        "tableWidth": 1282.8125,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "short-example": {
+        "keyWidth": 318.203125,
+        "keyLines": 1,
+        "descriptionWidth": 276.71875,
+        "rowHeight": 47.375,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      },
+      "prose-example": {
+        "keyWidth": 199.078125,
+        "keyLines": 1,
+        "descriptionWidth": 572.921875,
+        "rowHeight": 156.125,
+        "tableWidth": 772,
+        "viewportWidth": 772,
+        "fontSize": "16px"
+      }
+    },
+    "pageOverflow": false,
+    "errors": []
+  },
+  {
+    "phase": "after",
+    "language": "zh",
+    "width": 390,
+    "tables": {
+      "configuration-parameters": {
+        "keyWidth": 170,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 47.375,
+        "tableWidth": 738.9375,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "environment-variables": {
+        "keyWidth": 232.9375,
+        "keyLines": 2,
+        "descriptionWidth": 400,
+        "rowHeight": 74.5625,
+        "tableWidth": 1282.8125,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "short-example": {
+        "keyWidth": 147.5625,
+        "keyLines": 1,
+        "descriptionWidth": 128.328125,
+        "rowHeight": 47.375,
+        "tableWidth": 358,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      },
+      "prose-example": {
+        "keyWidth": 139,
+        "keyLines": 1,
+        "descriptionWidth": 400,
+        "rowHeight": 210.5,
+        "tableWidth": 539,
+        "viewportWidth": 358,
+        "fontSize": "16px"
+      }
+    },
+    "pageOverflow": false,
+    "errors": []
+  }
+]

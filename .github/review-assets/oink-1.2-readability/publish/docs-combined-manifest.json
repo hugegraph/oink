@@ -1,0 +1,83 @@
+{
+  "base": "edeb45b31c3b0f38078715d64e6aba43691fe591",
+  "commit": "0176e3d0fb344b7db1de856ec852bcb4ea9c8dfa",
+  "branch": "test/hugegraph-docs-combined",
+  "patch": "docs-combined.patch",
+  "patch_sha256": "15057200db9d35c0bfc3e3fcea3e894caf5a16335e0035949bcf5dc337c24062",
+  "sources": {
+    "markmap": {
+      "directory": "oink-docs-markmap",
+      "commit": "79db861b41ebd9d1c44fc8578dae00839f61f6f4",
+      "files": [
+        "tests/browser/markmap-theme.spec.mjs",
+        "tests/fixtures/browser/content/markmap-theme.md",
+        "tests/fixtures/browser/content/markmap-theme.zh.md"
+      ],
+      "sha256": {
+        "tests/browser/markmap-theme.spec.mjs": "d99fa1f53e2e8ff2385771f61fea3f90bbf2a851aa06b174209aad4a0d08b561",
+        "tests/fixtures/browser/content/markmap-theme.md": "a1ff19004261bb9185ddf435f8cc54da41510186a79af4ffff4553de82d8ab86",
+        "tests/fixtures/browser/content/markmap-theme.zh.md": "2171cc2016553a5558aef592547aadf112a6fd04d85d93ecbb0e2dfe20ce4613"
+      }
+    },
+    "filetree": {
+      "directory": "oink-docs-filetree",
+      "commit": "72c21f934c422ba1889bca4fda673319b7f21f26",
+      "files": [
+        "content/docs/components/filetree.md",
+        "content/docs/components/filetree.zh.md",
+        "tests/browser/content-components.spec.mjs",
+        "tests/browser/filetree-comments.spec.mjs",
+        "tests/fixtures/browser/content/filetree-comments.md",
+        "tests/fixtures/browser/content/filetree-comments.zh.md"
+      ],
+      "sha256": {
+        "content/docs/components/filetree.md": "c3f76a0422d915bfae6aa38d0a10a0da55c20d65dc00138fdf3ac47ceaab4112",
+        "content/docs/components/filetree.zh.md": "3c57b337602c0ac36259135a5525ba611cc2daa42997ff4a2fb5b0aba2ab6c6f",
+        "tests/browser/content-components.spec.mjs": "36ce46ed92d2677bc9f7d3435303f600c2cb8e509b375384e547b00eebed2b9d",
+        "tests/browser/filetree-comments.spec.mjs": "4f4ec0670e9ec03a6a124643a48c481e196769cb3a1f82dd47714ca1758896f3",
+        "tests/fixtures/browser/content/filetree-comments.md": "48e5291e2668af80eff681361d599ab8f3ffabd8e88919efd1e289c83f7ae321",
+        "tests/fixtures/browser/content/filetree-comments.zh.md": "d3ec525993cf7be382d31bc0c19988c572d0fd30a602e61058b8c6cf35f994c6"
+      }
+    },
+    "toc": {
+      "directory": "oink.pgsty-toc",
+      "commit": "240f570d72d05a0eb47acf7843ac57612cc8092f",
+      "files": [
+        "content/docs/design/shell.md",
+        "content/docs/design/shell.zh.md",
+        "tests/browser/rail-footer.spec.mjs",
+        "tests/fixtures/rail-footer/fixed.md",
+        "tests/fixtures/rail-footer/fixed.zh.md",
+        "tests/fixtures/rail-footer/flow.md",
+        "tests/fixtures/rail-footer/no-footer.md",
+        "tests/fixtures/rail-footer/no-sidebar.md"
+      ],
+      "sha256": {
+        "content/docs/design/shell.md": "28b0f230124ff3b72b1b30cc9a2cfc72de84171e2206f2ef37229371b54d9d59",
+        "content/docs/design/shell.zh.md": "69b66a254d7590698967db4f282884079749eab8424be0ee9209d7a8c6936e40",
+        "tests/browser/rail-footer.spec.mjs": "e2411305352f7a72dead92cba3d68753806a036c32d1d206fde860405bdae935",
+        "tests/fixtures/rail-footer/fixed.md": "65f70dccc39a2bcf03d9f2bb89f28c394842985bb468eec5b9d0fae55bc22549",
+        "tests/fixtures/rail-footer/fixed.zh.md": "dffc5b740082f0235aa984e9bd629ef748afa3c6d558d9401ba814760dde84ed",
+        "tests/fixtures/rail-footer/flow.md": "4b72f310606354b9a8e6b712d6443ee1ec39d198421df22f5b89fe9a5048acab",
+        "tests/fixtures/rail-footer/no-footer.md": "ec41b0a52a07fb2790ed1a2602c80d26d8945f3ef0058d55d13c7d6539892bd5",
+        "tests/fixtures/rail-footer/no-sidebar.md": "2ddae68d1448bb14dd5248465f6fa19aef15976403f10caa28c6e2bc33811072"
+      }
+    },
+    "tables": {
+      "directory": "oink-docs-tables",
+      "commit": null,
+      "status": "Parent-confirmed final working-tree snapshot at edeb45b; uncommitted.",
+      "files": [
+        "tests/browser/table-readability.spec.mjs",
+        "tests/fixtures/browser/content/table-readability.md",
+        "tests/fixtures/browser/content/table-readability.zh.md"
+      ],
+      "sha256": {
+        "tests/browser/table-readability.spec.mjs": "4952094a432a3c199c48597aab4c841abaf75854aed38750818b931fc33951b7",
+        "tests/fixtures/browser/content/table-readability.md": "ae5025f04ce5609c1ec4c55e23dd9b8449cb0efd7f4e2d36353c93738557cdfd",
+        "tests/fixtures/browser/content/table-readability.zh.md": "b0ea8688d2047a67c7db83e9fe502a1b0f8eb3582054f1fe6f291c9a79b926e5"
+      }
+    }
+  },
+  "merge": "Semantically merged component contract prose, unioned test:content-components entries, included rail-footer in test:responsive-shell, and retained three explicit EN/ZH mounts. No theme files, module pin, or local replacements."
+}
