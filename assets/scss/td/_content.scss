@@ -206,6 +206,34 @@
       margin-bottom: 0;
     }
 
+    @media screen {
+      &:not(.td-table-scroll--static) > table {
+        // The viewport, not the table, owns the horizontal width constraint.
+        max-width: none;
+
+        th,
+        td {
+          // Unlike anywhere, break-word keeps technical tokens in the
+          // intrinsic minimum width, with an escape hatch for very long ones.
+          overflow-wrap: break-word;
+          word-break: normal;
+
+          a,
+          code {
+            overflow-wrap: inherit;
+            word-break: inherit;
+          }
+        }
+
+        td {
+          // Bound prose's preferred measure instead of making a long
+          // description one enormous line. Auto layout may distribute extra
+          // space; matrix headers keep their explicit nowrap behavior.
+          max-width: 40ch;
+        }
+      }
+    }
+
     &--full {
       width: 100%;
       max-width: none;
