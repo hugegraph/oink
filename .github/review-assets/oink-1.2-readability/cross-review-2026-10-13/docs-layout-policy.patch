@@ -1,0 +1,263 @@
+diff --git a/content/docs/design/components.md b/content/docs/design/components.md
+--- a/content/docs/design/components.md
++++ b/content/docs/design/components.md
+@@ -1,10 +1,16 @@
+-**Unreleased table readability correction:** on screen, technical identifiers
+-retain their intrinsic word width and wide tables scroll inside the native
+-viewport. Exceptionally long identifiers and links can still wrap within their
+-cells. Body cells use a soft `40ch` preferred measure so long prose wraps instead
+-of creating one oversized line; automatic table layout can distribute extra
+-space. Matrix row headers retain their explicit no-wrap behavior. This applies
+-to native table viewports without a new author option and does not change the
+-static Print/RSS table contract.
++**Unreleased table readability correction:** ordinary screen tables prefer
++fitting the article viewport. Technical tokens retain intrinsic word widths;
++exceptionally long tokens can still wrap, and overflow stays in the focusable
++native viewport. For a technical table whose description needs a wider reading
++measure, add `{.td-table--wide}` after the table. This explicit mode keeps the
++max-content policy with a soft `40ch` body-cell measure; it is not a fixed column
++width. The theme does not infer intent from header names, column counts, or code.
++
++`.td-table--wide` selects the inner table's width policy; `.full-width` independently
++selects the available article canvas. Matrix headers keep their existing no-wrap
++behavior. Screen cell sizing is restricted to that table's own rows, and nested
++static viewports reset inherited wrapping. Print/RSS do not acquire wide mode.
++The earlier unconditional-wide proposal is superseded; existing technical
++examples below opt in explicitly. No runtime measurement loop is added.
+ 
+ ### Images, Gallery, FileTree, and fences {#images-gallery-filetree-and-fences}
+diff --git a/content/docs/design/components.zh.md b/content/docs/design/components.zh.md
+--- a/content/docs/design/components.zh.md
++++ b/content/docs/design/components.zh.md
+@@ -1,7 +1,12 @@
+-**尚未发布的表格可读性修正**：在屏幕上，技术标识符保留其固有单词宽度，
+-宽表在原生视口内横向滚动。超长标识符和链接仍可在单元格内换行。正文单元格
+-采用柔性的 `40ch` 首选宽度，让长段落换行，避免形成一整条超宽文本；自动表格
+-布局仍可分配额外空间。矩阵行表头保留显式不换行的行为。本修正适用于原生
+-表格视口，无需新增作者选项，也不改变 Print/RSS 的静态表格契约。
++**尚未发布的表格可读性修正**：普通屏幕表格优先适配正文视口。技术标识符
++保留固有单词宽度，超长内容仍可换行，必要的横向滚动留在可聚焦的原生容器内。
++技术表格的说明列需要更宽的阅读空间时，在表格后添加 `{.td-table--wide}`，
++显式选用 max-content 宽度和柔性的 `40ch` 单元格首选宽度；这不是固定列宽。
++主题不根据表头名称、列数或是否出现代码来猜测布局。
++
++`.td-table--wide` 选择表格内部宽度策略，`.full-width` 独立控制可用正文画布。
++矩阵表头仍保持不换行。屏幕单元格尺寸仅作用于该表自身的行，嵌套静态容器
++重置继承的换行规则；Print/RSS 不启用宽表模式。此前默认对所有表启用宽布局
++的方案已被替代，技术示例需要显式标记。没有增加运行时测量循环。
+ 
+ ### 图片、画廊、FileTree 与围栏 {#images-gallery-filetree-and-fences}
+diff --git a/tests/browser/table-layout-policy.spec.mjs b/tests/browser/table-layout-policy.spec.mjs
+new file mode 100644
+--- /dev/null
++++ b/tests/browser/table-layout-policy.spec.mjs
+@@ -0,0 +1,87 @@
++import { expect, test } from '@playwright/test';
++
++const urlFor = (language) => `${language === 'zh' ? '/zh' : ''}/tests/table-layout-policy/`;
++
++async function measure(table) {
++  return table.evaluate((node) => {
++    const viewport = node.parentElement;
++    const cells = [...node.tBodies[0].rows[0].cells];
++    return {
++      width: node.getBoundingClientRect().width,
++      available: viewport.clientWidth,
++      scrollWidth: viewport.scrollWidth,
++      description: cells.at(-1).getBoundingClientRect().width,
++      rowHeight: node.tBodies[0].rows[0].getBoundingClientRect().height,
++      lines: cells.map((cell) => {
++        const range = document.createRange();
++        range.selectNodeContents(cell);
++        return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
++      }),
++    };
++  });
++}
++
++for (const language of ['en', 'zh']) {
++  for (const width of [1440, 390]) {
++    test(`${language}: ordinary prose and explicit technical width at ${width}px`, async ({ page }) => {
++      await page.setViewportSize({ width, height: 1000 });
++      await page.goto(urlFor(language));
++      await page.evaluate(() => document.fonts.ready);
++      const prose = page.locator('#ordinary-prose-table');
++      const technical = page.locator('#wide-technical-table');
++      await expect(prose).not.toHaveClass(/td-table--wide/);
++      await expect(technical).toHaveClass(/td-table--wide/);
++      const wide = await measure(technical);
++      expect(wide.description).toBeGreaterThanOrEqual(280);
++      expect(wide.rowHeight).toBeLessThan(120);
++      const wrapper = technical.locator('..');
++      await expect(wrapper).toHaveAttribute('tabindex', '0');
++      await wrapper.focus();
++      await wrapper.press('ArrowRight');
++      await expect.poll(() => wrapper.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
++      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
++      if (width === 1440) {
++        const before = await measure(prose);
++        expect(before.scrollWidth).toBeLessThanOrEqual(before.available + 1);
++        expect(Math.max(...before.lines)).toBeGreaterThan(1);
++        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
++        await page.locator('[data-td-shell-right-toggle]:visible').first().click();
++        await expect.poll(async () => (await measure(prose)).available).toBeGreaterThan(before.available);
++        const after = await measure(prose);
++        expect(after.scrollWidth).toBeLessThanOrEqual(after.available + 1);
++        expect((await measure(technical)).description).toBeGreaterThanOrEqual(280);
++      }
++    });
++  }
++}
++
++test('wide is independent of matrix, full-width and static output', async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto(urlFor('en'));
++  const matrix = page.locator('#wide-matrix-table');
++  await expect(matrix).toHaveClass(/td-table--wide/);
++  await expect(matrix).toHaveClass(/td-table--matrix/);
++  await expect(matrix.locator('..')).toHaveClass(/td-table-scroll--full/);
++  await expect(matrix.locator('tbody th').first()).toHaveCSS('white-space', 'nowrap');
++  await page.emulateMedia({ media: 'print' });
++  await expect(page.locator('#wide-technical-table td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++  await page.emulateMedia({ media: 'screen' });
++  await page.goto('/_print/tests/table-layout-policy/');
++  await expect(page.locator('#wide-technical-table').locator('..')).toHaveClass(/td-table-scroll--static/);
++  await expect(page.locator('#wide-technical-table td').first()).toHaveCSS('overflow-wrap', 'anywhere');
++});
++
++test('explicit technical width works without page JavaScript', async ({ browser, baseURL }) => {
++  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 1440, height: 1000 } });
++  try {
++    const page = await context.newPage();
++    await page.goto(urlFor('en'));
++    await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded');
++    const wide = await measure(page.locator('#wide-technical-table'));
++    expect(wide.description).toBeGreaterThanOrEqual(280);
++    const prose = await measure(page.locator('#ordinary-prose-table'));
++    expect(prose.scrollWidth).toBeLessThanOrEqual(prose.available + 1);
++  } finally {
++    await context.close();
++  }
++});
+diff --git a/tests/fixtures/browser/content/table-readability.md b/tests/fixtures/browser/content/table-readability.md
+--- a/tests/fixtures/browser/content/table-readability.md
++++ b/tests/fixtures/browser/content/table-readability.md
+@@ -18,4 +18,4 @@
+-{#configuration-parameters}
++{#configuration-parameters .td-table--wide}
+ 
+ ## PD environment variables {#environment}
+ 
+@@ -34,4 +34,4 @@
+-{#environment-variables}
++{#environment-variables .td-table--wide}
+ 
+ ## Short table {#short-table}
+ 
+diff --git a/tests/fixtures/browser/content/table-readability.zh.md b/tests/fixtures/browser/content/table-readability.zh.md
+--- a/tests/fixtures/browser/content/table-readability.zh.md
++++ b/tests/fixtures/browser/content/table-readability.zh.md
+@@ -18,4 +18,4 @@
+-{#configuration-parameters}
++{#configuration-parameters .td-table--wide}
+ 
+ ## PD 环境变量 {#environment}
+ 
+@@ -34,4 +34,4 @@
+-{#environment-variables}
++{#environment-variables .td-table--wide}
+ 
+ ## Short table {#short-table}
+ 
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -35,3 +35,3 @@
+     "test:code-blocks": "playwright test tests/browser/code-blocks.spec.mjs",
+-    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs tests/browser/table-readability.spec.mjs",
++    "test:content-components": "playwright test tests/browser/content-components.spec.mjs tests/browser/math-compat.spec.mjs tests/browser/table-readability.spec.mjs tests/browser/table-layout-policy.spec.mjs",
+     "test:extra": "npm run seq -- test:hugo-build test:alt-site test:md-output test:favicons test:rendered-links test:release-pin-contract",
+diff --git a/tests/fixtures/browser/content/table-layout-policy.md b/tests/fixtures/browser/content/table-layout-policy.md
+new file mode 100644
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-layout-policy.md
+@@ -0,0 +1,37 @@
++---
++title: "Table layout policy"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++## Ordinary prose
++
++| Owner | Project | State | When | Notes |
++| --- | --- | --- | --- | --- |
++| Alice handles planning and coordination | Tokyo release | Ready for review | After final review and approval | A short explanation of the current delivery status. |
++| Bob handles design and delivery | Osaka patch | Waiting on tests | Before the next release window | Another short explanation of the expected next step. |
++{#ordinary-prose-table}
++
++## Explicit technical width
++
++| Variable | Required | Default | Configuration key | Description |
++| --- | --- | --- | --- | --- |
++| `HG_PD_GRPC_HOST` | Yes | None | `grpc.host` | Advertised gRPC hostname/IP; use container hostnames within a container network. |
++| `HG_PD_INITIAL_STORE_COUNT` | No | `1` | `pd.initial-store-count` | Minimum Store count needed for cluster availability. |
++| `HG_PD_ACTUATOR_EXPOSURE` | No | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | Public Actuator endpoint allowlist; `*` is forbidden. |
++{#wide-technical-table .td-table--wide}
++
++## Short ordinary table
++
++| City | Port | Purpose |
++| --- | --- | --- |
++| Tokyo | 8080 | Graph API |
++| Osaka | 8686 | Metadata |
++{#short-ordinary-table}
++
++## Explicit width with existing modifiers
++
++| Component | Read | Write |
++| --- | --- | --- |
++| A long component identifier | Yes | No |
++{#wide-matrix-table .matrix .full-width .td-table--wide caption="Existing modifiers remain independent"}
+diff --git a/tests/fixtures/browser/content/table-layout-policy.zh.md b/tests/fixtures/browser/content/table-layout-policy.zh.md
+new file mode 100644
+--- /dev/null
++++ b/tests/fixtures/browser/content/table-layout-policy.zh.md
+@@ -0,0 +1,37 @@
++---
++title: "表格布局策略"
++type: docs
++outputs: [HTML, markdown, print]
++---
++
++## 普通正文
++
++| Owner | Project | State | When | Notes |
++| --- | --- | --- | --- | --- |
++| Alice handles planning and coordination | Tokyo release | Ready for review | After final review and approval | A short explanation of the current delivery status. |
++| Bob handles design and delivery | Osaka patch | Waiting on tests | Before the next release window | Another short explanation of the expected next step. |
++{#ordinary-prose-table}
++
++## 显式技术宽表
++
++| Variable | Required | Default | Configuration key | Description |
++| --- | --- | --- | --- | --- |
++| `HG_PD_GRPC_HOST` | Yes | None | `grpc.host` | 对外宣告的 gRPC 主机名或 IP 地址；容器网络内部应使用容器主机名。 |
++| `HG_PD_INITIAL_STORE_COUNT` | No | `1` | `pd.initial-store-count` | 集群可用时所需的最少存储节点数量。 |
++| `HG_PD_ACTUATOR_EXPOSURE` | No | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | 对外开放的监控端点白名单，不允许使用通配符。 |
++{#wide-technical-table .td-table--wide}
++
++## 短普通表格
++
++| City | Port | Purpose |
++| --- | --- | --- |
++| Tokyo | 8080 | Graph API |
++| Osaka | 8686 | Metadata |
++{#short-ordinary-table}
++
++## 显式宽度与已有修饰符
++
++| Component | Read | Write |
++| --- | --- | --- |
++| A long component identifier | Yes | No |
++{#wide-matrix-table .matrix .full-width .td-table--wide caption="Existing modifiers remain independent"}
