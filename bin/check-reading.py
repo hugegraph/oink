@@ -518,7 +518,7 @@ def check_cached_content_navigation(hugo: str) -> list[str]:
                 and 'href="/book/part/" title=' not in expanded,
                 "content tree ignored compact/foldable/expand/overflow overrides", errors)
         require("data-td-shell-tree-toggle" in compact
-                and "td-shell-tree__item--hidden" in compact
+                and "td-shell-tree__item--hidden" not in compact
                 and 'href="/book/part/" title="Part"' in compact,
                 "content-tree default cache variant was polluted by another page", errors)
         require("data-td-sidebar-hydrate-active" not in headings
@@ -526,6 +526,61 @@ def check_cached_content_navigation(hugo: str) -> list[str]:
                 and 'href="#first-heading"' in headings
                 and 'href="#nested-heading"' in headings,
                 "Book sidebar headings were cached or omitted instead of rendering per page", errors)
+    return errors
+
+
+def check_foldable_content_navigation(hugo: str) -> list[str]:
+    """Compact filtering must not permanently hide a disclosure's leaves."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-foldable-content-nav-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config_path = source / "hugo.yaml"
+        config = config_path.read_text().replace(
+            "    sidebar_menu_foldable: true\n",
+            "    sidebar_menu_foldable: true\n"
+            "    sidebar_menu_compact: true\n"
+            "    sidebar_expand_levels: 1\n",
+        )
+        for kind in ("docs", "book"):
+            pages = {
+                "_index": f"title: {kind.title()}\ntype: {kind}\ncascade:\n  type: {kind}",
+                "about/_index": "title: About",
+                "about/compare/_index": "title: Compare",
+                "about/compare/cost": "title: Cost",
+                "about/compare/impact": "title: Impact",
+                "about/compare/private": "title: Private\ntoc_hide: true",
+                "other/_index": "title: Other",
+                "other/deep/_index": "title: Deep",
+                "other/deep/tip": "title: Tip",
+                "static": "title: Static compact\nsidebar_menu_foldable: false",
+            }
+            for path, frontmatter in pages.items():
+                write_file(source / f"content/{kind}/{path}.md", f"---\n{frontmatter}\n---\n")
+
+        for cache_limit in (1, 10000):
+            config_path.write_text(config + f"    sidebar_cache_limit: {cache_limit}\n")
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return errors + [f"foldable sidebar fixture failed: {result.stdout}{result.stderr}"]
+            for kind in ("docs", "book"):
+                for page in ("", "about/compare/", "about/compare/cost/"):
+                    label = f"{kind}/{page} cache_limit={cache_limit}"
+                    markup = sidebar_markup((source / f"public/{kind}/{page}index.html").read_text())
+                    require(bool(markup), f"{label}: missing sidebar", errors)
+                    require(("data-td-sidebar-hydrate-active" in markup) == (cache_limit == 1),
+                            f"{label}: unexpected cache path", errors)
+                    require("td-shell-tree__item--hidden" not in markup,
+                            f"{label}: compact filtering permanently hides foldable children", errors)
+                    for leaf in ("about/compare/cost/", "about/compare/impact/", "other/deep/tip/"):
+                        require(f'href="/{kind}/{leaf}"' in markup,
+                                f"{label}: missing reachable leaf {leaf}", errors)
+                    require(f'href="/{kind}/about/compare/private/"' not in markup,
+                            f"{label}: toc_hide leaf leaked into navigation", errors)
+                static = sidebar_markup((source / f"public/{kind}/static/index.html").read_text())
+                require("data-td-shell-tree-toggle" not in static
+                        and "td-shell-tree__item--hidden" in static,
+                        f"{kind} cache_limit={cache_limit}: non-foldable compact filtering changed", errors)
     return errors
 
 
@@ -912,6 +967,7 @@ def main() -> int:
     errors += (
         check_explicit_navigation(args.hugo)
         + check_cached_content_navigation(args.hugo)
+        + check_foldable_content_navigation(args.hugo)
         + check_home_root_navigation(args.hugo)
         + check_invalid_pager_config(args.hugo)
         + check_invalid_eq_escape(args.hugo)
