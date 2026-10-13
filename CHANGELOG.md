@@ -17,6 +17,7 @@ All notable changes to OINK are documented here. The project follows
   item focusable immediately when opening with ArrowDown.
 - Keep Appearance's expanded state correct when a dialog is closed and
   reopened before its queued close event arrives.
+- Align taxonomy output goldens with the compact foldable sidebar leaf repair.
 
 ## [1.2.0] — 2026-10-05
 
