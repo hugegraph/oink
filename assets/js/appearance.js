@@ -235,6 +235,8 @@
     }
 
     panel.addEventListener('close', function () {
+      // A previous close event may arrive after the reader reopens the dialog.
+      if (panel.open) return;
       wrapper.classList.remove('td-is-open');
       trigger.setAttribute('aria-expanded', 'false');
     });

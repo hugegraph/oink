@@ -15,6 +15,8 @@ All notable changes to OINK are documented here. The project follows
   and reject exports that are not PNG or SVG image data URLs.
 - Close Page Actions when keyboard focus leaves the menu, and make its first
   item focusable immediately when opening with ArrowDown.
+- Keep Appearance's expanded state correct when a dialog is closed and
+  reopened before its queued close event arrives.
 
 ## [1.2.0] — 2026-10-05
 
