@@ -241,3 +241,16 @@ ui_diagram_zoom_in: 放大
 ui_diagram_zoom_out: 縮小
 ui_diagram_zoom_reset: 重設檢視
 ui_diagram_error: 圖表無法呈現
+
+# Expo icon tooltips and accessible names.
+ui_expo_layout: "圖片佈局"
+ui_expo_wall: "展牆"
+ui_expo_cards: "卡片"
+ui_expo_seamless: "無縫"
+ui_expo_size: "圖片大小"
+ui_expo_fit: "原尺寸或適應螢幕"
+ui_expo_expand: "放大至適合畫面"
+ui_expo_original: "開啟原圖"
+ui_expo_locate: "在相簿中定位"
+ui_expo_play: "播放動圖"
+ui_expo_pause: "暫停動圖"

@@ -309,6 +309,9 @@ jobs:
       - name: Check Gallery output and Zoom reuse
         run: python3 bin/check-gallery.py
 
+      - name: Check Expo album outputs
+        run: python3 bin/check-expo.py
+
       - name: Check v5 components (callouts, tabs, data fences, removed shortcodes)
         run: python3 bin/check-components.py
 

@@ -63,6 +63,8 @@ default language's llms.txt even though Hugo publishes one per language. */ -}}
 {{ $needSeparator = true -}}
 {{ end -}}
 
+{{ if eq .Type "expo" -}}{{ partial "expo/markdown.md" . }}{{ end -}}
+
 {{/* Section index, if any --------------------------------------------- */ -}}
 
 {{ with .Pages -}}

@@ -8,6 +8,7 @@
 {{- $plain := $page.RenderString (dict "display" "block") $page.RawContent -}}
 {{- $plain = partial "content/static-image-output.html" $plain -}}
 {{- partial "code/register-rendered-ids.html" (dict "page" $page "content" $plain) -}}
+{{- if eq $page.Type "expo" }}{{ $plain = printf "%s%s" $plain (partial "expo/static.html" $page) | safeHTML }}{{ end -}}
 {{- $book := $plain -}}
 {{- if eq $page.Type "book" -}}
   {{- $page.Store.Set "tdBookAggregate" true -}}

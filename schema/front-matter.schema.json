@@ -56,6 +56,9 @@
     "description": {
       "description": "Front matter key read by the theme's templates."
     },
+    "expo": {
+      "description": "Image albums. Page front matter `expo` overrides this map."
+    },
     "featured_image": {
       "description": "How a blog page presents the featured image `images` selects: none | banner (a framed figure above the title) | wash (the image behind the article header at a low opacity) | hero (the immersive presentation: the blog shell paints the image as its own full-bleed backdrop and moves the opening down — on single pages and section indexes alike). Front matter `featured_image` overrides it for one page or, in a cascade, one section. A page that carries no image renders nothing either way."
     },

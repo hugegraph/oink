@@ -151,7 +151,12 @@ params:
     #   ui: "'Source Han Sans SC', sans-serif"
     #   code: "'Sarasa Mono SC', monospace"
 
-    shell_types: [docs, book, blog, swagger]
+    shell_types: [docs, book, blog, swagger, expo]
+    # Image albums. Page front matter `expo` overrides this map.
+    expo:
+      images: "images/*" # Bundle-resource glob, no remote fetching.
+      mode: wall # wall | cards | seamless
+      size: 240 # Target tile size in CSS pixels, 160 through 360.
     docs_section: docs
     blog_section: blog
     # How a blog page presents the featured image `images` selects:

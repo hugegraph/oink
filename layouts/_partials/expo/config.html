@@ -1,0 +1,13 @@
+{{- $page := . -}}
+{{- $raw := partial "ui-param.html" (dict "page" . "key" "expo") -}}
+{{- if not (reflect.IsMap $raw) -}}
+  {{- if ne $raw nil }}{{ warnf "expo must be a map at %s; using defaults" .Path }}{{ end -}}
+  {{- $raw = dict -}}
+{{- end -}}
+{{- $mode := partial "validate.html" (dict "value" $raw.mode "kind" "enum" "allowed" (slice "wall" "cards" "seamless") "fallback" "wall" "key" "expo.mode" "where" .Path) -}}
+{{- $size := partial "validate.html" (dict "value" $raw.size "kind" "int" "min" 160 "max" 360 "fallback" 240 "key" "expo.size" "where" .Path) -}}
+{{- $images := "images/*" -}}
+{{- with $raw.images -}}
+  {{- if eq (printf "%T" .) "string" }}{{ $images = . }}{{ else }}{{ warnf "expo.images must be a resource glob at %s; using images/*" $page.Path }}{{ end -}}
+{{- end -}}
+{{- return dict "mode" $mode "size" $size "images" $images -}}

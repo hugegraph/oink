@@ -5,8 +5,24 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Add `type: expo` for resource-backed image albums, with shared shell navigation,
+  icon controls for wall, masonry cards and seamless layouts, and tile sizing.
+- Add original-size image viewing with automatic fit, bounded expansion and manual zoom,
+  original-file and album-location links, default GIF playback and motion controls.
+- Add pointer dragging and scoped WASD panning, QE/HL navigation, JK zoom,
+  R reset and F expansion shortcuts to the album viewer.
+- Keep album images and metadata in Print, Markdown, LLMSFULL and RSS outputs;
+  include native accessible names in all 32 interface catalogs.
+- Remember reader layout and size across albums, with a segmented mode selector,
+  motion button and inline size slider. Keep appearance in navigation and omit
+  article actions from Expo pages.
+
 ### Fixed
 
+- Stabilize Expo's document scrollbar space so albums near the viewport height
+  cannot oscillate between two layouts; opening the viewer preserves grid width.
 - Escape image and Gallery source URLs as HTML attributes after URL validation,
   preserving quotes and ampersands without creating extra attributes in HTML,
   Print, and RSS output.
@@ -18,6 +34,11 @@ All notable changes to OINK are documented here. The project follows
 - Keep Appearance's expanded state correct when a dialog is closed and
   reopened before its queued close event arrives.
 - Align taxonomy output goldens with the compact foldable sidebar leaf repair.
+
+### Changed
+
+- Name the accepted image-album layout Expo. Replace the Muse draft with the
+  bilingual Expo contract and content-model decision in the documentation site.
 
 ## [1.2.0] — 2026-10-05
 

@@ -305,8 +305,28 @@
                 "docs",
                 "book",
                 "blog",
-                "swagger"
+                "swagger",
+                "expo"
               ]
+            },
+            "expo": {
+              "description": "Image albums. Page front matter `expo` overrides this map.",
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "images": {
+                  "type": "string",
+                  "default": "images/*"
+                },
+                "mode": {
+                  "type": "string",
+                  "default": "wall"
+                },
+                "size": {
+                  "type": "integer",
+                  "default": 240
+                }
+              }
             },
             "docs_section": {
               "type": "string",

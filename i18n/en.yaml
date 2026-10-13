@@ -236,3 +236,16 @@ ui_series_part: Part {{ .Part }} of {{ .Total }}
 markdown_llms_index: "LLMS index:"
 markdown_section_pages: "Section pages:"
 markdown_backlinks: "Backlinks:"
+
+# Expo icon tooltips and accessible names.
+ui_expo_layout: "Image layout"
+ui_expo_wall: "Image wall"
+ui_expo_cards: "Image cards"
+ui_expo_seamless: "Seamless wall"
+ui_expo_size: "Image size"
+ui_expo_fit: "Original size or fit"
+ui_expo_expand: "Expand to fit"
+ui_expo_original: "Open original image"
+ui_expo_locate: "Locate in album"
+ui_expo_play: "Play animations"
+ui_expo_pause: "Pause animations"
