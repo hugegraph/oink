@@ -1,0 +1,16 @@
+diff --git a/content/en/docs/quickstart/hugegraph/hugegraph-pd.md b/content/en/docs/quickstart/hugegraph/hugegraph-pd.md
+--- a/content/en/docs/quickstart/hugegraph/hugegraph-pd.md
++++ b/content/en/docs/quickstart/hugegraph/hugegraph-pd.md
+@@ -109,3 +109,3 @@
+ | `HG_PD_ACTUATOR_EXPOSURE` | No | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | Public Actuator endpoint allowlist; `*` is forbidden. |
+-{.hg-pd-env}
++{.hg-pd-env .td-table--wide}
+ 
+diff --git a/content/cn/docs/quickstart/hugegraph/hugegraph-pd.md b/content/cn/docs/quickstart/hugegraph/hugegraph-pd.md
+--- a/content/cn/docs/quickstart/hugegraph/hugegraph-pd.md
++++ b/content/cn/docs/quickstart/hugegraph/hugegraph-pd.md
+@@ -109,3 +109,3 @@
+ | `HG_PD_ACTUATOR_EXPOSURE` | 否 | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | 公开的 Actuator 端点白名单；不允许设置为 `*`。 |
+-{.hg-pd-env}
++{.hg-pd-env .td-table--wide}
+ 
