@@ -10,6 +10,9 @@ All notable changes to OINK are documented here. The project follows
 - Escape image and Gallery source URLs as HTML attributes after URL validation,
   preserving quotes and ampersands without creating extra attributes in HTML,
   Print, and RSS output.
+- Preserve query parameters and fragments in Draw.io editor URLs. Accept editor
+  messages only from the configured iframe and origin, ignore malformed data,
+  and reject exports that are not PNG or SVG image data URLs.
 
 ## [1.2.0] — 2026-10-05
 

@@ -22,8 +22,12 @@
   };
 
   var imghandler = function (img, imgdata) {
-    var url = server;
-    url += '?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&saveAndEdit=1&noSaveBtn=1';
+    var url = new URL(server, document.baseURI);
+    var options = {
+      embed: '1', ui: 'atlas', spin: '1', modified: 'unsavedChanges',
+      proto: 'json', saveAndEdit: '1', noSaveBtn: '1',
+    };
+    Object.keys(options).forEach(function (key) { url.searchParams.set(key, options[key]); });
 
     var wrapper = document.createElement('div');
     wrapper.classList.add('drawio');
@@ -44,16 +48,21 @@
       if (iframe) return;
       insertFrame();
       var handler = function (evt) {
+        if (!iframe || evt.source !== iframe.contentWindow || evt.origin !== url.origin
+          || typeof evt.data !== 'string' || !evt.data) return;
         var wind = iframe.contentWindow;
-        if (evt.data.length > 0 && evt.source === wind) {
-          var msg = JSON.parse(evt.data);
+        var msg;
+        try { msg = JSON.parse(evt.data); } catch (_) { return; }
+        if (msg && typeof msg === 'object') {
 
           if (msg.event === 'init') {
-            wind.postMessage(JSON.stringify({action: 'load', xml: imgdata}), '*');
+            wind.postMessage(JSON.stringify({action: 'load', xml: imgdata}), url.origin);
           } else if (msg.event === 'save') {
             var fmt = imgdata.indexOf('data:image/png') === 0 ? 'xmlpng' : 'xmlsvg';
-            wind.postMessage(JSON.stringify({action: 'export', format: fmt}), '*');
+            wind.postMessage(JSON.stringify({action: 'export', format: fmt}), url.origin);
           } else if (msg.event === 'export') {
+            if (typeof msg.data !== 'string'
+              || !/^data:image\/(?:png|svg\+xml)(?:;[^,]*)?,/i.test(msg.data)) return;
             const fn = img.src.replace(/^.*?([^/]+)$/, '$1');
             const dl = document.createElement('a');
             dl.setAttribute('href', msg.data);
@@ -71,7 +80,7 @@
       };
 
       window.addEventListener('message', handler);
-      iframe.setAttribute('src', url);
+      iframe.setAttribute('src', url.href);
     });
   };
 
