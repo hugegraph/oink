@@ -25,14 +25,14 @@ function blockAfter(text, marker) {
 
 const viewport = blockAfter(source, '.td-table-scroll {');
 const screen = blockAfter(viewport, '@media screen');
-const policy = blockAfter(screen, '&:not(.td-table-scroll--static) > table');
+const policy = blockAfter(screen, '&:where(:not(.td-table-scroll--static)) > table');
 
 test('ordinary screen tables prefer fitting; wide mode is explicit', () => {
-  const top = policy.slice(0, policy.indexOf('&.td-table--wide'));
+  const top = policy.slice(0, policy.indexOf('&:where(.td-table--wide)'));
   assert.match(top, /\bwidth:\s*auto;/);
   assert.match(top, /\bmax-width:\s*none;/);
   assert.doesNotMatch(top, /\bwidth:\s*max-content;/);
-  assert.match(blockAfter(policy, '&.td-table--wide'), /\bwidth:\s*max-content;/);
+  assert.match(blockAfter(policy, '&:where(.td-table--wide)'), /\bwidth:\s*max-content;/);
 });
 
 test('both layout policies preserve wrapping and the scrolling viewport', () => {
@@ -44,12 +44,12 @@ test('both layout policies preserve wrapping and the scrolling viewport', () => 
 });
 
 test('wide mode is assigned only inside the non-static screen policy', () => {
-  assert.equal((source.match(/&\.td-table--wide\s*\{/g) || []).length, 1);
-  assert.equal((policy.match(/&\.td-table--wide\s*\{/g) || []).length, 1);
+  assert.equal((source.match(/&:where\(\.td-table--wide\)\s*\{/g) || []).length, 1);
+  assert.equal((policy.match(/&:where\(\.td-table--wide\)\s*\{/g) || []).length, 1);
 });
 
 test('cell sizing does not leak into nested static tables', () => {
-  assert.ok(policy.includes('> :is(thead, tbody, tfoot) > tr > :is(th, td)'));
-  assert.ok(policy.includes('> :is(thead, tbody, tfoot) > tr > td'));
+  assert.ok(policy.includes('> :where(thead, tbody, tfoot) > :where(tr) > :is(th, td)'));
+  assert.ok(policy.includes('> :where(thead, tbody, tfoot) > :where(tr) > td'));
   assert.match(blockAfter(viewport, '&--static'), /overflow-wrap:\s*anywhere;/);
 });
