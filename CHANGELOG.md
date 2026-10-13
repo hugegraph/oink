@@ -13,6 +13,8 @@ All notable changes to OINK are documented here. The project follows
 - Preserve query parameters and fragments in Draw.io editor URLs. Accept editor
   messages only from the configured iframe and origin, ignore malformed data,
   and reject exports that are not PNG or SVG image data URLs.
+- Close Page Actions when keyboard focus leaves the menu, and make its first
+  item focusable immediately when opening with ArrowDown.
 
 ## [1.2.0] — 2026-10-05
 
