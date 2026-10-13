@@ -3,6 +3,14 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+### Fixed
+
+- Escape image and Gallery source URLs as HTML attributes after URL validation,
+  preserving quotes and ampersands without creating extra attributes in HTML,
+  Print, and RSS output.
+
 ## [1.2.0] — 2026-10-05
 
 Four visual styles with local fonts and independent appearance controls.
@@ -2128,6 +2136,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.2.0...HEAD
 [1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
