@@ -208,11 +208,17 @@
 
     @media screen {
       &:not(.td-table-scroll--static) > table {
-        // The viewport, not the table, owns the horizontal width constraint.
+        // Ordinary prose should fit before scrolling. Tables whose technical
+        // columns need a wider reading measure opt in through a native class;
+        // do not guess that intent from a column's name, count, or language.
+        width: auto;
         max-width: none;
 
-        th,
-        td {
+        &.td-table--wide {
+          width: max-content;
+        }
+
+        > :is(thead, tbody, tfoot) > tr > :is(th, td) {
           // Unlike anywhere, break-word keeps technical tokens in the
           // intrinsic minimum width, with an escape hatch for very long ones.
           overflow-wrap: break-word;
@@ -225,7 +231,7 @@
           }
         }
 
-        td {
+        > :is(thead, tbody, tfoot) > tr > td {
           // Bound prose's preferred measure instead of making a long
           // description one enormous line. Auto layout may distribute extra
           // space; matrix headers keep their explicit nowrap behavior.
@@ -245,6 +251,8 @@
     &--static {
       max-width: none;
       overflow: visible;
+      // A nested static viewport must not inherit an outer screen cell's rule.
+      overflow-wrap: anywhere;
     }
   }
 }
