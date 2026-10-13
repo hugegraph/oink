@@ -14,13 +14,13 @@ const SOURCE = fs.readFileSync(
   'utf8',
 );
 
-function build({ footer = true, sidebar = true, toc = true, visual = false } = {}) {
+function build({ footer = true, sidebar = true, toc = true, visual = false, top = 1100, observer = true } = {}) {
   const properties = new Map();
   const attrs = new Map();
   const listeners = new Map();
   const viewportListeners = new Map();
   const frames = new Map();
-  const measurements = { top: 1100, reads: 0 };
+  const measurements = { top, reads: 0 };
   const footerElement = {
     getBoundingClientRect() {
       measurements.reads += 1;
@@ -64,6 +64,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false } = {
     matchMedia() { return { matches: false, addEventListener() {} }; },
     ResizeObserver: class {},
   };
+  if (!observer) delete window.ResizeObserver;
   if (visual) {
     window.visualViewport = {
       height: 800,
@@ -154,3 +155,37 @@ for (const absent of [{ footer: false }, { sidebar: false, toc: false }]) {
     assert.equal(env.listeners.has('scroll'), false);
   });
 }
+
+// Scroll restoration may place the footer in view before the first event.
+test('TOC-only restored page receives its initial footer boundary', () => {
+  const env = build({ sidebar: false, top: 670 });
+  assert.equal(env.offset(), '331px');
+  assert.equal(env.measurements.reads, 1);
+});
+
+test('scroll and resize still update the TOC without ResizeObserver', () => {
+  const env = build({ sidebar: false, observer: false });
+  env.measurements.top = 700;
+  env.listeners.get('scroll')();
+  env.flush();
+  assert.equal(env.offset(), '301px');
+  env.window.innerHeight = 900;
+  env.listeners.get('resize')();
+  env.flush();
+  assert.equal(env.offset(), '201px');
+});
+
+test('mixed observer, window and visual viewport events share one frame', () => {
+  const env = build({ sidebar: false, visual: true });
+  const reads = env.measurements.reads;
+  env.measurements.top = 700;
+  env.listeners.get('scroll')();
+  env.listeners.get('resize')();
+  env.viewportListeners.get('scroll')();
+  env.viewportListeners.get('resize')();
+  env.resize();
+  assert.equal(env.measurements.reads, reads);
+  env.flush();
+  assert.equal(env.measurements.reads, reads + 1);
+  assert.equal(env.offset(), '101px');
+});
