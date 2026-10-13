@@ -182,6 +182,25 @@ with sync_playwright() as p:
     record('long code and links have contained text fragments',fits)
     record('caption and focusable wrapper are unchanged',page.locator('caption').inner_text()=='Long identifiers'
            and page.locator('#target').locator('..').get_attribute('tabindex')=='0')
+    # Negative control reproduces the intermediate structural specificity.
+    strong = (CANDIDATE.replace(':where(:not(.td-table-scroll--static))', ':not(.td-table-scroll--static)')
+              .replace(':where(.td-table--wide)', '.td-table--wide')
+              .replace(':where(thead, tbody, tfoot)', ':is(thead, tbody, tfoot)')
+              .replace(':where(tr)', 'tr'))
+    for wide in [False, True]:
+        markup = wrap_table(PROSE, PROSE_HEADS, wide=wide).replace('id="target" class="', 'id="target" class="consumer ')
+        override = '.td-content table.consumer {width:1200px;}'
+        old = load(markup, strong + override)
+        new = load(markup, CANDIDATE + override)
+        record(f'negative control: stronger structural selector blocks width override ({wide})', old['width']<1190, old)
+        record(f'consumer width override survives in mode wide={wide}', abs(new['width']-1200)<1, new)
+    markup = wrap_table(PROSE, PROSE_HEADS).replace('id="target" class="', 'id="target" class="consumer ')
+    override = '.td-content .td-table-scroll table.consumer td {max-width:18ch;overflow-wrap:normal;}'
+    old = load(markup, strong + override)
+    new = load(markup, CANDIDATE + override)
+    record('negative control: structural types block cell override', old['wrap']=='break-word', old)
+    record('consumer cell override retains precedence', new['wrap']=='normal' and float(new['max'].replace('px',''))<200, new)
+
     nojs=browser.new_context(java_script_enabled=False,viewport={'width':1440,'height':1000})
     np=nojs.new_page()
     np.set_content('<style>'+BASE+CANDIDATE+'</style><main class="td-content" style="width:772px">'+wrap_table(PD,HEADS,wide=True)+'</main>')
