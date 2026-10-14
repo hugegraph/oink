@@ -40,8 +40,10 @@ outputs:
   section: [HTML, print, markdown, RSS]
   page: [HTML, markdown]
 ''')
-        (site/'content/expo/_index.md').write_text('---\ntitle: Albums\ncascade:\n  type: expo\noutputs: [HTML, print, markdown, RSS, LLMSFULL]\n---\n')
+        (site/'content/expo/_index.md').write_text('---\ntitle: Albums\nweight: 2\ncascade:\n  type: expo\noutputs: [HTML, print, markdown, RSS, LLMSFULL]\n---\n')
         (site/'content/expo/_index.zh.md').write_text('---\ntitle: 相册\ncascade:\n  type: expo\n---\n')
+        # A lighter top-level section must not become the album's root label.
+        (site/'content/notes').mkdir();(site/'content/notes/_index.md').write_text('---\ntitle: Notes\nweight: 1\n---\n')
         front='''title: Album
 expo: {mode: seamless, size: 200}
 resources:
@@ -64,6 +66,7 @@ resources:
         assert 'aria-keyshortcuts="W A S D"' in html and 'draggable="false"' in html
         assert 'aria-keyshortcuts="Q H ArrowLeft"' in html and 'aria-keyshortcuts="R 0"' in html
         assert 'class="td-page-actions' not in html
+        assert re.search(r'class="td-shell-root__title">Albums<',html), 'Expo albums must use their section as sidebar root'
         assert 'data-td-expo-animated="true"' in html
         assert re.search(r'<img[^>]+src="[^"]+motion.gif"',html), 'GIF must play by default'
         assert 'prefers-reduced-motion: reduce' in html

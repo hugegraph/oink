@@ -21,6 +21,8 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Resolve Expo albums to their own top-level section in the sidebar and root
+  switcher instead of labelling the home tree with the first site section.
 - Stabilize Expo's document scrollbar space so albums near the viewport height
   cannot oscillate between two layouts; opening the viewer preserves grid width.
 - Escape image and Gallery source URLs as HTML attributes after URL validation,
