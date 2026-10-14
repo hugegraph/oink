@@ -54,7 +54,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 - **Four visual styles.** Paper is the warm, reading-focused default; Slate
   preserves the original look. Ink and Terminal are explicit opt-ins. Style
   and light/dark mode can be selected independently, with local fonts and saved
-  reader preferences. See [what's new in 1.2](https://oink.pgsty.com/blog/release/1.2.0/).
+  reader preferences. See [what's new in 1.3](https://oink.pgsty.com/blog/release/1.3.0/).
 - **Multilingual by design.** Language-aware routing, translated-page peers,
   RTL support, alternate-site links, and localized search work across large
   documentation trees.
@@ -62,8 +62,8 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-Expo is part of the unreleased 1.3 candidate. Published v1.2.0 does not include
-this image-album shell.
+OINK 1.3.0 adds the Expo image-album shell. The v1.3.0 tag is prepared locally;
+public module publication and deployment are separate steps.
 
 ## Start a site
 

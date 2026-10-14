@@ -5,6 +5,12 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-10-14
+
+Resource-backed Expo albums with shared navigation, an original-image viewer,
+and reader-controlled layouts. This version is tagged locally; public module
+publication and consumer deployment are separate steps.
+
 ### Added
 
 - Add `type: expo` for resource-backed image albums, with shared shell navigation,
@@ -2195,7 +2201,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/pgsty/oink/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
