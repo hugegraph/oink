@@ -221,6 +221,10 @@
       trigger.focus({ preventScroll: true });
     });
   });
+  // The album grid mirrors in right-to-left languages, so arrow keys follow
+  // the reading direction: the key toward the start goes to the previous image.
+  const rtl = getComputedStyle(dialog).direction === 'rtl';
+  const backKey = rtl ? 'arrowright' : 'arrowleft', forwardKey = rtl ? 'arrowleft' : 'arrowright';
   dialog.addEventListener('keydown', event => {
     if (!dialog.open || event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey || event.altKey || event.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
     const key = event.key.toLowerCase();
@@ -229,9 +233,9 @@
       event.preventDefault(); endDrag();
       // Move the image in the named direction, just as a pointer drag does.
       stage.scrollBy({ left: pan[0], top: pan[1], behavior: 'instant' });
-    } else if (['q', 'h'].includes(key) || (key === 'arrowleft' && stage.scrollWidth <= stage.clientWidth + 1)) {
+    } else if (['q', 'h'].includes(key) || (key === backKey && stage.scrollWidth <= stage.clientWidth + 1)) {
       event.preventDefault(); show(active - 1);
-    } else if (['e', 'l'].includes(key) || (key === 'arrowright' && stage.scrollWidth <= stage.clientWidth + 1)) {
+    } else if (['e', 'l'].includes(key) || (key === forwardKey && stage.scrollWidth <= stage.clientWidth + 1)) {
       event.preventDefault(); show(active + 1);
     } else if (['+', '=', 'k'].includes(key)) { event.preventDefault(); adjust(1.25);
     } else if (['-', 'j'].includes(key)) { event.preventDefault(); adjust(1 / 1.25);

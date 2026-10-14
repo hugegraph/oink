@@ -35,6 +35,7 @@ defaultContentLanguage: en
 languages:
   en: {weight: 1, locale: en-US}
   zh: {weight: 2, locale: zh-CN}
+  ar: {weight: 3, locale: ar, direction: rtl}
 outputs:
   home: [HTML, LLMS]
   section: [HTML, print, markdown, RSS]
@@ -54,6 +55,7 @@ resources:
         def build(extra='',strict=True):
             (album/'index.md').write_text('---\n'+front+extra+'---\nAlbum body.\n')
             (album/'index.zh.md').write_text('---\ntitle: 相册内容\n---\n正文。\n')
+            (album/'index.ar.md').write_text('---\ntitle: ألبوم\n---\n')
             return run_hugo_process([args.hugo,'--source',str(site),'--themesDir',str(ROOT.parent),'--destination',str(site/'public'),'--environment','development','--printPathWarnings',*(['--panicOnWarning'] if strict else [])],cwd=ROOT,capture_output=True,text=True)
         result=build();assert result.returncode==0,result.stdout+result.stderr
         public=site/'public';html=(public/'expo/album/index.html').read_text();md=(public/'expo/album/index.md').read_text();printed=(public/'_print/expo/index.html').read_text();rss=(public/'expo/index.xml').read_text();llms=(public/'expo/llms-full.txt').read_text()
@@ -71,7 +73,12 @@ resources:
         assert re.search(r'<img[^>]+src="[^"]+motion.gif"',html), 'GIF must play by default'
         assert 'prefers-reduced-motion: reduce' in html
         assert '&lt;script&gt;plain&lt;/script&gt;' in html and '<script>plain</script>' not in html
-        assert 'aria-label="展墙"' in (public/'zh/expo/album/index.html').read_text()
+        zh=(public/'zh/expo/album/index.html').read_text()
+        assert 'aria-label="展墙"' in zh and 'aria-label="上一张"' in zh and 'aria-label="下一张"' in zh, 'viewer steps name images, not pages'
+        # The grid mirrors in RTL, so the arrow toward the start means previous.
+        rtl=(public/'ar/expo/album/index.html').read_text()
+        assert 'aria-keyshortcuts="Q H ArrowRight"' in rtl and 'aria-keyshortcuts="E L ArrowLeft"' in rtl
+        assert 'aria-keyshortcuts="E L ArrowRight"' in html
         assert html.index('id="img-small"')<html.index('data-td-expo-animated="true"')
         for output in [md,llms]:
             assert '/expo/album/images/small.png' in output and '![Small image]' in output
@@ -89,6 +96,6 @@ resources:
             result=build();assert result.returncode!=0 and warning in result.stdout+result.stderr,(params,result.stdout+result.stderr)
         front='title: Fallback\n'
         result=build('expo: {mode: wrong}\n',strict=False);assert result.returncode==0,result.stdout+result.stderr
-        print('Expo: HTML, bilingual labels, GIF, metadata escaping, Print, Markdown, LLMSFULL, RSS, capability isolation and 7 invalid-input cases passed')
+        print('Expo: HTML, section root, localized labels, RTL arrow keys, GIF, metadata escaping, Print, Markdown, LLMSFULL, RSS, capability isolation and 7 invalid-input cases passed')
 
 if __name__=='__main__': main()
