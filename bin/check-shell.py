@@ -282,6 +282,8 @@ def check_sources() -> list[str]:
     alignment = "var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem)"
     require(alignment in layout_styles and alignment in toc_styles,
             "collapsed rail controls no longer align with the article topline", errors)
+    require(not re.search(r"\b(?:width|flex-basis)\s+var\(--td-motion-", toc_styles),
+            "responsive TOC widths must not animate and make the article rebound during resizing", errors)
     require("@media (min-width: 768px) and (hover: hover) and (pointer: fine)" in navbar_styles,
             "drawer-width viewports no longer disable auto-hide", errors)
     require("@media (max-width: 767.98px)" in navbar_styles

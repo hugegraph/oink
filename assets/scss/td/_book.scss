@@ -338,7 +338,13 @@ a > img.td-image {
 
 .td-shell-tree__headings {
   margin: 0.1rem 0 0.5rem;
-  padding-inline-start: 1.65rem;
+  // Follow the owning row's depth and its optional icon/number columns, then
+  // add one heading level. Logical spacing also preserves this hierarchy in RTL.
+  padding-inline-start: calc(
+    var(--td-shell-indent, 8px) + var(--td-book-heading-icon, 0px) +
+      var(--td-book-heading-number, 0px) + 1rem
+  );
+  padding-inline-end: 8px;
   color: var(--td-shell-muted-fg);
   font-size: 0.78rem;
 
@@ -367,6 +373,14 @@ a > img.td-image {
   a:focus-visible {
     color: var(--td-accent);
   }
+}
+
+.td-shell-tree__row:has(> .td-shell-tree__link > i) + .td-shell-tree__headings {
+  --td-book-heading-icon: 1.5rem;
+}
+
+.td-shell-tree__row:has(> .td-shell-tree__link > .td-book-number) + .td-shell-tree__headings {
+  --td-book-heading-number: calc(1.75rem + 8px);
 }
 
 @media (max-width: 575.98px) {

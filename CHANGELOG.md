@@ -24,6 +24,13 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Indent optional Book sidebar headings from their owning navigation row,
+  including its chapter number and icon, instead of using one fixed offset.
+- Let fixed and flow outlines grow within bounded widths on wide screens,
+  keeping the visible rail and reserved column synchronized during resizing.
+- Apply responsive outline widths immediately so a shrinking viewport cannot
+  make the article repeatedly narrow and rebound near its maximum width or
+  a text-wrapping boundary. Keep the rail's collapse slide and fade.
 - Resolve Expo albums to their own top-level section in the sidebar and root
   switcher instead of labelling the home tree with the first site section.
 - Name the viewer's previous and next buttons as image steps in all 32 catalogs,

@@ -718,6 +718,60 @@ def create_site(root: Path, body: str, *, extra_ui: str = "", draft: bool = Fals
     write(root / "content/book/page.md", f"---\ntitle: Page\n{status}---\n\n{body}\n")
 
 
+def check_sidebar_headings(hugo: str) -> list[str]:
+    """Headings are opt-in, page overrides win, and cached trees stay neutral."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-book-sidebar-") as temp:
+        source = Path(temp)
+        create_site(source, "")
+        pages = {
+            "default": ("", None),
+            "off": ("sidebar_headings: false\n", 0),
+            "two": ("sidebar_headings: true\n", 2),
+            "three": ("sidebar_headings: 3\n", 3),
+            "four": ("sidebar_headings: 4\n", 4),
+            "part/inherited": ("", 3),
+            "part/off": ("sidebar_headings: false\n", 0),
+        }
+        write(source / "content/book/part/_index.md",
+              "---\ntitle: Part\ncascade:\n  sidebar_headings: 3\n---\n")
+        for name, (settings, _) in pages.items():
+            write(source / f"content/book/{name}.md",
+                  f"---\ntitle: {name}\n{settings}---\n\n"
+                  "## Heading two {#h2}\n\nText.\n\n"
+                  "### Heading three {#h3}\n\nText.\n\n"
+                  "#### Heading four {#h4}\n\nText.\n")
+        # Exercise both navigation authorities and both sides of the cache
+        # threshold. Enabled pages must not leak headings into cached siblings.
+        for explicit in (False, True):
+            if explicit:
+                write(source / "data/docs_nav.json", json.dumps({"sections": [{
+                    "page": "/book", "children": [
+                        {"page": f"/book/{name}"} for name in pages
+                    ],
+                }]}))
+            for site_depth in (None, 4):
+                ui = "    sidebar_cache_limit: 1\n" if site_depth is None else "    sidebar_cache_limit: 500\n    sidebar_headings: 4\n"
+                write(source / "hugo.yaml", base_config(ui))
+                public = source / "public"
+                result = build(hugo, source, public, "--panicOnWarning")
+                if result.returncode:
+                    return [f"Book sidebar fixture failed: {result.stdout}{result.stderr}"]
+                for name, (_, depth) in pages.items():
+                    html = (public / f"book/{name}/index.html").read_text()
+                    branch = re.findall(r'<div[^>]*data-td-book-headings[^>]*>(.*?)</div>', html, re.S)
+                    expected = (site_depth or 0) if depth is None else depth
+                    label = f"{name} (explicit={explicit}, site={site_depth})"
+                    require(len(branch) == int(expected > 0), f"wrong Book heading branch count: {label}", errors)
+                    if branch:
+                        require(re.findall(r'href="#(h[234])"', branch[0]) ==
+                                [f"h{level}" for level in range(2, expected + 1)],
+                                f"wrong Book heading depth: {label}", errors)
+                    require('id="TableOfContents"' in html,
+                            f"Book sidebar setting removed the right TOC: {label}", errors)
+    return errors
+
+
 def check_toc_heading_entities(hugo: str) -> list[str]:
     """Fragment titles are already entity-encoded; Book HTML must decode them
     once before the template context performs its final escaping."""
@@ -1446,7 +1500,8 @@ def main() -> int:
         errors = check_example(args.public)
 
     errors += (
-        check_toc_heading_entities(args.hugo)
+        check_sidebar_headings(args.hugo)
+        + check_toc_heading_entities(args.hugo)
         + check_toc_drafts(args.hugo)
         + check_print_store_isolation(args.hugo)
         + check_home_manifest(args.hugo)

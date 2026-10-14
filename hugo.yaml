@@ -192,7 +192,9 @@ params:
     # Sequential navigation is on by default for reading-oriented content.
     # Override this list site-wide, or set `pager: false` in front matter.
     pager_types: [docs, book, blog]
-    # Book pages may opt into an h2-h4 branch beneath the active sidebar row.
+    # Book headings beneath the active sidebar row are off by default.
+    # Opt in with true (h2 only) or 2, 3, 4 (deepest heading level).
+    # Page front matter or a section cascade can override this site setting.
     sidebar_headings: false
     # Cache neutral section trees once a site reaches this many pages. Variants
     # keep page-effective layout settings; JS adds active state without hiding it.

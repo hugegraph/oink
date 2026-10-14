@@ -371,8 +371,11 @@
               ]
             },
             "sidebar_headings": {
-              "description": "Book pages may opt into an h2-h4 branch beneath the active sidebar row.",
-              "type": "boolean",
+              "description": "Book headings beneath the active sidebar row are off by default. Opt in with true (h2 only) or 2, 3, 4 (deepest heading level). Page front matter or a section cascade can override this site setting.",
+              "type": [
+                "boolean",
+                "integer"
+              ],
               "default": false
             },
             "sidebar_cache_limit": {

@@ -251,6 +251,9 @@ def build(check_params) -> dict[str, str]:
             raise SystemExit(f"preset resolver has no {group}-name slice")
         presets.extend(re.findall(r'"([a-z]+)"', names[1]))
     ui = params_schema["properties"]["ui"]["properties"]
+    # Book headings also accept an integer depth; the false default alone
+    # must not make valid values such as sidebar_headings: 3 fail validation.
+    ui["sidebar_headings"]["type"] = ["boolean", "integer"]
     ui["preset"]["enum"] = presets
     ui["preset_menu"].pop("type", None)
     ui["preset_menu"]["anyOf"] = [
