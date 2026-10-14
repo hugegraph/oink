@@ -20,6 +20,14 @@ type: docs
 | `HG_PD_ACTUATOR_EXPOSURE` | 否 | `health,metrics,prometheus` | `management.endpoints.web.exposure.include` | 对外开放的监控端点白名单，不允许使用通配符。 |
 {#wide-technical-table .td-table--wide}
 
+## 三列配置标识符
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| rocksdb.data_path | `rocksdb-data/data` | RocksDB 数据目录，不能为空。 |
+| rocksdb.data_disks | `[]` | 使用 STORE/TABLE: /path/disk 指定不同表的数据目录。支持的键包括 g/vertex、g/edge_out、g/edge_in、g/vertex_label_index、g/edge_label_index、g/range_int_index、g/range_float_index、g/range_long_index、g/range_double_index、g/secondary_index、g/search_index、g/shard_index、g/unique_index 和 g/olap。不能复用 rocksdb.data_path。 |
+{#configuration-keys-table .td-table--wide}
+
 ## 短普通表格
 
 | 城市 | 端口 | 用途 |
