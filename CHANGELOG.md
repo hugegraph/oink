@@ -18,6 +18,9 @@ All notable changes to OINK are documented here. The project follows
 - Remember reader layout and size across albums, with a segmented mode selector,
   motion button and inline size slider. Keep appearance in navigation and omit
   article actions from Expo pages.
+- Swipe between fitted images on touch screens and double-click to alternate
+  between the initial fit and a closer look in the album viewer. The viewer shows
+  the cached grid preview while an original loads and warms neighbouring images.
 
 ### Fixed
 
@@ -28,6 +31,8 @@ All notable changes to OINK are documented here. The project follows
 - Keep focused Expo tiles visible in seamless walls and above wall captions.
   Album covers and cards follow the preset radius and gain hover and focus
   states; viewer arrows mirror in right-to-left languages.
+- Lay out card albums without one forced reflow per image, and load the first
+  album tiles eagerly.
 - Stabilize Expo's document scrollbar space so albums near the viewport height
   cannot oscillate between two layouts; opening the viewer preserves grid width.
 - Escape image and Gallery source URLs as HTML attributes after URL validation,

@@ -41,11 +41,15 @@
       const columns = width < 500 ? (size >= 320 ? 1 : 2) : Math.max(2, Math.round((width + gap) / (size + gap)));
       const w = (width - gap * (columns - 1)) / columns;
       const bottoms = Array(columns).fill(0);
-      items.forEach(item => {
+      // Write every width before reading any caption height: interleaving
+      // them forces one synchronous reflow per item in large albums.
+      items.forEach(item => { item.style.width = `${w}px`; });
+      const captions = items.map(item => item.querySelector('figcaption').offsetHeight);
+      items.forEach((item, i) => {
         const column = bottoms.indexOf(Math.min(...bottoms));
         const h = Math.min(w / ratio(item), w * 2.2);
         place(item, column * (w + gap), bottoms[column], w, h);
-        bottoms[column] += h + item.querySelector('figcaption').offsetHeight + gap;
+        bottoms[column] += h + captions[i] + gap;
       });
       grid.style.height = `${Math.max(...bottoms) - gap}px`;
     } else {
@@ -66,7 +70,8 @@
   new MutationObserver(schedule).observe(document.documentElement, { attributes: true, attributeFilter: ['data-td-preset'] });
   document.fonts?.ready.then(schedule);
   document.fonts?.addEventListener('loadingdone', schedule);
-  items.forEach(item => item.querySelector('img').addEventListener('load', schedule));
+  // Build-time dimensions already fix every ratio; only unknown ones wait for pixels.
+  items.forEach(item => { if (!(Number(item.dataset.tdExpoWidth) && Number(item.dataset.tdExpoHeight))) item.querySelector('img').addEventListener('load', schedule); });
   layout();
   const locateHash = () => {
     let node;
@@ -132,11 +137,27 @@
     }
     stage.classList.toggle('is-pannable', canPan());
   };
+  const sourceOf = index => {
+    const link = links[index];
+    return link.dataset.tdExpoAnimated === 'true' && !playing ? link.dataset.tdExpoPoster : link.href;
+  };
   const setSource = () => {
-    const link = links[active];
-    image.src = link.dataset.tdExpoAnimated === 'true' && !playing ? link.dataset.tdExpoPoster : link.href;
+    const source = new URL(sourceOf(active), location.href).href;
+    if (image.src !== source) {
+      // The grid preview is usually cached: show it, stretched to the final
+      // box, until the original arrives. A failed original keeps the preview.
+      image.style.backgroundImage = `url(${JSON.stringify(links[active].dataset.tdExpoPoster)})`;
+      image.src = source;
+    }
     motionLabel(get('viewer-motion'));
   };
+  // Warm one image on each side so previous/next rarely wait on the network.
+  const preload = () => [active - 1, active + 1].forEach(index => {
+    if (index < 0 || index >= links.length) return;
+    const neighbour = new Image();
+    neighbour.decoding = 'async';
+    neighbour.src = sourceOf(index);
+  });
   const show = index => {
     // A boundary key must not reset the currently viewed image.
     if (index < 0 || index >= links.length) return;
@@ -160,9 +181,11 @@
   };
   image.addEventListener('load', () => {
     if (!dialog.open) return;
+    image.style.removeProperty('background-image');
     // Original metadata wins when a paused GIF is represented by a small poster.
     if (!Number(items[active].dataset.tdExpoWidth)) dimensions = [image.naturalWidth, image.naturalHeight];
     resizeImage(false);
+    preload();
   });
   links.forEach((link, index) => link.addEventListener('click', event => {
     if (event.button || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
@@ -242,11 +265,45 @@
     } else if (['0', 'r'].includes(key)) { event.preventDefault(); reset('fit');
     } else if (key === 'f') { event.preventDefault(); reset('expand'); }
   });
+  // Double-click alternates between the initial fit and a closer look: shrunk
+  // images open at 100% under the pointer, already-original ones expand.
+  stage.addEventListener('dblclick', event => {
+    // Drag capture retargets clicks to the stage, so hit-test the image box;
+    // double-clicks on classic scrollbars stay with the browser.
+    const box = image.getBoundingClientRect(), view = stage.getBoundingClientRect();
+    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) return;
+    if (event.clientX >= view.left + stage.clientWidth || event.clientY >= view.top + stage.clientHeight) return;
+    if (sizing !== 'fit') { reset('fit'); return; }
+    if (zoom >= 1) { reset('expand'); return; }
+    const x = (event.clientX - box.left) / box.width, y = (event.clientY - box.top) / box.height;
+    endDrag(); sizing = 'manual'; zoom = 1; resizeImage(false);
+    stage.scrollLeft = x * dimensions[0] - (event.clientX - view.left);
+    stage.scrollTop = y * dimensions[1] - (event.clientY - view.top);
+  });
+  // A horizontal swipe changes images when the image fits the stage. Touch on
+  // an enlarged image stays native scrolling; pinches and page zoom are ignored.
+  let swipe = null;
+  stage.addEventListener('touchstart', event => {
+    const touch = event.touches[0];
+    swipe = event.touches.length === 1 && !canPan() && (window.visualViewport?.scale ?? 1) <= 1.01 ? { x: touch.clientX, y: touch.clientY } : null;
+  }, { passive: true });
+  stage.addEventListener('touchmove', event => { if (event.touches.length > 1) swipe = null; }, { passive: true });
+  stage.addEventListener('touchcancel', () => { swipe = null; }, { passive: true });
+  stage.addEventListener('touchend', event => {
+    const start = swipe, touch = event.changedTouches[0];
+    swipe = null;
+    if (!start || event.touches.length || !touch) return;
+    const dx = touch.clientX - start.x, dy = touch.clientY - start.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    // Content follows the finger: swiping toward the start reveals the next image.
+    show(active + ((dx < 0) !== rtl ? 1 : -1));
+  }, { passive: true });
   dialog.addEventListener('close', () => {
     if (dialog.open) return;
-    endDrag();
+    endDrag(); swipe = null;
     document.body.style.removeProperty('--td-expo-scrollbar-width');
     image.removeAttribute('src');
+    image.style.removeProperty('background-image');
     if (!document.activeElement || document.activeElement === document.body || dialog.contains(document.activeElement)) origin?.focus({ preventScroll: true });
   });
   let backdrop = false;

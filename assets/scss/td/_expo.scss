@@ -97,12 +97,15 @@ html:has(.td-expo-viewer[open]) { overflow: hidden; }
 .td-expo-viewer__tools output { width: 48px; text-align: center; font-size: .75rem; font-variant-numeric: tabular-nums; }
 .td-expo-viewer__stage {
   flex: 1; min-height: 0; overflow: hidden; overscroll-behavior: contain; background: var(--td-shell-surface, var(--bs-tertiary-bg)); direction: ltr;
+  // Keep native pan and pinch, but let a double tap reach the fit toggle.
+  touch-action: manipulation;
   &.is-pannable { cursor: grab; }
   &.is-dragging { cursor: grabbing; }
   &:focus-visible { outline: 2px solid var(--bs-link-color); outline-offset: -2px; }
 }
 .td-expo-viewer__canvas { display: flex; align-items: center; justify-content: center; min-width: 100%; min-height: 100%; }
-.td-expo-viewer__canvas img { display: block; max-width: none; max-height: none; flex-shrink: 0; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+// The runtime paints the grid preview as a background until the original loads.
+.td-expo-viewer__canvas img { display: block; max-width: none; max-height: none; flex-shrink: 0; object-fit: contain; user-select: none; -webkit-user-drag: none; background: center / 100% 100% no-repeat; }
 .td-expo-viewer__footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 18px; max-height: 28%; flex-shrink: 0; }
 .td-expo-viewer__caption { min-width: 0; max-height: 100%; overflow-y: auto; overflow-wrap: anywhere; }
 .td-expo-viewer__caption h2 { font-size: 1rem; line-height: 1.4; margin: 0; }
