@@ -25,6 +25,9 @@ All notable changes to OINK are documented here. The project follows
   switcher instead of labelling the home tree with the first site section.
 - Name the viewer's previous and next buttons as image steps in all 32 catalogs,
   and mirror their arrow keys and hints in right-to-left languages.
+- Keep focused Expo tiles visible in seamless walls and above wall captions.
+  Album covers and cards follow the preset radius and gain hover and focus
+  states; viewer arrows mirror in right-to-left languages.
 - Stabilize Expo's document scrollbar space so albums near the viewport height
   cannot oscillate between two layouts; opening the viewer preserves grid width.
 - Escape image and Gallery source URLs as HTML attributes after URL validation,
