@@ -62,6 +62,8 @@ resources:
         assert html.count('data-td-expo-item ')==3
         assert 'id="img-small"' in html and 'data-td-expo-mode="seamless"' in html
         assert 'data-td-expo-viewer' in html and '/js/chunks/expo.js' in html
+        runtime=(public/'js/chunks/expo.js').read_text()
+        assert re.search(r"\.register\(['\"]expo-viewer['\"]",runtime), 'Expo must register its coordinated close callback'
         assert html.count('name="td-expo-mode"')==3
         assert '<fieldset class="td-expo-modes">' in html and 'type="range"' in html
         assert 'data-td-expo-expand' in html and 'td-appearance-expo' not in html

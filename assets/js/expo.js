@@ -104,6 +104,9 @@
 
   const dialog = document.querySelector('[data-td-expo-viewer]');
   if (!dialog || typeof dialog.showModal !== 'function') return;
+  window.OinkSurfaceCoordinator?.register('expo-viewer', () => {
+    if (dialog.open) dialog.close();
+  });
   const get = name => dialog.querySelector(`[data-td-expo-${name}]`);
   const image = get('full'), stage = get('stage'), canvas = image.parentElement;
   const close = get('close'), prev = get('prev'), next = get('next');
@@ -192,6 +195,7 @@
     event.preventDefault(); origin = link;
     // WebKit does not focus pointer-activated links before native modal restore.
     origin.focus({ preventScroll: true });
+    window.OinkSurfaceCoordinator?.closeOthers('expo-viewer');
     const width = document.documentElement.getBoundingClientRect().width;
     dialog.showModal();
     // Some overlay/custom scrollbar combinations ignore scrollbar-gutter.

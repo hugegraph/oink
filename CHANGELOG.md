@@ -30,6 +30,8 @@ All notable changes to OINK are documented here. The project follows
 - Scope `data/docs_nav.json` by resolved content identity across sidebar, pager
   and navigation JSON, including custom URLs, nested roots and separate Docs/Book
   trees. Unlisted roots retain their content-tree navigation.
+- Register Expo viewer closure with the shared surface coordinator.
+- Keep closed Appearance menus from taking focus during a coordinated close.
 - Give Draw.io a modal host with a localized, keyboard-accessible Close button,
   backdrop dismissal and focus restoration. Cross-origin editor keys remain
   under editor control.

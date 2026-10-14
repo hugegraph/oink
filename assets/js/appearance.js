@@ -230,7 +230,8 @@
     }
 
     function close(restoreFocus) {
-      if (panel.open) panel.close();
+      if (!panel.open) return;
+      panel.close();
       if (restoreFocus) trigger.focus();
     }
 
