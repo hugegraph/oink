@@ -100,8 +100,8 @@ def check_sources() -> list[str]:
             "self-root links do not default to their own landing with an explicit legacy escape", errors)
     require('"node" (dict "page" $sidebarRootPage' in docs_tree,
             "explicit docs sidebar does not prepend a missing root row", errors)
-    require("continue" not in docs_tree.split('index $docsNav "sections"', 1)[1].split("partial", 1)[0],
-            "docs sidebar still skips its root row", errors)
+    # check-reading.py exercises root inclusion and scoped explicit order in
+    # rendered sidebars, pagers and navigation JSON (including custom URLs).
     require(all('data-td-sidebar-hydrate-active' in source and "d-none" not in source
                 for source in (generic_tree, docs_tree)),
             "a cached sidebar is hidden until JavaScript instead of exposing a hydration marker", errors)

@@ -1,0 +1,31 @@
+{{- /* Scope the explicit tree by content identity, not published URL. The
+       same selection feeds the sidebar, pager and navigation.json, including
+       nested sidebar roots and sections with custom permalinks. */ -}}
+{{- $page := .page -}}
+{{- $root := .root -}}
+{{- $sections := slice -}}
+{{- if ne $root $page.Site.Home -}}
+  {{- $nodes := slice -}}
+  {{- if isset . "nodes" -}}
+    {{- $nodes = .nodes -}}
+  {{- else -}}
+    {{- $data := index hugo.Data "docs_nav" | default dict -}}
+    {{- $nodes = index $data "sections" | default (slice) -}}
+    {{- if and (isset $data "sections") (not $nodes) -}}
+      {{- warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $nodes -}}
+    {{- $target := $page.Site.GetPage .page -}}
+    {{- if not $target -}}
+      {{- warnf "docs navigation: page %s was not found; skipping the entry" .page -}}
+    {{- else if or (eq $root $target) ($root.IsAncestor $target) -}}
+      {{- $sections = $sections | append . -}}
+    {{- else if $target.IsAncestor $root -}}
+      {{- range partial "shell/docs-nav-sections.html" (dict "page" $page "root" $root "nodes" (.children | default (slice))) -}}
+        {{- $sections = $sections | append . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $sections -}}

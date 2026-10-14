@@ -5,11 +5,13 @@
      content-tree walker, so the two sources cannot drift apart visually. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRootID := .sidebarRootID -}}
+{{ $sidebarRoot := .sidebarRoot -}}
 {{ $sidebarRootPage := .sidebarRoot.Path -}}
 {{ $cacheSidebar := .cacheSidebar -}}
 {{ $iconPolicy := .iconPolicy -}}
 {{ $foldable := .foldable -}}
 {{ $overflow := .overflow -}}
+{{ $sections := .sections -}}
 
 {{ with $context -}}
 {{ $shouldDelayActive := $cacheSidebar -}}
@@ -23,12 +25,10 @@
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-td-sidebar-icon-policy="{{ $iconPolicy }}"
       {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
-    {{ with (index $docsNav "sections") -}}
     <ul class="td-shell-tree__list td-shell-tree__list--1">
       {{- $hasRoot := false -}}
-      {{- range . -}}
-        {{- if eq (strings.TrimSuffix "/" .url)
-              (strings.TrimSuffix "/" $sidebarRootURL) -}}
+      {{- range $sections -}}
+        {{- if eq ($context.Site.GetPage .page) $sidebarRoot -}}
           {{- $hasRoot = true -}}
         {{- end -}}
       {{- end -}}
@@ -45,7 +45,7 @@
             "overflow" $overflow
         ) -}}
       {{- end -}}
-      {{ range . -}}
+      {{ range $sections -}}
         {{ partial "shell/docs-sidebar-node.html" (dict
             "page" $context
             "node" .
@@ -59,9 +59,6 @@
         ) }}
       {{ end -}}
     </ul>
-    {{ else -}}
-      {{ warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
-    {{ end -}}
   </nav>
 </div>
 {{- end }}

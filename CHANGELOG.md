@@ -24,6 +24,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Ignore explicit Docs navigation in home-root and non-Docs/Book trees; mark
+  uncached current pages and expand their content ancestors from resolved page
+  identity, including page-only nodes and custom URLs.
+- Scope `data/docs_nav.json` by resolved content identity across sidebar, pager
+  and navigation JSON, including custom URLs, nested roots and separate Docs/Book
+  trees. Unlisted roots retain their content-tree navigation.
 - Indent optional Book sidebar headings from their owning navigation row,
   including its chapter number and icon, instead of using one fixed offset.
 - Let fixed and flow outlines grow within bounded widths on wide screens,

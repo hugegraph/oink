@@ -26,6 +26,8 @@ class NavigationParser(HTMLParser):
         super().__init__()
         self.in_sidebar = False
         self.sidebar_links: list[str] = []
+        self.sidebar_current: list[str] = []
+        self.sidebar_expanded: list[str] = []
         self.pager_links: dict[str, str] = {}
         self.head_links: dict[str, str] = {}
         self.has_pager = False
@@ -39,6 +41,10 @@ class NavigationParser(HTMLParser):
         if self.in_sidebar and tag == "a" and "td-shell-tree__link" in classes:
             if href := values.get("href"):
                 self.sidebar_links.append(href)
+                if values.get("aria-current") == "page":
+                    self.sidebar_current.append(href)
+        if self.in_sidebar and tag == "button" and values.get("aria-expanded") == "true":
+            self.sidebar_expanded.append(values.get("aria-controls") or "")
         if tag == "nav" and "td-pager" in classes:
             self.has_pager = True
         if tag == "a":
@@ -946,6 +952,161 @@ params:
     return errors
 
 
+def check_explicit_navigation_scopes(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-nav-scopes-") as temp:
+        source = Path(temp)
+        write_file(source / "hugo.yaml", f"""baseURL: https://example.org/sub/
+title: Scoped navigation
+theme: {ROOT.name}
+themesDir: {ROOT.parent}
+defaultContentLanguage: en
+languages:
+  en: {{locale: en-US}}
+  zh: {{locale: zh-CN}}
+outputs:
+  home: [HTML, NAVJSON]
+params:
+  ui:
+    sidebar_cache_limit: 1
+    sidebar_menu_compact: false
+""")
+        for section in ("docs", "book"):
+            published = "manual" if section == "book" else section
+            for name, weight in (("_index", 0), ("a", 1), ("b", 2)):
+                path = published + ("" if name == "_index" else "/" + name)
+                for suffix in (".md", ".zh.md"):
+                    write_file(source / "content" / section / (name + suffix),
+                               f"---\ntitle: {section} {name}\nweight: {weight}\nurl: /{'zh/' if suffix == '.zh.md' else ''}{path}/\n---\n")
+
+        def node(section, name="", children=None):
+            published = "manual" if section == "book" else section
+            return {"page": "/" + section + ("/" + name if name else ""),
+                    "url": "/" + published + ("/" + name if name else "") + "/",
+                    "children": children or []}
+
+        for scopes in (("docs",), ("book",), ("docs", "book")):
+            write_file(source / "data/docs_nav.json", json.dumps({"sections": [
+                node(section, children=[node(section, "b"), node(section, "a")])
+                for section in scopes]}))
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return errors + [f"scoped navigation {scopes} failed: {result.stdout}{result.stderr}"]
+            for language in ("", "zh/"):
+                prefix = "/sub/" + language
+                public = source / "public" / language
+                nav = json.loads((public / "navigation.json").read_text())["root"]["children"]
+                for section in ("docs", "book"):
+                    published = "manual" if section == "book" else section
+                    order = ("b", "a") if section in scopes else ("a", "b")
+                    expected = [prefix + published + "/" + name + "/" for name in order]
+                    root_url = prefix + published + "/"
+                    tree = next(item for item in nav if item["id"] == root_url)
+                    require([item["id"] for item in tree["children"]] == expected,
+                            f"{scopes} {language} {section} navigation.json escaped its scope", errors)
+                    for i, url in enumerate([root_url, *expected]):
+                        html = page_path(source / "public", url.removeprefix("/sub")).read_text()
+                        parsed = parse_navigation(html)
+                        require(parsed.sidebar_links == [root_url, *expected],
+                                f"{scopes} {language} {section} sidebar order/scope differs", errors)
+                        sequence = [root_url, *expected]
+                        require(url_path(parsed.pager_links.get("prev")) == (sequence[i-1] if i else None)
+                                and url_path(parsed.pager_links.get("next")) == (sequence[i+1] if i+1 < len(sequence) else None),
+                                f"{scopes} {language} {url} pager order/scope differs", errors)
+        # A nested root selects its branch from the same explicit authority.
+        for suffix in (".md", ".zh.md"):
+            write_file(source / ("content/book/part/_index" + suffix),
+                       "---\ntitle: Part\nsidebar_root_for: self\n---\n")
+            for name, weight in (("a", 1), ("b", 2)):
+                write_file(source / ("content/book/part/" + name + suffix),
+                           f"---\ntitle: Part {name}\nweight: {weight}\n---\n")
+        write_file(source / "data/docs_nav.json", json.dumps({"sections": [node("book", children=[
+            node("book", "a"), node("book", "part", [node("book", "part/b"), node("book", "part/a")])])]}))
+        result = run_site(hugo, source, "--panicOnWarning")
+        if result.returncode:
+            return errors + [f"nested navigation failed: {result.stdout}{result.stderr}"]
+        for language in ("", "zh/"):
+            prefix = "/sub/" + language + "book/part/"
+            parsed = parse_navigation((source / "public" / language / "book/part/b/index.html").read_text())
+            require(parsed.sidebar_links == [prefix, prefix + "b/", prefix + "a/"],
+                    f"{language} nested root lost explicit order or leaked outer entries", errors)
+    return errors
+
+
+def check_explicit_navigation_state(hugo: str) -> list[str]:
+    """Uncached trees resolve current pages even without matching URL hints."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-nav-state-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        config.write_text(config.read_text().replace(
+            "baseURL: https://example.org/", "baseURL: https://example.org/sub/"
+        ) + "    sidebar_cache_limit: 10000\nlanguages:\n  en: {locale: en-US}\n  zh: {locale: zh-CN}\n")
+        for suffix in (".md", ".zh.md"):
+            write_file(source / ("content/docs/_index" + suffix), "---\ntitle: Docs\n---\n")
+            write_file(source / ("content/docs/part/_index" + suffix), "---\ntitle: Part\n---\n")
+            write_file(source / ("content/docs/part/page" + suffix),
+                       f"---\ntitle: Page\nurl: /{'zh/' if suffix == '.zh.md' else ''}read/\n---\n")
+        for url_hint in (None, "/docs/part/page/"):
+            child = {"page": "/docs/part/page"}
+            if url_hint is not None:
+                child["url"] = url_hint
+            write_file(source / "data/docs_nav.json", json.dumps({"sections": [
+                {"page": "/docs/part", "children": [child]}
+            ]}))
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return errors + [f"navigation state fixture failed: {result.stdout}{result.stderr}"]
+            for language in ("", "zh/"):
+                parsed = parse_navigation((source / "public" / language / "read/index.html").read_text())
+                require(parsed.sidebar_current == ["/sub/" + language + "read/"],
+                        f"{language} {url_hint=}: resolved current page is not marked", errors)
+                require(len(parsed.sidebar_expanded) == 1,
+                        f"{language} {url_hint=}: current content ancestor is not expanded", errors)
+    return errors
+
+
+def check_explicit_navigation_boundaries(hugo: str) -> list[str]:
+    """Irrelevant explicit data cannot warn in home or non-Docs/Book trees."""
+    errors: list[str] = []
+    for shell in ("home", "blog", "expo"):
+        with tempfile.TemporaryDirectory(prefix=f"oink-nav-boundary-{shell}-") as temp:
+            source = Path(temp)
+            create_theme_site(source)
+            config = source / "hugo.yaml"
+            text = config.read_text().replace(
+                "disableKinds: [home, RSS, sitemap, taxonomy, term]",
+                "disableKinds: [RSS, sitemap, taxonomy, term]"
+            ).replace("outputs:\n", "outputs:\n  home: [HTML, NAVJSON]\n")
+            if shell == "home":
+                text += "    docs_sidebar_root: home\n"
+                write_file(source / "content/one.md", "---\ntitle: One\ntype: docs\n---\n")
+            else:
+                (source / "content/docs/_index.md").unlink()
+                write_file(source / f"content/{shell}/_index.md", "---\ntitle: Collection\n---\n")
+                write_file(source / f"content/{shell}/page.md", "---\ntitle: Page\n---\n")
+            config.write_text(text)
+            for sections in ([], [{"page": "/missing-docs"}]):
+                write_file(source / "data/docs_nav.json", json.dumps({"sections": sections}))
+                result = run_site(hugo, source, "--panicOnWarning")
+                require(result.returncode == 0,
+                        f"{shell} consumed irrelevant docs_nav data: {result.stdout}{result.stderr}", errors)
+                require("WARN" not in result.stdout + result.stderr,
+                        f"{shell} emitted an irrelevant navigation warning", errors)
+    # Empty data remains invalid when a Docs section actually owns navigation.
+    with tempfile.TemporaryDirectory(prefix="oink-nav-empty-docs-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        write_file(source / "data/docs_nav.json", '{"sections": []}')
+        result = run_site(hugo, source)
+        require(result.returncode == 0 and "does not define any Docs navigation sections" in result.stdout + result.stderr,
+                "an applicable empty explicit tree must warn and fall back", errors)
+        require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                "strict publication accepted an applicable empty explicit tree", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--public", type=Path)
@@ -966,6 +1127,9 @@ def main() -> int:
 
     errors += (
         check_explicit_navigation(args.hugo)
+        + check_explicit_navigation_scopes(args.hugo)
+        + check_explicit_navigation_state(args.hugo)
+        + check_explicit_navigation_boundaries(args.hugo)
         + check_cached_content_navigation(args.hugo)
         + check_foldable_content_navigation(args.hugo)
         + check_home_root_navigation(args.hugo)
