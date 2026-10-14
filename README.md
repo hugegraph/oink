@@ -42,7 +42,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 
 - **One deterministic toolchain.** Resolve the Hugo Module once, then build and
   preview with one `hugo` binary.
-- **Complete publishing surfaces.** Docs, Blog, Book, OpenAPI, releases,
+- **Complete publishing surfaces.** Docs, Blog, Book, Expo image albums, OpenAPI, releases,
   downloads, and data-driven landing pages share one navigation and visual
   system.
 - **Native Markdown authoring.** Tables, fenced code, lists, and attributes
@@ -61,6 +61,9 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 - **Progressive by default.** Server-rendered content remains useful without
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
+
+Expo is part of the unreleased 1.3 candidate. Published v1.2.0 does not include
+this image-album shell.
 
 ## Start a site
 
@@ -139,7 +142,7 @@ also read the [upgrade and migration guide](https://oink.pgsty.com/docs/admin/up
 
 | Area | Included capabilities |
 | --- | --- |
-| Reading shells | Docs, Blog, Book, Swagger/Redoc, releases, downloads, Print |
+| Reading shells | Docs, Blog, Book, Expo, Swagger/Redoc, releases, downloads, Print |
 | Navigation | Sidebars, breadcrumbs, TOC rail, pager, version and language menus |
 | Discovery | Local full-text search, command palette, taxonomies, backlinks |
 | Authoring | Code, tabs, steps, cards, fields, images, galleries, callouts, includes |
@@ -175,7 +178,7 @@ documentation estates and multi-edition books. These are representative:
 | Guide | Purpose |
 | --- | --- |
 | [Get started](https://oink.pgsty.com/docs/start/) | Install, understand the repository, and establish a working baseline |
-| [Authoring](https://oink.pgsty.com/docs/write/) | Write Docs, Blog, Book, release, and OpenAPI content |
+| [Authoring](https://oink.pgsty.com/docs/write/) | Write Docs, Blog, Book, Expo, release, and OpenAPI content |
 | [Components](https://oink.pgsty.com/docs/components/) | Source-first examples and parameter references |
 | [Customization](https://oink.pgsty.com/docs/customize/) | Brand, navigation, layout, languages, search, outputs, and integrations |
 | [Operations](https://oink.pgsty.com/docs/admin/) | Preview, deploy, upgrade, troubleshoot, analytics, and SEO |
@@ -192,7 +195,7 @@ and the narrow internal fixture under
 
 OINK began from Docsy's mature Hugo content model and remains Apache-2.0 with
 explicit upstream attribution. It is now a separate theme rather than a Docsy
-skin: OINK owns its Docs, Blog, Book, Swagger, and Landing shells; local search
+skin: OINK owns its Docs, Blog, Book, Expo, Swagger, and Landing shells; local search
 and command palette; native-Markdown component model; responsive and
 accessibility behavior; and reader, print, Markdown, and agent-facing outputs.
 
@@ -209,7 +212,7 @@ assuming drop-in compatibility.
 | Hugo | **Extended 0.160.1 or newer**; CI currently pins 0.165.0 |
 | Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 194-message schema, including CLDR plural forms, with no English placeholder blocks |
+| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
 On Hugo 0.160.x, when generic `zh` is a non-default language and the regional
 Chinese catalogs are present, configure it with the concrete `locale: zh-CN`,
