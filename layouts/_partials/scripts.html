@@ -135,7 +135,7 @@ window.markmap = {
 {{ end -}}
 {{ $drawioActive := and $interactiveOutput $drawioEnabled (.Store.Get "hasDrawio") -}}
 {{ if $drawioActive -}}
-<script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
+<script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer "close" (T "ui_search_close") | jsonify | safeJS }}</script>
 {{ end -}}
 
 {{/* The registry reads this manifest synchronously while js/actions.js loads,

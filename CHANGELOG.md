@@ -30,6 +30,9 @@ All notable changes to OINK are documented here. The project follows
 - Scope `data/docs_nav.json` by resolved content identity across sidebar, pager
   and navigation JSON, including custom URLs, nested roots and separate Docs/Book
   trees. Unlisted roots retain their content-tree navigation.
+- Give Draw.io a modal host with a localized, keyboard-accessible Close button,
+  backdrop dismissal and focus restoration. Cross-origin editor keys remain
+  under editor control.
 - Indent optional Book sidebar headings from their owning navigation row,
   including its chapter number and icon, instead of using one fixed offset.
 - Let fixed and flow outlines grow within bounded widths on wide screens,

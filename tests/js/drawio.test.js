@@ -12,23 +12,28 @@ function editor(server = 'https://editor.example/edit?lang=zh#diagram') {
   const elements = [];
   const messages = [];
   const downloads = [];
+  let focused;
   const listeners = new Map();
   function element(tagName) {
     const attributes = new Map();
     const events = new Map();
     const node = {
-      tagName, children: [], classList: { add() {} },
+      tagName, children: [], isConnected: true, classList: { add() {} },
       setAttribute(key, value) { attributes.set(key, value); },
       getAttribute(key) { return attributes.get(key); },
       addEventListener(key, fn) { events.set(key, fn); },
       click() {
         if (tagName === 'a') downloads.push(attributes.get('href'));
-        events.get('click')?.();
+        events.get('click')?.({ target: node });
       },
       appendChild(child) { this.children.push(child); child.parentNode = this; },
       insertBefore(child) { this.appendChild(child); },
       removeChild(child) { this.children = this.children.filter(item => item !== child); },
       insertAdjacentHTML() {},
+      focus() { focused = this; },
+      showModal() { this.open = true; },
+      close() { this.open = false; },
+      dispatch(type, values = {}) { events.get(type)?.({ preventDefault() {}, ...values }); },
       closest() { return null; },
     };
     if (tagName === 'iframe') node.contentWindow = {
@@ -72,6 +77,11 @@ function editor(server = 'https://editor.example/edit?lang=zh#diagram') {
   const frame = elements.find(node => node.tagName === 'iframe');
   return {
     frame, messages, downloads,
+    dialog: elements.find(node => node.tagName === 'dialog'),
+    close: elements.filter(node => node.tagName === 'button').at(-1),
+    opener: elements.find(node => node.tagName === 'button'),
+    focused() { return focused; },
+    mounted() { return body.children.some(node => node.tagName === 'dialog'); },
     send(data, origin = 'https://editor.example', sender = frame.contentWindow) {
       listeners.get('message')?.({ data, origin, source: sender });
     },
@@ -119,4 +129,19 @@ test('Draw.io downloads image exports only and cleans up its message listener', 
   runtime.send(JSON.stringify({ event: 'export', data }));
   assert.deepEqual(runtime.downloads, [data]);
   assert.equal(runtime.listening(), false);
+});
+
+test('Draw.io closes through the host control, backdrop or native cancel and restores focus', () => {
+  for (const close of [runtime => runtime.close.click(),
+    runtime => runtime.dialog.click(), runtime => runtime.dialog.dispatch('cancel')]) {
+    const runtime = editor();
+    assert.equal(runtime.dialog.open, true);
+    assert.equal(runtime.focused(), runtime.close);
+    close(runtime);
+    assert.equal(runtime.mounted(), false);
+    assert.equal(runtime.listening(), false);
+    assert.equal(runtime.focused(), runtime.opener);
+    runtime.send('{"event":"init"}');
+    assert.deepEqual(runtime.messages, []);
+  }
 });

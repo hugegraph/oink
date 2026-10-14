@@ -1,24 +1,54 @@
 (function () {
   'use strict';
 
-  var shade, iframe;
-  var server;
+  var shade, iframe, activeHandler, opener;
+  var server, closeLabel;
+
+  var closeFrame = function (restoreFocus) {
+    if (activeHandler) {
+      window.removeEventListener('message', activeHandler);
+      activeHandler = undefined;
+    }
+    if (shade) {
+      var dialog = shade;
+      shade = undefined;
+      iframe = undefined;
+      dialog.close();
+      if (dialog.parentNode) dialog.parentNode.removeChild(dialog);
+      if (restoreFocus !== false && opener && opener.isConnected) opener.focus({ preventScroll: true });
+      opener = undefined;
+    }
+  };
 
   var insertFrame = function () {
-    shade = document.createElement('div');
+    shade = document.createElement('dialog');
     shade.classList.add('drawioframe');
+    shade.setAttribute('aria-label', 'Draw.io');
+    shade.addEventListener('click', function (evt) {
+      if (evt.target === shade) closeFrame();
+    });
+    shade.addEventListener('cancel', function (evt) {
+      evt.preventDefault();
+      closeFrame();
+    });
+    shade.addEventListener('close', function () {
+      if (shade === this) closeFrame();
+    });
     iframe = document.createElement('iframe');
     iframe.title = 'Draw.io';
     shade.appendChild(iframe);
+    // Cross-origin editors own their keyboard events. Keep a host close
+    // control next in the Tab order, even when the editor does not send exit.
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.tabIndex = 0; // Keep the host escape route in Safari's Tab sequence.
+    close.classList.add('drawioframe__close');
+    close.textContent = closeLabel;
+    close.addEventListener('click', function () { closeFrame(); });
+    shade.appendChild(close);
     document.body.appendChild(shade);
-  };
-
-  var closeFrame = function () {
-    if (shade) {
-      document.body.removeChild(shade);
-      shade = undefined;
-      iframe = undefined;
-    }
+    shade.showModal();
+    close.focus();
   };
 
   var imghandler = function (img, imgdata) {
@@ -39,6 +69,7 @@
 
     var btn = document.createElement('button');
     btn.type = 'button';
+    btn.tabIndex = 0; // Keep Edit in Safari's Tab sequence.
     btn.classList.add('drawiobtn');
     btn.setAttribute('aria-label', 'Draw.io');
     btn.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>');
@@ -46,8 +77,10 @@
 
     btn.addEventListener('click', function () {
       if (iframe) return;
+      if (window.OinkSurfaceCoordinator) window.OinkSurfaceCoordinator.closeOthers('drawio');
+      opener = btn;
       insertFrame();
-      var handler = function (evt) {
+      activeHandler = function (evt) {
         if (!iframe || evt.source !== iframe.contentWindow || evt.origin !== url.origin
           || typeof evt.data !== 'string' || !evt.data) return;
         var wind = iframe.contentWindow;
@@ -73,13 +106,12 @@
           }
 
           if (msg.event === 'exit' || msg.event === 'export') {
-            window.removeEventListener('message', handler);
             closeFrame();
           }
         }
       };
 
-      window.addEventListener('message', handler);
+      window.addEventListener('message', activeHandler);
       iframe.setAttribute('src', url.href);
     });
   };
@@ -93,7 +125,10 @@
   document.addEventListener('DOMContentLoaded', function () {
     var config = document.getElementById('td-drawio-config');
     if (!config) return;
-    server = JSON.parse(config.textContent).server;
+    var options = JSON.parse(config.textContent);
+    server = options.server;
+    closeLabel = options.close || 'Close';
+    if (window.OinkSurfaceCoordinator) window.OinkSurfaceCoordinator.register('drawio', closeFrame);
 
     var imagesBySource = new Map();
     document.querySelectorAll('main img').forEach(function (img) {
