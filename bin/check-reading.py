@@ -818,6 +818,8 @@ def check_unnumbered_math_attributes(hugo: str) -> list[str]:
         for attrs, warning in (
             ('{.wide data-formula="plain" aria-label="Energy"}', None),
             ('{id="orphan" caption="Ignored caption"}', "id/caption attributes require num"),
+            ('{num="" caption="Ignored caption"}', "num must not be empty"),
+            ('{num="!" caption="Ignored caption"}', "num must match"),
         ):
             write_file(page, f"---\ntitle: Formula\n---\n\n$$\nE=mc^2\n$$\n{attrs}\n")
             result = run_site(hugo, source, *(('--panicOnWarning',) if warning is None else ()))

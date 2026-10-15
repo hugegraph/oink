@@ -7,6 +7,8 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Validate explicit empty or malformed native equation numbers before target
+  registration, and render their ordinary-build fallback without a fake label.
 - Match generated schemas to supported boolean shorthand and nested page
   fields. Honor empty quick-link lists, keep the documented sidebar-root
   fallback, and validate taxonomy page widths through the shared resolver.
