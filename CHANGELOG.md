@@ -7,6 +7,10 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Remeasure code blocks after tab activation, allow search from nonmodal
+  Appearance, and preserve modal keyboard ownership. Close the root switcher
+  before its drawer, restore Landing search focus to a visible control, and
+  keep preset selection in the Palette usable for another action.
 - Keep Expo anchors unique through hash/suffix collisions, validate explicit
   metadata including false values, and clear stale images during viewer changes.
   Separate album prose from image headings in Markdown and LLMSFULL.
