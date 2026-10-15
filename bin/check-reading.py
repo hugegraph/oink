@@ -726,6 +726,45 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
     return errors
 
 
+def check_explicit_shell_overrides(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-overrides-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / 'hugo.yaml'
+        config.write_text(config.read_text().replace(
+            'taxonomy, term', ''
+        ).replace('params:\n', 'params:\n  page_width: wide\n  offline_search: true\n')
+            .replace('    docs_section: docs', '    docs_section: docs\n    quick_links: []')
+            + 'menus:\n  main:\n    - {identifier: docs, name: Docs, pageRef: /docs}\n')
+        write_file(source / 'content/docs/default.md', '---\ntitle: Default\n---\n')
+        write_file(source / 'content/docs/invalid.md', '---\ntitle: Invalid\npage_width: false\n---\n')
+        write_file(source / 'content/docs/nested/_index.md',
+                   '---\ntitle: Nested\nsidebar_root_for: self\nsidebar_root_link_self: 0\n---\n')
+        write_file(source / 'content/docs/nested/page.md', '---\ntitle: Nested page\n---\n')
+        write_file(source / 'content/tags/_index.md', '---\ntitle: Tags\npage_width: wrong\n---\n')
+        write_file(source / 'content/tags/test/_index.md', '---\ntitle: Test\npage_width: wrong\n---\n')
+        result = run_site(hugo, source)
+        if result.returncode:
+            return [f'shell override fixture failed: {result.stdout}{result.stderr}']
+        public = source / 'public'
+        default = (public / 'docs/default/index.html').read_text()
+        require('td-shell-layout--w-wide' in default, 'site page width no longer inherits', errors)
+        for relative in ('docs/invalid/index.html', 'tags/index.html', 'tags/test/index.html'):
+            html = (public / relative).read_text()
+            require('td-shell-layout--w-normal' in html,
+                    f'{relative} bypassed page-width validation or ignored false', errors)
+        manifest = re.search(r'id="td-action-manifest">(.*?)</script>', default, re.S)
+        require(manifest is not None and json.loads(manifest[1])['quickLinks'] == [],
+                'an explicit empty quick_links list restored default links', errors)
+        nested = parse_navigation((public / 'docs/nested/page/index.html').read_text())
+        require('/docs/nested/' in nested.sidebar_links and '/docs/' not in nested.sidebar_links,
+                'invalid sidebar_root_link_self did not fall back to true', errors)
+        require(run_site(hugo, source, '--panicOnWarning').returncode != 0,
+                'invalid shell overrides survived strict publication', errors)
+    return errors
+
+
 def check_print_math_and_heading(hugo: str) -> list[str]:
     """Print must own its math flags even when formulas occur only in children."""
     errors: list[str] = []
@@ -1213,6 +1252,7 @@ def main() -> int:
         + check_invalid_eq_escape(args.hugo)
         + check_unnumbered_math_attributes(args.hugo)
         + check_print_math_and_heading(args.hugo)
+        + check_explicit_shell_overrides(args.hugo)
         + check_rss_pager_output(args.hugo)
         + check_pager_sources()
         + check_group_only_sections(args.hugo)

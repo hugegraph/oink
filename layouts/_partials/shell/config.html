@@ -35,7 +35,10 @@
   {{- $docsRoot = "section" -}}
 {{- end -}}
 {{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "book" "blog" "swagger" "expo") -}}
-{{- $quickLinks := .Site.Params.ui.quick_links | default (slice $docsSection $blogSection) -}}
+{{- $quickLinks := slice $docsSection $blogSection -}}
+{{- if isset .Site.Params.ui "quick_links" -}}
+  {{- $quickLinks = index .Site.Params.ui "quick_links" -}}
+{{- end -}}
 {{- return dict
   "brandName" $name
   "logoURL" $logoURL

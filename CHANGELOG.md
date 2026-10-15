@@ -7,6 +7,9 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Match generated schemas to supported boolean shorthand and nested page
+  fields. Honor empty quick-link lists, keep the documented sidebar-root
+  fallback, and validate taxonomy page widths through the shared resolver.
 - Remeasure code blocks after tab activation, allow search from nonmodal
   Appearance, and preserve modal keyboard ownership. Close the root switcher
   before its drawer, restore Landing search focus to a visible control, and

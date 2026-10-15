@@ -100,10 +100,7 @@
           }
         },
         "print": {
-          "type": [
-            "boolean",
-            "object"
-          ],
+          "type": "object",
           "additionalProperties": true,
           "properties": {
             "toc": {
@@ -260,7 +257,10 @@
             },
             "dark_mode": {
               "description": "Dark palette and theme menu: `dark_mode: true` is the shorthand for `dark_mode: { enable: true, show_menu: true }`.",
-              "type": "boolean",
+              "type": [
+                "boolean",
+                "object"
+              ],
               "default": false
             },
             "preset": {
