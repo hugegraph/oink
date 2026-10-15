@@ -5,37 +5,11 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
-### Fixed
-
-- Validate explicit empty or malformed native equation numbers before target
-  registration, and render their ordinary-build fallback without a fake label.
-- Match generated schemas to supported boolean shorthand and nested page
-  fields. Honor empty quick-link lists, keep the documented sidebar-root
-  fallback, and validate taxonomy page widths through the shared resolver.
-- Remeasure code blocks after tab activation, allow search from nonmodal
-  Appearance, and preserve modal keyboard ownership. Close the root switcher
-  before its drawer, restore Landing search focus to a visible control, and
-  keep preset selection in the Palette usable for another action.
-- Keep Expo anchors unique through hash/suffix collisions, validate explicit
-  metadata including false values, and clear stale images during viewer changes.
-  Separate album prose from image headings in Markdown and LLMSFULL.
-- Render the description once in single-page Print and load local KaTeX
-  styles for mathematics included from section descendants.
-- Keep unnumbered block math with generic attributes out of Book numbering.
-  Empty tabs emit no container; missing cross-reference targets retain plain
-  text; conflicting figure captions consistently prefer `caption` over `title`.
-
-### Changed
-
-- Use Hugo Extended 0.166.0 as the minimum and sole development, CI, and
-  release-test baseline. Advance the baseline with stable Hugo releases;
-  discontinue older-Hugo compatibility testing and adaptation.
-
-## [1.3.0] — 2026-10-14
+## [1.3.0] — 2026-10-15
 
 Resource-backed Expo albums with shared navigation, an original-image viewer,
-and reader-controlled layouts. This version is tagged locally; public module
-publication and consumer deployment are separate steps.
+and reader-controlled layouts. This release also improves navigation, Landing,
+and aggregate Print output across the maintained consumer sites.
 
 ### Added
 
@@ -97,10 +71,76 @@ publication and consumer deployment are separate steps.
   reopened before its queued close event arrives.
 - Align taxonomy output goldens with the compact foldable sidebar leaf repair.
 
+- Give the releases layout an explicit aggregate Print template so release
+  sections consistently include every release body instead of an index list.
+- Include Markdown headings rendered inside Tabs and other Markdown shortcodes
+  in aggregate Print namespaces, even when absent from Hugo page fragments.
+- Decode encoded heading fragments exactly once in aggregate Print output,
+  preserve literal plus and percent characters, and match HTML-escaped IDs.
+- Let consumers mark custom HTML IDs with `data-td-print-local` so aggregate
+  Print namespaces their IDs and local links without changing ordinary pages
+  or single-page Print deep links.
+- Scope Landing Markdown code IDs per section and field, apply shared content
+  styles and capabilities, and reject explicit duplicate IDs before publication.
+- Generate configured Landing RSS feeds through the shared static renderer,
+  keeping advertised alternate URLs reachable.
+- Omit reading-sidebar drawer controls on stock 404 pages even when root
+  cascade settings assign a Docs or Book type.
+- Preserve explicit navigation for root-level manuals assigned to a Docs or
+  Book sidebar, including manifest ancestry, current entries and page order.
+- Namespace generated tab IDs in aggregate Print output so links stay in their
+  own chapter; distinguish nested tab containers within a page.
+- Contain wide tables in keyboard-scrollable Print browser previews while
+  expanding their viewports for paper output and keeping RSS static.
+- Make Landing code plates keyboard-focusable in WebKit as well as browsers
+  that automatically focus scroll containers.
+- Resolve relative links against their original HTML pages before aggregating
+  Print content, including quoted raw HTML attributes; preserve non-link
+  attributes even when they contain text identical to an actual `href`.
+- Give Book and Docs Landing pages one working navigation drawer, and load its
+  runtime when a site supplies a custom homepage or Landing body.
+- Reserve space for mobile navbar controls beside longer menus, and underline
+  page annotation links so they remain distinguishable without color.
+- Validate explicit empty or malformed native equation numbers before target
+  registration, and render their ordinary-build fallback without a fake label.
+- Match generated schemas to supported boolean shorthand and nested page
+  fields. Honor empty quick-link lists, keep the documented sidebar-root
+  fallback, and validate taxonomy page widths through the shared resolver.
+- Remeasure code blocks after tab activation, allow search from nonmodal
+  Appearance, and preserve modal keyboard ownership. Close the root switcher
+  before its drawer, restore Landing search focus to a visible control, and
+  keep preset selection in the Palette usable for another action.
+- Keep Expo anchors unique through hash/suffix collisions, validate explicit
+  metadata including false values, and clear stale images during viewer changes.
+  Separate album prose from image headings in Markdown and LLMSFULL.
+- Render the description once in single-page Print and load local KaTeX
+  styles for mathematics included from section descendants.
+- Keep unnumbered block math with generic attributes out of Book numbering.
+  Empty tabs emit no container; missing cross-reference targets retain plain
+  text; conflicting figure captions consistently prefer `caption` over `title`.
+- Speed up `backlinks-index.html` with in-place map accumulation, cache
+  `expo/config.html` and `comments-state.html` per page, and honor empty
+  `params.ui.quick_links: []` lists.
+- Clean up Draw.io modal listeners when the editor closes.
+- Resolve explicit `--sites` project roots with nested `site/` directories in
+  `bin/update-consumers.py`, including projects whose root `go.mod` belongs to a
+  separate Go application.
+
 ### Changed
 
 - Name the accepted image-album layout Expo. Replace the Muse draft with the
   bilingual Expo contract and content-model decision in the documentation site.
+
+- Use Hugo Extended 0.166.0 as the minimum and sole development, CI, and
+  release-test baseline. Advance the baseline with stable Hugo releases;
+  discontinue older-Hugo compatibility testing and adaptation.
+- Consumer inventory also includes primary `site/` directories and reports
+  classic `themes/oink` consumers for separate submodule or source-copy updates.
+- Reviewed source directories without Git can be selected with `--sites`.
+  Retained vendor snapshots bypassed by Hugo configuration no longer block
+  published-module upgrades.
+- `--check-appearance`, together with `--check`, validates the Paper default
+  and all four style controls on freshly rendered consumer entry pages.
 
 ## [1.2.0] — 2026-10-05
 

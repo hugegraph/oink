@@ -62,11 +62,10 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.3.0 adds the Expo image-album shell. The unchanged local v1.3.0 tag
-points to `6dede1f`; `main` includes later correctness fixes listed under
-Unreleased in the changelog. Candidate acceptance uses the current checkout.
-Publish a tag containing those fixes before public module resolution,
-downstream upgrades, and deployment.
+OINK 1.3.0 adds the Expo image-album shell and improves navigation, Landing,
+and aggregate Print output. It uses Hugo Extended 0.166.0 as its minimum and
+single development, CI, and release-test baseline. See the
+[changelog](CHANGELOG.md) for the complete release notes.
 
 ## Start a site
 
