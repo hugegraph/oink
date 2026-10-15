@@ -135,7 +135,7 @@ window.markmap = {
 {{ end -}}
 {{ $drawioActive := and $interactiveOutput $drawioEnabled (.Store.Get "hasDrawio") -}}
 {{ if $drawioActive -}}
-<script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
+<script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer "close" (T "ui_search_close") | jsonify | safeJS }}</script>
 {{ end -}}
 
 {{/* The registry reads this manifest synchronously while js/actions.js loads,
@@ -334,6 +334,10 @@ window.markmap = {
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/authored-a11y.js" "members" (slice (resources.Get "js/authored-a11y.js"))) -}}
 {{ end -}}
 
+{{ if and $interactiveOutput (.Store.Get "hasExpo") -}}
+  {{ partial "expo/viewer.html" . }}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/expo.js" "members" (slice (resources.Get "js/expo-geometry.js") (resources.Get "js/expo.js"))) -}}
+{{ end -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ if $hasMermaid }}{{ partial "content/diagram-zoom-dialog.html" . }}{{ end -}}
 {{ range $jsChunks -}}

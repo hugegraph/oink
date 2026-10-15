@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from html.parser import HTMLParser
 from pathlib import Path
 import re
 import shutil
@@ -180,7 +181,7 @@ def check_resolver_matrix(hugo: str) -> list[str]:
 
 
 def check_image_hook_matrix(hugo: str) -> list[str]:
-    """render-image: block vs inline, title, caption, num, width/height, rss."""
+    """render-image: block vs inline, title, caption, num, dimensions, print, RSS."""
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-media-hook-") as temp:
         temp_path = Path(temp)
@@ -190,7 +191,7 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
         layouts.mkdir(parents=True)
         shutil.copyfile(PAGE_IMAGE, content / "page.png")
         (content / "index.md").write_text(
-            "---\ntitle: Image hook\noutputs: [HTML, markdown, RSS]\n---\n\n"
+            "---\ntitle: Image hook\noutputs: [HTML, markdown, RSS, print]\n---\n\n"
             "## Block image (page resource)\n\n"
             '![Page raster](page.png "Advisory title")\n\n'
             "## Inline image\n\n"
@@ -200,6 +201,8 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
             "![Static SVG](/media/content-primitives-static.svg)\n\n"
             "## Remote\n\n"
             "![Remote raster](https://example.invalid/remote.png?fixture=1)\n\n"
+            '![Quoted URL](https://example.invalid/image.svg?x="data-injected="yes&copy;=1)\n\n'
+            'Inline ![Inline quoted URL](https://example.invalid/image.svg?x="data-injected="yes&copy;=1) image.\n\n'
             "## Caption figure and site class\n\n"
             "![Captioned](page.png)\n"
             '{caption="A plain caption" .wide data-fixture="figure"}\n\n'
@@ -216,16 +219,36 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
         # A scoped render (like content/rss-description.html) re-runs the hooks with the RSS store flag.
         (layouts / "single.rss.xml").write_text('{{- .Store.Set "tdOutputFormat" "rss" -}}\n<fixture>{{ (.Markup "td-rss-check").Render.Content }}</fixture>\n')
         override = temp_path / "rss.yaml"
-        override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS]\n")
+        override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS, print]\n")
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", fixture_media_config(override), "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", fixture_media_config(override), "--logLevel", "warn", "--panicOnWarning")
         if result.returncode != 0:
             errors.append(f"image hook matrix failed to build: {result.stdout}{result.stderr}")
             return errors
         html = (destination / "docs/hook/index.html").read_text()
         markdown = (destination / "docs/hook/index.md").read_text()
+        print_html = (destination / "_print/docs/hook/index.html").read_text()
         rss_outputs = [path for path in destination.rglob("*.xml") if "hook" in path.parts]
         rss = rss_outputs[0].read_text() if rss_outputs else ""
+        class ImageAttributes(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.images = {}
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "img":
+                    values = dict(attrs)
+                    self.images[values.get("alt")] = values
+
+        for output_name, output in (("HTML", html), ("Print", print_html), ("RSS", rss)):
+            parsed = ImageAttributes()
+            parsed.feed(output)
+            for alt in ("Quoted URL", "Inline quoted URL"):
+                attrs = parsed.images.get(alt, {})
+                require(attrs.get("src") == 'https://example.invalid/image.svg?x="data-injected="yes&copy;=1',
+                        f"{output_name}: image URL was truncated or entity-decoded", errors)
+                require("data-injected" not in attrs,
+                        f"{output_name}: image URL injected an HTML attribute", errors)
         for marker in (
             '<img class="td-image" src="/docs/hook/page.png" alt="Page raster" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
             'Text with <img src="/docs/hook/page.png" alt="inline raster" width="64" height="40" loading="lazy" decoding="async"> inside a sentence.',
@@ -490,8 +513,11 @@ def check_template_contracts() -> list[str]:
     require(not (ROOT / "layouts/_shortcodes/imgproc.html").exists(), "imgproc.html must stay deleted", errors)
     static_output = 'partial "content/static-image-output.html"'
     rss_description = 'partial "content/rss-description.html"'
-    for relative in ("layouts/_default/rss.xml", "layouts/blog/rss.xml"):
+    for relative in ("layouts/_partials/content/rss.html", "layouts/blog/rss.xml"):
         require(rss_description in (ROOT / relative).read_text(), f"{relative} does not use the shared RSS description renderer", errors)
+    for relative in ("layouts/_default/rss.xml", "layouts/landing.rss.xml"):
+        require('partial "content/rss.html"' in (ROOT / relative).read_text(),
+                f"{relative} does not use the shared RSS document renderer", errors)
     require(static_output in (ROOT / "layouts/_partials/content/rss-description.html").read_text(), "RSS description renderer does not remove interaction-only image attributes", errors)
     # Every print aggregate renders page content through one cached partial,
     # which is where the static-image filter runs.

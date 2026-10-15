@@ -10,7 +10,7 @@ forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix
 from __future__ import annotations
 
 import argparse
-from html import escape
+from html import escape, unescape
 from pathlib import Path
 import re
 import tempfile
@@ -148,10 +148,11 @@ def check_outputs(public: Path) -> list[str]:
         '<table class="full-width">',
     ):
         require(marker in print_page, f"print fixture missing {marker}", errors)
-    # The wrapper stays in print so the caption, matrix, and figure selectors keep
-    # working, but it must be marked static and must never be a focusable viewport.
+    # Print remains a browser document before printing. Keep complete static
+    # content and a labelled keyboard scroll region for the on-screen preview.
     require("td-table-scroll--static" in print_page, "print table wrapper is not marked static", errors)
-    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', print_page) is None, "print kept an interactive table scroll viewport", errors)
+    print_tables = re.findall(r'<div class="td-table-scroll[^>]*>', print_page)
+    require(bool(print_tables) and all('tabindex="0"' in wrapper and 'role="region"' in wrapper and 'aria-label=' in wrapper for wrapper in print_tables), "Print preview lost its accessible table scroll regions", errors)
     print_trees = re.findall(r'<div class="td-filetree td-filetree--static"[\s\S]*?</ul></div></div>', print_page)
     require(any(">Site tree</p>" in tree and "<details" not in tree and tree.count("<li ") == 17 for tree in print_trees), "print FileTree is not the static, fully expanded tree", errors)
     require(print_trees and all("<details" not in tree for tree in print_trees), "print FileTree still uses <details>", errors)
@@ -360,6 +361,7 @@ def check_generic_rss_output(hugo: str) -> list[str]:
         (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
         (content / "item.md").write_text(
             "---\ntitle: Primitive feed\ndate: 2026-08-11\n---\n\n"
+            "| Key | Value |\n| --- | --- |\n| Feed table | Complete static content |\n\n"
             "```filetree\n- closed/\n  - nested.md\n```\n\n"
             "1. first\n1. second\n{.steps}\n\n"
             "```go-html-template\n"
@@ -394,6 +396,8 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             errors.append("generic RSS primitive fixture did not produce docs/index.xml")
             return errors
         source = output.read_text()
+        rss_tables = re.findall(r'<div class="td-table-scroll[^>]*>', unescape(source))
+        require(bool(rss_tables) and all('td-table-scroll--static' in wrapper and 'tabindex=' not in wrapper and 'role=' not in wrapper for wrapper in rss_tables), "RSS table acquired browser scroll focus semantics", errors)
         home_source = (destination / "index.xml").read_text()
         require("<title>Generic primitive feed</title>" in home_source, "generic RSS home title repeats the site title", errors)
         for marker in ('&lt;pre class=&#34;td-filetree-source&#34;&gt;', "nested.md", '&lt;ol class=&#34;steps&#34;&gt;', "Example only"):

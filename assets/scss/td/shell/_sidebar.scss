@@ -441,16 +441,17 @@ html:not([data-td-shell-initialized]) {
 
 /* Row indentation and nested vertical rails. */
 
-.td-shell-tree .td-shell-tree__list--2 > li > .td-shell-tree__row {
+// The item shares its depth with both its row and optional Book headings.
+.td-shell-tree .td-shell-tree__list--2 > li {
   --td-shell-indent: 24px;
 }
-.td-shell-tree .td-shell-tree__list--3 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--3 > li {
   --td-shell-indent: 36px;
 }
-.td-shell-tree .td-shell-tree__list--4 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--4 > li {
   --td-shell-indent: 48px;
 }
-.td-shell-tree .td-shell-tree__list--5 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--5 > li {
   --td-shell-indent: 60px;
 }
 

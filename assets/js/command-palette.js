@@ -51,7 +51,9 @@
   }
 
   function hasOpenDialog(except) {
-    if (document.querySelector('dialog[open]')) return true;
+    if (Array.prototype.some.call(document.querySelectorAll('dialog[open]'), function (dialog) {
+      return !dialog.classList.contains('td-appearance__panel') || dialog.matches(':modal');
+    })) return true;
     return Array.prototype.some.call(
       document.querySelectorAll('[role="dialog"]'),
       function (dialog) { return dialog !== except && isRendered(dialog); },
@@ -256,6 +258,11 @@
         opener && opener.closest && opener.closest('[data-td-mobile-menu]')
       ) {
         opener = document.querySelector('[data-td-menu-toggle]') || opener;
+      }
+      if (
+        opener && opener.closest && opener.closest('[data-td-landing-menu]')
+      ) {
+        opener = document.querySelector('[data-td-landing-menu-toggle]') || opener;
       }
       lastOpener = opener;
       if (global.OinkSurfaceCoordinator)
@@ -677,12 +684,15 @@
         }
         var completedInPlace = result && (
           result.theme ||
+          result.preset ||
           (result.action &&
             (result.action.id === 'copy_markdown' || result.action.id === 'copy_link'))
         );
         if (completedInPlace) {
+          var restoreInput = root.contains(document.activeElement);
           choiceState = null;
           render(input.value);
+          if (restoreInput) input.focus({ preventScroll: true });
           announce(row.title || (result.action && result.action.title) || labels.actions);
         } else if (!isPrint) {
           close(true);

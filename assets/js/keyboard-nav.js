@@ -149,9 +149,10 @@
     }
 
     function hasOpenDialog() {
-      if (!doc.querySelector) return false;
-      if (doc.querySelector('dialog[open]')) return true;
       if (!doc.querySelectorAll) return false;
+      if (Array.prototype.some.call(doc.querySelectorAll('dialog[open]'), function (dialog) {
+        return !dialog.classList.contains('td-appearance__panel') || dialog.matches(':modal');
+      })) return true;
       return Array.prototype.some.call(
         doc.querySelectorAll('[role="dialog"]'),
         function (dialog) { return isVisible(dialog, win); },

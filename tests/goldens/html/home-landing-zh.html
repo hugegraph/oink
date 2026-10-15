@@ -287,9 +287,7 @@ data-bs-theme-value="auto" checked>
 <span class="td-landing-status-dot" aria-hidden="true"></span>
 <span>只用 Hugo · 本地优先 · 零 npm</span>
 </p>
-<h1 class="td-landing-hero__title" id="hero-title">
-<span>输入纯 Markdown。</span>
-<span>输出现代文档。</span></h1><p class="td-landing-hero__lead">搜索、多语言、版本、图表、公式——全都在主题里。整个构建步骤只有一条命令：<code>hugo</code>。</p>
+<h1 class="td-landing-hero__title" id="hero-title"><span>输入纯 Markdown。</span><span>输出现代文档。</span></h1><p class="td-landing-hero__lead">搜索、多语言、版本、图表、公式——全都在主题里。整个构建步骤只有一条命令：<code>hugo</code>。</p>
 <p class="td-landing-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>不需要 npm、CDN 或任何 JavaScript 框架。</span></p>
 <div class="td-landing-hero__actions">
 <a class="td-landing-button td-landing-button--primary" href="/zh/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
@@ -308,14 +306,10 @@ data-bs-theme-value="auto" checked>
 <h2 id="metrics-title">这一页的全部成本</h2>
 <p class="td-landing-section__description">四个数字，每个都能在仓库里对上。</p>
 </header>
-<div class="td-landing-metric-grid" style="--td-columns: 4">
-<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>数据文件</span><small><code>data/home/zh.yaml</code></small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>本页区块</span><small>从 22 种区块类型里挑出来的</small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>改过的模板</span><small>顺序是数据，不是标记</small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>运行时依赖</span><small>不装 npm，不连 CDN，不跑 PostCSS</small>
+<div class="td-landing-metric-grid" style="--td-columns: 4"><div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>数据文件</span><small><code>data/home/zh.yaml</code></small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>本页区块</span><small>从 22 种区块类型里挑出来的</small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>改过的模板</span><small>顺序是数据，不是标记</small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>运行时依赖</span><small>不装 npm，不连 CDN，不跑 PostCSS</small>
 </div>
 </div>
 </div>
@@ -333,7 +327,7 @@ data-bs-theme-value="auto" checked>
 </div>
 <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="落地页区块配置">
 <div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home/zh.yaml</b></div>
-<pre><code><span class="c"># </span>这一页，按顺序
+<pre tabindex="0"><code><span class="c"># </span>这一页，按顺序
 <span class="p">- </span>hero
 <span class="ok">- </span>metrics
 <span class="ok">- </span>capabilities
@@ -348,17 +342,14 @@ data-bs-theme-value="auto" checked>
 <h2 id="cards-title">三个映射条目，三张卡片</h2>
 <p class="td-landing-section__description">通用的集合区块——特性、优势、服务，任何一组短内容都可以放进来。</p>
 </header>
-<div class="td-landing-card-grid" style="--td-columns: 3">
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">富文本</p><h3>支持 Markdown</h3><div class="td-landing-card__description"><p>描述里可以写<strong>强调</strong>、<code>代码</code>与<a href="https://commonmark.org/">链接</a>。</p>
-</div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">了解更多
+<div class="td-landing-card-grid" style="--td-columns: 3"><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">富文本</p><h3>支持 Markdown</h3><div class="td-landing-card__description"><div class="td-content"><p>描述里可以写<strong>强调</strong>、<code>代码</code>与<a href="https://commonmark.org/">链接</a>。</p>
+</div></div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">了解更多
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
-</article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">数据健壮</p><h3>链接可省略</h3><div class="td-landing-card__description"><p>这张卡没写 <code>url</code>，它仍然是有效、可读的内容。</p>
-</div>
-</article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">多个实例</p><h3>可复用</h3><div class="td-landing-card__description"><p>两个条目，同一种 <code>type</code>，不同的 <code>key</code>——下面这一招用了三次。</p>
-</div>
+</article><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">数据健壮</p><h3>链接可省略</h3><div class="td-landing-card__description"><div class="td-content"><p>这张卡没写 <code>url</code>，它仍然是有效、可读的内容。</p>
+</div></div>
+</article><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">多个实例</p><h3>可复用</h3><div class="td-landing-card__description"><div class="td-content"><p>两个条目，同一种 <code>type</code>，不同的 <code>key</code>——下面这一招用了三次。</p>
+</div></div>
 </article>
 </div>
 </div>
@@ -535,22 +526,22 @@ data-bs-theme-value="auto" checked>
 </header>
 <div class="td-landing-gallery" style="--td-columns: 3"><article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">信息架构</p><h3>文档门户</h3><div class="td-landing-gallery-card__description"><p>给<a href="/zh/docs/">文档</a>一个明确的入口。</p>
-</div><a class="td-landing-card-link" href="/zh/docs/">打开示例
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">信息架构</p><h3>文档门户</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>给<a href="/zh/docs/">文档</a>一个明确的入口。</p>
+</div></div><a class="td-landing-card-link" href="/zh/docs/">打开示例
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </div>
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API 参考</h3><div class="td-landing-gallery-card__description"><p>让说明文字与生成的参考资料并排。</p>
-</div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API 参考</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>让说明文字与生成的参考资料并排。</p>
+</div></div>
 </div>
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">动态</p><h3>工程博客</h3><div class="td-landing-gallery-card__description"><p>发布版本、解释，以及背后的决策。</p>
-</div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">动态</p><h3>工程博客</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>发布版本、解释，以及背后的决策。</p>
+</div></div>
 </div>
 </article>
 </div>
@@ -562,16 +553,16 @@ data-bs-theme-value="auto" checked>
 <h2 id="testimonials-title">占位的引用，真实的标记</h2>
 <p class="td-landing-section__description">下面两条都是示例数据。每条支持姓名、头像或图标、身份、来源链接与 Markdown 正文。</p>
 </header>
-<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“配置文件足够好读，<strong>内容负责人</strong>自己就能改首页。”</p>
-</blockquote>
+<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><div class="td-content"><p>“配置文件足够好读，<strong>内容负责人</strong>自己就能改首页。”</p>
+</div></blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">A</span></div>
 <div><strong>Ada Example</strong><span>文档工程师</span></div><a class="td-landing-card-link" href="/zh" target="_blank" rel="noopener noreferrer">来源
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </figcaption>
 </figure>
-<figure class="td-landing-testimonial"><blockquote><p>“把画廊挪到常见问题前面，我们只挪了两行。”</p>
-</blockquote>
+<figure class="td-landing-testimonial"><blockquote><div class="td-content"><p>“把画廊挪到常见问题前面，我们只挪了两行。”</p>
+</div></blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">L</span></div>
 <div><strong>Lin Example</strong><span>开源项目维护者</span></div>
 </figcaption>
@@ -585,18 +576,15 @@ data-bs-theme-value="auto" checked>
 <h2 id="contributors-title">记下人，而不是工具</h2>
 <p class="td-landing-section__description">生产站点让 <code>icon</code> 指向头像图片；这里用单个字母，示例因此自成一体。</p>
 </header>
-<div class="td-landing-contributor-grid" style="--td-columns: 3">
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
+<div class="td-landing-contributor-grid" style="--td-columns: 3"><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
 <div class="td-landing-contributor__copy"><h3>Alex</h3><p>主题架构</p>
 </div><a class="td-landing-card-link" href="https://github.com/"><span class="visually-hidden">Alex</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
-</article>
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">B</span></div>
+</article><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">B</span></div>
 <div class="td-landing-contributor__copy"><h3>Bo</h3><p>无障碍审阅</p>
 </div>
-</article>
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">C</span></div>
+</article><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">C</span></div>
 <div class="td-landing-contributor__copy"><h3>Casey</h3><p>文档与示例</p>
 </div>
 </article>
@@ -612,27 +600,31 @@ data-bs-theme-value="auto" checked>
 <div class="td-landing-faq-list td-landing-faq-list--accordion">
 <details class="td-landing-faq" open>
 <summary><span>真的只有一个文件？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>导航栏与页脚之间的部分是。导航来自 <code>hugo.yaml</code>，页脚来自 <code>data/footer/zh.yaml</code>，中间每一块都来自 <code>data/home/zh.yaml</code>。</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>导航栏与页脚之间的部分是。导航来自 <code>hugo.yaml</code>，页脚来自 <code>data/footer/zh.yaml</code>，中间每一块都来自 <code>data/home/zh.yaml</code>。</p>
+</div>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>每种语言都得有一个文件吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>单语言站点用一个 <code>data/home.yaml</code> 就够。本站是双语，所以用 <code>data/home/en.yaml</code> 与 <code>data/home/zh.yaml</code>。</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>单语言站点用一个 <code>data/home.yaml</code> 就够。本站是双语，所以用 <code>data/home/en.yaml</code> 与 <code>data/home/zh.yaml</code>。</p>
+</div>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>同一种区块可以出现多次吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>可以，给每个条目不同的 <code>key</code>：</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>可以，给每个条目不同的 <code>key</code>：</p>
 <ul>
 <li><code>{ type: gallery, key: products }</code></li>
 <li><code>{ type: gallery, key: case_studies }</code></li>
 </ul>
 <p>本页那三面 Logo 墙，就是同一种区块读三份不同的数据。</p>
 </div>
+</div>
 </details>
 <details class="td-landing-faq">
 <summary><span>没写 <code>url</code> 会怎样？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>这一项按普通内容渲染——不留空链接，也不留坏链接。上面三张卡片里，有两张就没写 <code>url</code>。</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>这一项按普通内容渲染——不留空链接，也不留坏链接。上面三张卡片里，有两张就没写 <code>url</code>。</p>
+</div>
 </div>
 </details>
 </div>
@@ -644,13 +636,13 @@ data-bs-theme-value="auto" checked>
 <h2 id="markdown-title">逃生口</h2>
 <p class="td-landing-section__description">预定义的集合表达不了时，把 Markdown 直接写进数据文件。</p>
 </header>
-<div class="td-landing-markdown"><p>这一段是同一个 YAML 文件里的一个 <code>body:</code> 字符串。它支持段落、<a href="https://gohugo.io/">链接</a>与列表：</p>
+<div class="td-landing-markdown"><div class="td-content"><p>这一段是同一个 YAML 文件里的一个 <code>body:</code> 字符串。它支持段落、<a href="https://gohugo.io/">链接</a>与列表：</p>
 <ul>
 <li>不需要自定义模板；</li>
 <li>就是普通的 Goldmark 渲染；</li>
 <li>与上面每一块同样的宽度与竖向节奏。</li>
 </ul>
-</div>
+</div></div>
 </div>
 </section>
 <section id="principles" class="td-landing-section td-landing-principles" aria-labelledby="principles-title">
@@ -658,18 +650,15 @@ data-bs-theme-value="auto" checked>
 <p class="td-landing-section__eyebrow"><span>设计原则</span><i aria-hidden="true"></i></p>
 <h2 id="principles-title">行为可预期</h2>
 </header>
-<div class="td-landing-principle-grid" style="--td-columns: 3">
-<article>
+<div class="td-landing-principle-grid" style="--td-columns: 3"><article>
 <span>01</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
 <h3>内容优先</h3><p>多数改动只是数据文件里的纯文本。</p>
-</article>
-<article>
+</article><article>
 <span>02</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-universal-access" aria-hidden="true"></i></div>
 <h3>默认无障碍</h3><p>语义化区块、受控的外链，以及原生的 FAQ 折叠控件。</p>
-</article>
-<article>
+</article><article>
 <span>03</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
 <h3>向后兼容</h3><p>没有 <code>sections</code> 列表的首页数据，保持它一直以来的顺序。</p>
