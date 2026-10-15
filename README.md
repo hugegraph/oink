@@ -62,8 +62,11 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.3.0 adds the Expo image-album shell. The v1.3.0 tag is prepared locally;
-public module publication and deployment are separate steps.
+OINK 1.3.0 adds the Expo image-album shell. The unchanged local v1.3.0 tag
+points to `6dede1f`; `main` includes later correctness fixes listed under
+Unreleased in the changelog. Candidate acceptance uses the current checkout.
+Publish a tag containing those fixes before public module resolution,
+downstream upgrades, and deployment.
 
 ## Start a site
 
