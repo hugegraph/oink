@@ -332,7 +332,7 @@
         inset-block: 6px;
         inset-inline-start: 0;
         width: 3px;
-        background: var(--td-brand-copper);
+        background: var(--td-accent);
       }
     }
     .td-landing-hero__title { font-weight: 800; letter-spacing: -0.045em; }
@@ -380,7 +380,7 @@
       width: 0.14em;
       height: 0.8em;
       margin-inline-start: 0.15em;
-      background: var(--td-brand-copper);
+      background: var(--td-accent);
     }
     // Compact desktop chrome; keep prose at its existing 1rem/1.7 rhythm
     // and preserve the wider touch targets below the drawer breakpoint.

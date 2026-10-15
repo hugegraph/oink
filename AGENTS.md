@@ -6,8 +6,8 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-The current release is `v1.2.0`, dated 2026-10-05 in `CHANGELOG.md`. The sibling
-site's `v1.2.0` Design contracts describe this release. Refresh Git state,
+The current release is `v1.3.0`, dated 2026-10-15 in `CHANGELOG.md`. The sibling
+site's `v1.3.0` Design contracts describe this release. Refresh Git state,
 public tags, and consumer pins before making claims about later releases or
 downstream adoption.
 
@@ -78,21 +78,43 @@ make -C ../oink.pgsty.com dev
   and nested archives. Review every blocked or skipped result; use `--sites`
   for an explicitly selected checkout. Review vendored changes before using
   `--refresh-vendor`; a go.mod bump alone does not upgrade vendored output.
+- Inventory also includes primary `site/` directories and reports classic
+  `themes/oink` consumers. Update their clean submodule or reviewed source copy
+  separately, preserve offline builds, and run the site's owning checks.
 - Check exact published module resolution with local replacements and both
   workspace mechanisms disabled. Update current version references in site
   READMEs/configuration, and run each site's relevant checks. Keep historical
   release notes unchanged. Commit, push, and deployment remain separate steps.
+- Maintained consumers use `params.ui.preset: paper` and the explicit
+  `preset_menu: [paper, slate, ink, terminal]` list. Preserve this reader-choice
+  policy on later upgrades, and check rendered menus as well as configuration.
+  Use `--check --check-appearance` to verify the published pin and entry menus.
+  Review custom shells separately. Select reviewed source-only sites with
+  `--sites`; leave superseded migration copies out of the maintained set.
 
 ## Theme contracts
 
-- Hugo Extended 0.160.1 is the compatibility floor. On 0.160.x, configure a
-  non-default generic `zh` language alongside the regional Chinese catalogs
-  with `locale: zh-CN`; bare `locale: zh` works there from 0.161 onward.
-- The module declares Go 1.27.0. CI pins Hugo Extended 0.165.0 and Go 1.27.0;
-  the Hugo floor is not a second full CI matrix leg. Identify any selected
-  floor checks and the actual local tool versions separately.
+- As of 2026-10-15, Hugo Extended 0.166.0 is the single development, CI, and
+  release-test baseline and the current minimum. Advance it with stable Hugo
+  releases; update CI pins, module/theme requirements, checkers, and current
+  bilingual documentation together. Do not run older-Hugo compatibility
+  matrices, adapt code for old versions, or add compatibility shims unless the
+  user explicitly requests it. Historical release/research records are not
+  current support requirements.
+- The module declares Go 1.27.0; CI pins Go 1.27.0. Record the actual local
+  tool versions when reporting validation.
 - Run checkers with `--panicOnWarning` when they build Hugo output. Ordinary
   editing may warn and fall back; publishing gates turn warnings into failures.
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.
 - Preserve pre-existing changes in this shared worktree and edit only the
   owning implementation, checker, and public Design contract for a change.
+
+## Git 内容与大文件规则
+
+用户于 2026-10-10 明确的通用仓库规则：
+
+- 仓库默认保存源代码、配置和必要的轻量文档、元数据。构建产物、可执行文件、软件包、容器/虚拟机镜像、下载压缩包、数据库导出和大体积原始数据默认不进入 Git；文本格式的数据大文件同样需要检查。
+- 在工作树内下载或生成上述文件之前，先选择仓库外的制品/数据位置，或补上合理的 `.gitignore` 规则并验证实际路径已被忽略，防止暂存和代理恢复/差异快照将它们写入 Git 对象库。
+- 暂存、提交前检查新增文件的大小、类型和 staged 文件列表，只加入本次需要的源文件；不得用强制添加绕过忽略规则。优先保留来源清单、校验值及可复现的下载/构建方法。
+- 对二进制素材、数据集或生成文件是否应纳入版本控制拿不准时，先问用户，再暂存或提交；确需例外时也先取得用户明确指示。
+- 本规则不授权删除已有文件、stash、恢复快照或改写 Git 历史。忽略规则不会清除已存在的 Git 对象，历史清理需要单独明确范围。

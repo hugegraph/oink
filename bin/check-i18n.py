@@ -298,14 +298,10 @@ def check_hugo_runtime(
         )
         language_lines: list[str] = []
         for weight, locale in enumerate(["en", *sorted(OINK_LOCALES - {"en"})], 1):
-            # Hugo 0.160.x cannot resolve a bare `locale: zh` while the regional
-            # Chinese catalogs are present. A concrete locale is also what the
-            # public OINK examples use for their generic `zh` language key.
-            runtime_locale = "zh-CN" if locale == "zh" else locale
             language_lines.extend(
                 [
                     f"  {locale}:\n",
-                    f"    locale: {runtime_locale}\n",
+                    f"    locale: {locale}\n",
                     f"    label: {locale}\n",
                     f"    weight: {weight}\n",
                 ]
