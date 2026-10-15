@@ -13,7 +13,7 @@
   <a href="https://oink.pgsty.com/"><img alt="Website" src="https://img.shields.io/badge/website-oink.pgsty.com-17385c?style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/pgsty/oink?display_name=tag&amp;sort=semver&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/pgsty/oink/ci.yml?branch=main&amp;label=CI&amp;style=flat-square"></a>
-  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.160.1 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.160.1-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
+  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.166.0 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.166.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/blob/main/LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
 </p>
 
@@ -82,8 +82,8 @@ repository's internal fixtures.
 · [Live starter](https://pgsty.github.io/oink-starter/)
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
-The current starter expects Git, Go 1.27 or newer, and Hugo Extended 0.165.0
-or newer; it does not require Node.js. To evaluate the neutral template locally:
+For development and validation, use Git, Go 1.27 or newer, and Hugo Extended
+0.166.0. The site does not require Node.js. To evaluate the neutral template locally:
 
 ```sh
 git clone https://github.com/pgsty/oink-starter.git
@@ -212,15 +212,15 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | **Extended 0.160.1 or newer**; CI currently pins 0.165.0 |
+| Hugo | **Extended 0.166.0 or newer**; development, CI, and release tests use 0.166.0 |
 | Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
-On Hugo 0.160.x, when generic `zh` is a non-default language and the regional
-Chinese catalogs are present, configure it with the concrete `locale: zh-CN`,
-as OINK's examples do. Hugo 0.161.0 and newer also resolve bare `locale: zh`
-in that configuration.
+The Hugo baseline advances with stable releases. Update the pins and declared
+requirements together; older Hugo versions receive no compatibility testing
+or adaptation. Dated release and research records retain their original tool
+versions.
 
 ## Community and releases
 

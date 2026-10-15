@@ -85,12 +85,15 @@ make -C ../oink.pgsty.com dev
 
 ## Theme contracts
 
-- Hugo Extended 0.160.1 is the compatibility floor. On 0.160.x, configure a
-  non-default generic `zh` language alongside the regional Chinese catalogs
-  with `locale: zh-CN`; bare `locale: zh` works there from 0.161 onward.
-- The module declares Go 1.27.0. CI pins Hugo Extended 0.165.0 and Go 1.27.0;
-  the Hugo floor is not a second full CI matrix leg. Identify any selected
-  floor checks and the actual local tool versions separately.
+- As of 2026-10-15, Hugo Extended 0.166.0 is the single development, CI, and
+  release-test baseline and the current minimum. Advance it with stable Hugo
+  releases; update CI pins, module/theme requirements, checkers, and current
+  bilingual documentation together. Do not run older-Hugo compatibility
+  matrices, adapt code for old versions, or add compatibility shims unless the
+  user explicitly requests it. Historical release/research records are not
+  current support requirements.
+- The module declares Go 1.27.0; CI pins Go 1.27.0. Record the actual local
+  tool versions when reporting validation.
 - Run checkers with `--panicOnWarning` when they build Hugo output. Ordinary
   editing may warn and fall back; publishing gates turn warnings into failures.
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.

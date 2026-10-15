@@ -11,9 +11,10 @@ per surface: html, print, markdown, rss, llms.
   bin/check-goldens.py --hugo PATH    # build with another Hugo binary
   bin/check-goldens.py --public DIR   # reuse an existing private-fixture build
 
-Goldens are intentionally Hugo-version-neutral; a version-specific difference
-must be normalised here (never by keeping two copies silently). Update goldens
-in the same commit as the behaviour change and say why in the message.
+Build goldens with the current Hugo Extended baseline. Normalise nonsemantic
+build noise; review rendering changes when advancing the baseline instead of
+adding compatibility handling for obsolete Hugo releases. Update goldens in
+the same commit as the behaviour change and say why in the message.
 """
 
 from __future__ import annotations
@@ -67,8 +68,7 @@ def normalise(text: str) -> str:
         ) + attr['quote'],
         text,
     )
-    # Hugo releases can indent embedded-template and Goldmark output differently
-    # (observed between 0.160.1 and 0.164.0); compare structure, not indentation:
+    # Compare embedded-template and Goldmark structure, not indentation:
     # strip leading whitespace per line and drop empty lines.
     lines = [line.strip() for line in text.splitlines()]
     return "\n".join(line for line in lines if line) + "\n"

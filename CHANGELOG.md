@@ -25,6 +25,12 @@ All notable changes to OINK are documented here. The project follows
   Empty tabs emit no container; missing cross-reference targets retain plain
   text; conflicting figure captions consistently prefer `caption` over `title`.
 
+### Changed
+
+- Use Hugo Extended 0.166.0 as the minimum and sole development, CI, and
+  release-test baseline. Advance the baseline with stable Hugo releases;
+  discontinue older-Hugo compatibility testing and adaptation.
+
 ## [1.3.0] — 2026-10-14
 
 Resource-backed Expo albums with shared navigation, an original-image viewer,
