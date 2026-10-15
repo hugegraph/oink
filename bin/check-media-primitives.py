@@ -513,8 +513,11 @@ def check_template_contracts() -> list[str]:
     require(not (ROOT / "layouts/_shortcodes/imgproc.html").exists(), "imgproc.html must stay deleted", errors)
     static_output = 'partial "content/static-image-output.html"'
     rss_description = 'partial "content/rss-description.html"'
-    for relative in ("layouts/_default/rss.xml", "layouts/blog/rss.xml"):
+    for relative in ("layouts/_partials/content/rss.html", "layouts/blog/rss.xml"):
         require(rss_description in (ROOT / relative).read_text(), f"{relative} does not use the shared RSS description renderer", errors)
+    for relative in ("layouts/_default/rss.xml", "layouts/landing.rss.xml"):
+        require('partial "content/rss.html"' in (ROOT / relative).read_text(),
+                f"{relative} does not use the shared RSS document renderer", errors)
     require(static_output in (ROOT / "layouts/_partials/content/rss-description.html").read_text(), "RSS description renderer does not remove interaction-only image attributes", errors)
     # Every print aggregate renders page content through one cached partial,
     # which is where the static-image filter runs.

@@ -1,4 +1,4 @@
-{{- $config := partial "expo/config.html" . -}}
+{{- $config := partialCached "expo/config.html" . .RelPermalink -}}
 {{- $items := partialCached "expo/items.html" . .RelPermalink -}}
 {{- if $items -}}
 {{- .Store.Set "hasExpo" true -}}

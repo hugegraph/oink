@@ -41,13 +41,14 @@
       const columns = width < 500 ? (size >= 320 ? 1 : 2) : Math.max(2, Math.round((width + gap) / (size + gap)));
       const w = (width - gap * (columns - 1)) / columns;
       const bottoms = Array(columns).fill(0);
-      // Write every width before reading any caption height: interleaving
-      // them forces one synchronous reflow per item in large albums.
+      // Write every width before reading any caption height or natural ratio:
+      // interleaving them forces one synchronous reflow per item in large albums.
       items.forEach(item => { item.style.width = `${w}px`; });
       const captions = items.map(item => item.querySelector('figcaption').offsetHeight);
+      const ratios = items.map(ratio);
       items.forEach((item, i) => {
         const column = bottoms.indexOf(Math.min(...bottoms));
-        const h = Math.min(w / ratio(item), w * 2.2);
+        const h = Math.min(w / ratios[i], w * 2.2);
         place(item, column * (w + gap), bottoms[column], w, h);
         bottoms[column] += h + captions[i] + gap;
       });

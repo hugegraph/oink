@@ -1,6 +1,6 @@
 {{- /* One resource authority for HTML, Print, Markdown, and album covers. */ -}}
 {{- $page := . -}}
-{{- $config := partial "expo/config.html" . -}}
+{{- $config := partialCached "expo/config.html" . .RelPermalink -}}
 {{- $items := slice -}}
 {{- $ids := slice -}}
 {{- $matched := try (.Resources.Match $config.images) -}}
