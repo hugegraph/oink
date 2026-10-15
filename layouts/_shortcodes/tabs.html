@@ -11,7 +11,9 @@
 {{- $innerOutput := strings.TrimSpace (printf "%s" .Inner) -}}
 {{- if $innerOutput }}{{ warnf "shortcode %q accepts tab children only at %s; ignoring the stray content" .Name .Position }}{{ end -}}
 {{- $entries := .Scratch.Get "tabEntries" | default (dict) -}}
-{{- if eq (len $entries) 0 }}{{ warnf "shortcode %q requires at least one tab child at %s; rendering nothing" .Name .Position }}{{ end -}}
+{{- if eq (len $entries) 0 -}}
+  {{- warnf "shortcode %q requires at least one tab child at %s; rendering nothing" .Name .Position -}}
+{{- else -}}
 {{- $tabs := slice -}}
 {{- $seen := dict -}}
 {{- $i := 0 -}}
@@ -75,4 +77,5 @@
   </div>
   {{- end }}
 </div>
+{{- end -}}
 {{- end -}}

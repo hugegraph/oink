@@ -5,6 +5,12 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Keep unnumbered block math with generic attributes out of Book numbering.
+  Empty tabs emit no container; missing cross-reference targets retain plain
+  text; conflicting figure captions consistently prefer `caption` over `title`.
+
 ## [1.3.0] — 2026-10-14
 
 Resource-backed Expo albums with shared navigation, an original-image viewer,

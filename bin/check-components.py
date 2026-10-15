@@ -515,6 +515,32 @@ def check_media_output_states(hugo: str) -> list[str]:
     return errors
 
 
+def check_empty_tabs(hugo: str) -> list[str]:
+    errors: list[str] = []
+    pages = {
+        "docs/_index.md": "---\ntitle: Docs\n---\n",
+        "docs/empty.md": '---\ntitle: Empty tabs\noutputs: [HTML, PRINT, MARKDOWN, RSS]\n---\n\nBefore.\n\n{{< tabs >}}{{< /tabs >}}\n\nAfter.\n',
+    }
+    for strict in (False, True):
+        result, destination, temp = build_site(
+            hugo, pages, prefix="oink-empty-tabs-", panic_on_warning=strict,
+        )
+        with temp:
+            output = result.stdout + result.stderr
+            require('requires at least one tab child' in output, "empty tabs lost its diagnostic", errors)
+            require((result.returncode != 0) == strict, "empty tabs violated the warning policy", errors)
+            if strict:
+                continue
+            for relative in ('docs/empty/index.html', '_print/docs/empty/index.html',
+                             'docs/empty/index.md', 'docs/empty/index.xml'):
+                rendered = (destination / relative).read_text()
+                require('Before.' in rendered and 'After.' in rendered,
+                        f"{relative} lost content around empty tabs", errors)
+                require('td-tabs' not in rendered and 'role="tablist"' not in rendered,
+                        f"{relative} rendered an empty tabs container", errors)
+    return errors
+
+
 def check_removed_shortcodes(hugo: str) -> list[str]:
     errors: list[str] = []
     for name in REMOVED_SHORTCODES:
@@ -598,6 +624,7 @@ def main() -> int:
         + check_steps_container(args.hugo)
         + check_openapi(args.hugo)
         + check_media_output_states(args.hugo)
+        + check_empty_tabs(args.hugo)
         + check_removed_shortcodes(args.hugo)
         + check_i18n()
         + check_template_contracts()

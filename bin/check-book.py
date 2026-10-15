@@ -1015,12 +1015,13 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("duplicate-num", '{{< fig num="1" id="one" src="/x.png" />}}\n{{< fig num="1" id="two" src="/y.png" />}}', "duplicate fig number"),
         ("unsupported", '{{< fig num="1" src="/x.png" bogus="x" />}}', "unsupported parameter"),
         ("src-inner", '{{< fig num="1" src="/x.png" >}}body{{< /fig >}}', "mutually exclusive"),
+        ("fig-caption-title", '{{< fig num="1" src="/x.png" caption="Kept caption" title="Dropped title" />}}', "using caption"),
         ("empty-table", '{{< tbl num="1" >}}{{< /tbl >}}', "requires inner table content"),
         ("bad-width", '{{< fig num="1" src="/x.png" width="0" />}}', "must be a positive integer"),
         ("many-kinds", '{{< xref fig="1" tbl="1" />}}', "accepts only one"),
-        ("xref-empty", '{{< xref />}}', "requires fig, tbl, eq, eg, or anchor"),
+        ("xref-empty", '{{< xref >}}Kept reference{{< /xref >}}', "requires fig, tbl, eq, eg, or anchor"),
         ("xref-anchor-text", '{{< xref anchor="heading" />}}', "requires inner link text"),
-        ("xref-page", '{{< xref page="missing" anchor="heading" >}}text{{< /xref >}}', "was not found"),
+        ("xref-page", '{{< xref page="missing" anchor="heading" >}}Kept reference{{< /xref >}}', "was not found"),
         ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be an integer from 1 through 3"),
         ("eg-caption", '{{< eg num="1" >}}```sql\nSELECT 1;\n```{{< /eg >}}', "requires parameter caption"),
         ("eg-num", '{{< eg num="1/2" caption="Bad" >}}x{{< /eg >}}', "num must match"),
@@ -1052,6 +1053,8 @@ def check_invalid_components(hugo: str) -> list[str]:
         "duplicate-num",               # numbered-kind registry
         "unsupported",                 # shortcode parameter allowlist
         "src-inner",                   # source/body exclusivity
+        "fig-caption-title",           # caption/title conflict
+        "xref-empty",                  # missing target fallback
         "empty-table",                 # required body content
         "bad-width",                   # positive integer validation
         "many-kinds",                  # xref target selection
@@ -1067,6 +1070,9 @@ def check_invalid_components(hugo: str) -> list[str]:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-book-invalid-{name}-") as temp:
             source = Path(temp)
             create_site(source, body)
+            if name in ("xref-empty", "xref-page", "fig-caption-title"):
+                config = source / "hugo.yaml"
+                config.write_text(config.read_text().replace("page: [HTML]", "page: [HTML, PRINT, MARKDOWN]"))
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
             require(result.returncode == 0,
@@ -1074,6 +1080,16 @@ def check_invalid_components(hugo: str) -> list[str]:
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
             require((source / "public/book/page/index.html").is_file(),
                     f"invalid Book case {name} emitted no safe page output", errors)
+            if name in ("xref-empty", "xref-page", "fig-caption-title"):
+                for relative in ("book/page/index.html", "_print/book/page/index.html", "book/page/index.md"):
+                    rendered = (source / "public" / relative).read_text()
+                    if name == "fig-caption-title":
+                        require("Kept caption" in rendered and "Dropped title" not in rendered,
+                                f"{relative} did not prefer fig caption", errors)
+                    else:
+                        require("Kept reference" in rendered and "td-book-xref" not in rendered
+                                and "[Kept reference](" not in rendered,
+                                f"{relative} linked a missing xref target", errors)
             if name in strict_canaries:
                 require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
                         f"invalid Book case {name} survived --panicOnWarning", errors)

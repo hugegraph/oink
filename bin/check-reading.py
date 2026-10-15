@@ -726,6 +726,43 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
     return errors
 
 
+def check_unnumbered_math_attributes(hugo: str) -> list[str]:
+    """Generic block attributes must not opt a formula into Book numbering."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-math-attributes-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        config.write_text(config.read_text().replace(
+            "page: [HTML]", "page: [HTML, PRINT, MARKDOWN]"
+        ) + "markup:\n  goldmark:\n    extensions:\n      passthrough:\n        enable: true\n        delimiters:\n          block: [['$$', '$$']]\n    parser:\n      attribute:\n        block: true\n")
+        page = source / "content/docs/page.md"
+        for attrs, warning in (
+            ('{.wide data-formula="plain" aria-label="Energy"}', None),
+            ('{id="orphan" caption="Ignored caption"}', "id/caption attributes require num"),
+        ):
+            write_file(page, f"---\ntitle: Formula\n---\n\n$$\nE=mc^2\n$$\n{attrs}\n")
+            result = run_site(hugo, source, *(('--panicOnWarning',) if warning is None else ()))
+            output = result.stdout + result.stderr
+            require(result.returncode == 0, f"unnumbered math failed: {output}", errors)
+            require((warning in output) if warning else ('WARN' not in output),
+                    f"unexpected unnumbered math diagnostics: {output}", errors)
+            if result.returncode:
+                continue
+            for relative in ('docs/page/index.html', '_print/docs/page/index.html'):
+                html = (source / "public" / relative).read_text()
+                require('class="katex-display"' in html and 'td-book-figure--eq' not in html
+                        and 'id="eq-"' not in html and 'Ignored caption' not in html,
+                        f"{relative} invented a numbered equation", errors)
+            markdown = (source / "public/docs/page/index.md").read_text()
+            require('E=mc^2' in markdown and 'Equation ' not in markdown,
+                    "unnumbered Markdown invented an equation label", errors)
+            if warning:
+                require(run_site(hugo, source, '--panicOnWarning').returncode != 0,
+                        "orphan math metadata survived strict publication", errors)
+    return errors
+
+
 def check_invalid_eq_escape(hugo: str) -> list[str]:
     errors: list[str] = []
     cases = (
@@ -1135,6 +1172,7 @@ def main() -> int:
         + check_home_root_navigation(args.hugo)
         + check_invalid_pager_config(args.hugo)
         + check_invalid_eq_escape(args.hugo)
+        + check_unnumbered_math_attributes(args.hugo)
         + check_rss_pager_output(args.hugo)
         + check_pager_sources()
         + check_group_only_sections(args.hugo)
