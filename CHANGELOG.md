@@ -7,6 +7,8 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Render the description once in single-page Print and load local KaTeX
+  styles for mathematics included from section descendants.
 - Keep unnumbered block math with generic attributes out of Book numbering.
   Empty tabs emit no container; missing cross-reference targets retain plain
   text; conflicting figure captions consistently prefer `caption` over `title`.

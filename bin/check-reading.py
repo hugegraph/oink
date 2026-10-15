@@ -726,6 +726,45 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
     return errors
 
 
+def check_print_math_and_heading(hugo: str) -> list[str]:
+    """Print must own its math flags even when formulas occur only in children."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-print-math-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        config.write_text(config.read_text().replace(
+            'page: [HTML]', 'page: [HTML, PRINT]'
+        ).replace('section: [HTML]', 'section: [HTML, PRINT]')
+            + 'languages:\n  en: {locale: en-US}\n  zh: {locale: zh-CN}\n')
+        for shell in ('docs', 'blog', 'expo', 'plain'):
+            for suffix in ('.md', '.zh.md'):
+                kind = 'docs' if shell == 'plain' else shell
+                write_file(source / f'content/{shell}/_index{suffix}',
+                           f'---\ntitle: {shell}\ntype: {kind}\ncascade:\n  type: {kind}\n---\n')
+                body = 'No formula.' if shell == 'plain' else '{{< eq >}}E=mc^2{{< /eq >}}'
+                write_file(source / f'content/{shell}/part/_index{suffix}',
+                           '---\ntitle: Part\n---\n')
+                write_file(source / f'content/{shell}/part/page{suffix}',
+                           f'---\ntitle: Page\ndescription: Lead exactly once.\n---\n\n{body}\n')
+        result = run_site(hugo, source, '--panicOnWarning')
+        if result.returncode:
+            return [f'Print math fixture failed: {result.stdout}{result.stderr}']
+        for language in ('', 'zh/'):
+            for shell in ('docs', 'blog', 'expo', 'plain'):
+                for tail in ('', 'part/', 'part/page/'):
+                    relative = f'{language}_print/{shell}/{tail}index.html'
+                    html = (source / 'public' / relative).read_text()
+                    has_math = shell != 'plain'
+                    require(('third_party/katex/katex.min.' in html) == has_math,
+                            f'{relative} selected the wrong KaTeX styles', errors)
+                    require(('class="katex-display"' in html) == has_math,
+                            f'{relative} lost or invented a formula', errors)
+                    require(html.count('<div class="lead">') == 1,
+                            f'{relative} duplicated the page description', errors)
+    return errors
+
+
 def check_unnumbered_math_attributes(hugo: str) -> list[str]:
     """Generic block attributes must not opt a formula into Book numbering."""
     errors: list[str] = []
@@ -1173,6 +1212,7 @@ def main() -> int:
         + check_invalid_pager_config(args.hugo)
         + check_invalid_eq_escape(args.hugo)
         + check_unnumbered_math_attributes(args.hugo)
+        + check_print_math_and_heading(args.hugo)
         + check_rss_pager_output(args.hugo)
         + check_pager_sources()
         + check_group_only_sections(args.hugo)

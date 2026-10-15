@@ -21,6 +21,7 @@
 {{ define "recurse-content" }}
   {{ $s := .section }}
   {{ $psid := .psid }}
+  {{ $root := .root | default $s }}
   {{ $pages := partial "print/children.html" $s }}
   {{ $subSection := 1 }}
 
@@ -32,11 +33,11 @@
   {{ range $pages }}
     {{ $sid := printf "%s%d" $psid $subSection }}
     {{ $subSection = add $subSection 1 }}
-	{{ $params := dict "Page" . "PageNum" $sid "DoPageBreak" $doPageBreak }}
+	{{ $params := dict "Page" . "Root" $root "PageNum" $sid "DoPageBreak" $doPageBreak }}
     {{ partial "print/content.html" $params }}
 
     {{ if .IsSection }}
-      {{ template "recurse-content" (dict "section" . "psid" (printf "%s." $sid) ) }}
+      {{ template "recurse-content" (dict "section" . "root" $root "psid" (printf "%s." $sid) ) }}
     {{ end }}
 	{{ $doPageBreak = true }}
   {{ end }}
@@ -68,4 +69,4 @@
 </div>
 </div>
 
-{{ template "recurse-content" (dict "section" .CurrentSection "psid" "") }}
+{{ template "recurse-content" (dict "section" .CurrentSection "root" . "psid" "") }}
