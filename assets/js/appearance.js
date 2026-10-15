@@ -230,11 +230,14 @@
     }
 
     function close(restoreFocus) {
-      if (panel.open) panel.close();
+      if (!panel.open) return;
+      panel.close();
       if (restoreFocus) trigger.focus();
     }
 
     panel.addEventListener('close', function () {
+      // A previous close event may arrive after the reader reopens the dialog.
+      if (panel.open) return;
       wrapper.classList.remove('td-is-open');
       trigger.setAttribute('aria-expanded', 'false');
     });

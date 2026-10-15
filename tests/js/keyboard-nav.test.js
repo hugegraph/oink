@@ -57,6 +57,7 @@ class Element {
     if (selector === '[role="dialog"]') return this.getAttribute('role') === 'dialog';
     if (selector === '.td-kbd-focus') return this.classList.contains('td-kbd-focus');
     if (selector === '.td-shell-tree__row') return this.classList.contains('td-shell-tree__row');
+    if (selector === ':modal') return this.modal === true;
     if (selector === 'dialog[open]') return this.tagName === 'DIALOG' && this.hasAttribute('open');
     if (selector === '#TableOfContents') return this.id === 'TableOfContents';
     if (selector === 'link[rel="canonical"]') return this.tagName === 'LINK' && this.getAttribute('rel') === 'canonical';
@@ -1000,6 +1001,25 @@ function press(harness, values) {
   assert.equal(resumed.win.sessionStorage.getItem('td-kbd-palette'), null, 'a pending palette mode is consumed once');
   resumed.timeouts.splice(0).forEach((callback) => callback());
   assert.deepEqual(resumedOpens, ['>'], 'the destination resumes command mode after its runtime initializes');
+
+  const appearanceKeys = setup({ withTree: false, shell: false });
+  const appearanceBridge = new Element('button');
+  appearanceBridge.setAttribute('data-td-theme-toggle', '');
+  appearanceKeys.root.appendChild(appearanceBridge);
+  const appearanceDialog = new Element('dialog', 'td-appearance__panel');
+  appearanceDialog.setAttribute('open', '');
+  appearanceKeys.root.appendChild(appearanceDialog);
+  press(appearanceKeys, { key: 't' });
+  assert.equal(appearanceBridge.clicks, 1, 'nonmodal Appearance blocked reading shortcuts');
+  appearanceDialog.modal = true;
+  press(appearanceKeys, { key: 't' });
+  assert.equal(appearanceBridge.clicks, 1, 'modal Appearance lost shortcut ownership');
+  appearanceDialog.modal = false;
+  const secondDialog = new Element('dialog');
+  secondDialog.setAttribute('open', '');
+  appearanceKeys.root.appendChild(secondDialog);
+  press(appearanceKeys, { key: 't' });
+  assert.equal(appearanceBridge.clicks, 1, 'a second native dialog was ignored');
 
   // -------------------------------------------------- collapsed desktop tree
   const collapsed = setup({ sidebarToggle: true });

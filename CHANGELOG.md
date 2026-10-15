@@ -3,6 +3,145 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+## [1.3.0] — 2026-10-15
+
+Resource-backed Expo albums with shared navigation, an original-image viewer,
+and reader-controlled layouts. This release also improves navigation, Landing,
+and aggregate Print output across the maintained consumer sites.
+
+### Added
+
+- Add `type: expo` for resource-backed image albums, with shared shell navigation,
+  icon controls for wall, masonry cards and seamless layouts, and tile sizing.
+- Add original-size image viewing with automatic fit, bounded expansion and manual zoom,
+  original-file and album-location links, default GIF playback and motion controls.
+- Add pointer dragging and scoped WASD panning, QE/HL navigation, JK zoom,
+  R reset and F expansion shortcuts to the album viewer.
+- Keep album images and metadata in Print, Markdown, LLMSFULL and RSS outputs;
+  include native accessible names in all 32 interface catalogs.
+- Remember reader layout and size across albums, with a segmented mode selector,
+  motion button and inline size slider. Keep appearance in navigation and omit
+  article actions from Expo pages.
+- Swipe between fitted images on touch screens and double-click to alternate
+  between the initial fit and a closer look in the album viewer. The viewer shows
+  the cached grid preview while an original loads and warms neighbouring images.
+
+### Fixed
+
+- Ignore explicit Docs navigation in home-root and non-Docs/Book trees; mark
+  uncached current pages and expand their content ancestors from resolved page
+  identity, including page-only nodes and custom URLs.
+- Scope `data/docs_nav.json` by resolved content identity across sidebar, pager
+  and navigation JSON, including custom URLs, nested roots and separate Docs/Book
+  trees. Unlisted roots retain their content-tree navigation.
+- Register Expo viewer closure with the shared surface coordinator.
+- Keep closed Appearance menus from taking focus during a coordinated close.
+- Give Draw.io a modal host with a localized, keyboard-accessible Close button,
+  backdrop dismissal and focus restoration. Cross-origin editor keys remain
+  under editor control.
+- Indent optional Book sidebar headings from their owning navigation row,
+  including its chapter number and icon, instead of using one fixed offset.
+- Let fixed and flow outlines grow within bounded widths on wide screens,
+  keeping the visible rail and reserved column synchronized during resizing.
+- Apply responsive outline widths immediately so a shrinking viewport cannot
+  make the article repeatedly narrow and rebound near its maximum width or
+  a text-wrapping boundary. Keep the rail's collapse slide and fade.
+- Resolve Expo albums to their own top-level section in the sidebar and root
+  switcher instead of labelling the home tree with the first site section.
+- Name the viewer's previous and next buttons as image steps in all 32 catalogs,
+  and mirror their arrow keys and hints in right-to-left languages.
+- Keep focused Expo tiles visible in seamless walls and above wall captions.
+  Album covers and cards follow the preset radius and gain hover and focus
+  states; viewer arrows mirror in right-to-left languages.
+- Lay out card albums without one forced reflow per image, and load the first
+  album tiles eagerly.
+- Stabilize Expo's document scrollbar space so albums near the viewport height
+  cannot oscillate between two layouts; opening the viewer preserves grid width.
+- Escape image and Gallery source URLs as HTML attributes after URL validation,
+  preserving quotes and ampersands without creating extra attributes in HTML,
+  Print, and RSS output.
+- Preserve query parameters and fragments in Draw.io editor URLs. Accept editor
+  messages only from the configured iframe and origin, ignore malformed data,
+  and reject exports that are not PNG or SVG image data URLs.
+- Close Page Actions when keyboard focus leaves the menu, and make its first
+  item focusable immediately when opening with ArrowDown.
+- Keep Appearance's expanded state correct when a dialog is closed and
+  reopened before its queued close event arrives.
+- Align taxonomy output goldens with the compact foldable sidebar leaf repair.
+
+- Give the releases layout an explicit aggregate Print template so release
+  sections consistently include every release body instead of an index list.
+- Include Markdown headings rendered inside Tabs and other Markdown shortcodes
+  in aggregate Print namespaces, even when absent from Hugo page fragments.
+- Decode encoded heading fragments exactly once in aggregate Print output,
+  preserve literal plus and percent characters, and match HTML-escaped IDs.
+- Let consumers mark custom HTML IDs with `data-td-print-local` so aggregate
+  Print namespaces their IDs and local links without changing ordinary pages
+  or single-page Print deep links.
+- Scope Landing Markdown code IDs per section and field, apply shared content
+  styles and capabilities, and reject explicit duplicate IDs before publication.
+- Generate configured Landing RSS feeds through the shared static renderer,
+  keeping advertised alternate URLs reachable.
+- Omit reading-sidebar drawer controls on stock 404 pages even when root
+  cascade settings assign a Docs or Book type.
+- Preserve explicit navigation for root-level manuals assigned to a Docs or
+  Book sidebar, including manifest ancestry, current entries and page order.
+- Namespace generated tab IDs in aggregate Print output so links stay in their
+  own chapter; distinguish nested tab containers within a page.
+- Contain wide tables in keyboard-scrollable Print browser previews while
+  expanding their viewports for paper output and keeping RSS static.
+- Make Landing code plates keyboard-focusable in WebKit as well as browsers
+  that automatically focus scroll containers.
+- Resolve relative links against their original HTML pages before aggregating
+  Print content, including quoted raw HTML attributes; preserve non-link
+  attributes even when they contain text identical to an actual `href`.
+- Give Book and Docs Landing pages one working navigation drawer, and load its
+  runtime when a site supplies a custom homepage or Landing body.
+- Reserve space for mobile navbar controls beside longer menus, and underline
+  page annotation links so they remain distinguishable without color.
+- Validate explicit empty or malformed native equation numbers before target
+  registration, and render their ordinary-build fallback without a fake label.
+- Match generated schemas to supported boolean shorthand and nested page
+  fields. Honor empty quick-link lists, keep the documented sidebar-root
+  fallback, and validate taxonomy page widths through the shared resolver.
+- Remeasure code blocks after tab activation, allow search from nonmodal
+  Appearance, and preserve modal keyboard ownership. Close the root switcher
+  before its drawer, restore Landing search focus to a visible control, and
+  keep preset selection in the Palette usable for another action.
+- Keep Expo anchors unique through hash/suffix collisions, validate explicit
+  metadata including false values, and clear stale images during viewer changes.
+  Separate album prose from image headings in Markdown and LLMSFULL.
+- Render the description once in single-page Print and load local KaTeX
+  styles for mathematics included from section descendants.
+- Keep unnumbered block math with generic attributes out of Book numbering.
+  Empty tabs emit no container; missing cross-reference targets retain plain
+  text; conflicting figure captions consistently prefer `caption` over `title`.
+- Speed up `backlinks-index.html` with in-place map accumulation, cache
+  `expo/config.html` and `comments-state.html` per page, and honor empty
+  `params.ui.quick_links: []` lists.
+- Clean up Draw.io modal listeners when the editor closes.
+- Resolve explicit `--sites` project roots with nested `site/` directories in
+  `bin/update-consumers.py`, including projects whose root `go.mod` belongs to a
+  separate Go application.
+
+### Changed
+
+- Name the accepted image-album layout Expo. Replace the Muse draft with the
+  bilingual Expo contract and content-model decision in the documentation site.
+
+- Use Hugo Extended 0.166.0 as the minimum and sole development, CI, and
+  release-test baseline. Advance the baseline with stable Hugo releases;
+  discontinue older-Hugo compatibility testing and adaptation.
+- Consumer inventory also includes primary `site/` directories and reports
+  classic `themes/oink` consumers for separate submodule or source-copy updates.
+- Reviewed source directories without Git can be selected with `--sites`.
+  Retained vendor snapshots bypassed by Hugo configuration no longer block
+  published-module upgrades.
+- `--check-appearance`, together with `--check`, validates the Paper default
+  and all four style controls on freshly rendered consumer entry pages.
+
 ## [1.2.0] — 2026-10-05
 
 Four visual styles with local fonts and independent appearance controls.
@@ -2128,6 +2267,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/pgsty/oink/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0

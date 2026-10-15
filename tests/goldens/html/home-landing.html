@@ -287,9 +287,7 @@ data-bs-theme-value="auto" checked>
 <span class="td-landing-status-dot" aria-hidden="true"></span>
 <span>Hugo-only · Local-first · Zero npm</span>
 </p>
-<h1 class="td-landing-hero__title" id="hero-title">
-<span>Plain Markdown in.</span>
-<span>Modern docs out.</span></h1><p class="td-landing-hero__lead">Search, i18n, versioning, charts, and math — built into the theme. The entire build step is one command: <code>hugo</code>.</p>
+<h1 class="td-landing-hero__title" id="hero-title"><span>Plain Markdown in.</span><span>Modern docs out.</span></h1><p class="td-landing-hero__lead">Search, i18n, versioning, charts, and math — built into the theme. The entire build step is one command: <code>hugo</code>.</p>
 <p class="td-landing-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>No npm, CDN, or JavaScript framework required.</span></p>
 <div class="td-landing-hero__actions">
 <a class="td-landing-button td-landing-button--primary" href="/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
@@ -308,14 +306,10 @@ data-bs-theme-value="auto" checked>
 <h2 id="metrics-title">What this page cost</h2>
 <p class="td-landing-section__description">Four numbers, all of them checkable against the repository.</p>
 </header>
-<div class="td-landing-metric-grid" style="--td-columns: 4">
-<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>Data file</span><small><code>data/home/en.yaml</code></small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>Blocks on this page</span><small>from a registry of 22 section types</small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>Templates edited</span><small>order is data, not markup</small>
-</div>
-<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>Runtime dependencies</span><small>no npm, no CDN, no PostCSS</small>
+<div class="td-landing-metric-grid" style="--td-columns: 4"><div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>Data file</span><small><code>data/home/en.yaml</code></small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>Blocks on this page</span><small>from a registry of 22 section types</small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>Templates edited</span><small>order is data, not markup</small>
+</div><div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>Runtime dependencies</span><small>no npm, no CDN, no PostCSS</small>
 </div>
 </div>
 </div>
@@ -333,7 +327,7 @@ data-bs-theme-value="auto" checked>
 </div>
 <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="Landing page section configuration">
 <div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home/en.yaml</b></div>
-<pre><code><span class="c"># </span>this page
+<pre tabindex="0"><code><span class="c"># </span>this page
 <span class="p">- </span>hero
 <span class="ok">- </span>metrics
 <span class="ok">- </span>capabilities
@@ -348,17 +342,14 @@ data-bs-theme-value="auto" checked>
 <h2 id="cards-title">Three map entries, three cards</h2>
 <p class="td-landing-section__description">The general-purpose collection — features, benefits, services, any short list of things.</p>
 </header>
-<div class="td-landing-card-grid" style="--td-columns: 3">
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">Rich text</p><h3>Markdown-aware</h3><div class="td-landing-card__description"><p>Descriptions carry <strong>emphasis</strong>, <code>code</code>, and <a href="https://commonmark.org/">links</a>.</p>
-</div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">Learn more
+<div class="td-landing-card-grid" style="--td-columns: 3"><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">Rich text</p><h3>Markdown-aware</h3><div class="td-landing-card__description"><div class="td-content"><p>Descriptions carry <strong>emphasis</strong>, <code>code</code>, and <a href="https://commonmark.org/">links</a>.</p>
+</div></div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">Learn more
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
-</article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">Robust data</p><h3>Link-optional</h3><div class="td-landing-card__description"><p>This card has no <code>url</code>, and is still valid, readable content.</p>
-</div>
-</article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">Multiple instances</p><h3>Reusable</h3><div class="td-landing-card__description"><p>Two entries, one <code>type</code>, different <code>key</code> — the pattern used three times below.</p>
-</div>
+</article><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">Robust data</p><h3>Link-optional</h3><div class="td-landing-card__description"><div class="td-content"><p>This card has no <code>url</code>, and is still valid, readable content.</p>
+</div></div>
+</article><article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">Multiple instances</p><h3>Reusable</h3><div class="td-landing-card__description"><div class="td-content"><p>Two entries, one <code>type</code>, different <code>key</code> — the pattern used three times below.</p>
+</div></div>
 </article>
 </div>
 </div>
@@ -535,22 +526,22 @@ data-bs-theme-value="auto" checked>
 </header>
 <div class="td-landing-gallery" style="--td-columns: 3"><article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Information architecture</p><h3>Documentation portal</h3><div class="td-landing-gallery-card__description"><p>One deliberate route into the <a href="/docs/">documentation</a>.</p>
-</div><a class="td-landing-card-link" href="/docs/">Open example
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Information architecture</p><h3>Documentation portal</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>One deliberate route into the <a href="/docs/">documentation</a>.</p>
+</div></div><a class="td-landing-card-link" href="/docs/">Open example
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </div>
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API reference</h3><div class="td-landing-gallery-card__description"><p>Prose beside generated reference material.</p>
-</div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API reference</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>Prose beside generated reference material.</p>
+</div></div>
 </div>
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Updates</p><h3>Engineering blog</h3><div class="td-landing-gallery-card__description"><p>Releases, explanations, and the decisions behind them.</p>
-</div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Updates</p><h3>Engineering blog</h3><div class="td-landing-gallery-card__description"><div class="td-content"><p>Releases, explanations, and the decisions behind them.</p>
+</div></div>
 </div>
 </article>
 </div>
@@ -562,16 +553,16 @@ data-bs-theme-value="auto" checked>
 <h2 id="testimonials-title">Placeholder quotes, real markup</h2>
 <p class="td-landing-section__description">Both quotes below are sample data. Each one takes a name, an avatar or icon, a role, a source link, and a Markdown comment.</p>
 </header>
-<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“The configuration is readable enough that <strong>content owners</strong> change the homepage themselves.”</p>
-</blockquote>
+<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><div class="td-content"><p>“The configuration is readable enough that <strong>content owners</strong> change the homepage themselves.”</p>
+</div></blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">A</span></div>
 <div><strong>Ada Example</strong><span>Documentation engineer</span></div><a class="td-landing-card-link" href="/" target="_blank" rel="noopener noreferrer">Source
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </figcaption>
 </figure>
-<figure class="td-landing-testimonial"><blockquote><p>“We moved the gallery above the FAQ by moving two lines.”</p>
-</blockquote>
+<figure class="td-landing-testimonial"><blockquote><div class="td-content"><p>“We moved the gallery above the FAQ by moving two lines.”</p>
+</div></blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">L</span></div>
 <div><strong>Lin Example</strong><span>Open-source maintainer</span></div>
 </figcaption>
@@ -585,18 +576,15 @@ data-bs-theme-value="auto" checked>
 <h2 id="contributors-title">Credit the people, not the tooling</h2>
 <p class="td-landing-section__description">Production sites point <code>icon</code> at an avatar image; single letters keep this example self-contained.</p>
 </header>
-<div class="td-landing-contributor-grid" style="--td-columns: 3">
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
+<div class="td-landing-contributor-grid" style="--td-columns: 3"><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
 <div class="td-landing-contributor__copy"><h3>Alex</h3><p>Theme architecture</p>
 </div><a class="td-landing-card-link" href="https://github.com/"><span class="visually-hidden">Alex</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
-</article>
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">B</span></div>
+</article><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">B</span></div>
 <div class="td-landing-contributor__copy"><h3>Bo</h3><p>Accessibility review</p>
 </div>
-</article>
-<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">C</span></div>
+</article><article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">C</span></div>
 <div class="td-landing-contributor__copy"><h3>Casey</h3><p>Documentation and examples</p>
 </div>
 </article>
@@ -612,27 +600,31 @@ data-bs-theme-value="auto" checked>
 <div class="td-landing-faq-list td-landing-faq-list--accordion">
 <details class="td-landing-faq" open>
 <summary><span>Is it really one file?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>Everything between the navbar and the footer is. Navigation comes from <code>hugo.yaml</code>, the footer from <code>data/footer/en.yaml</code>, and every block in between from <code>data/home/en.yaml</code>.</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>Everything between the navbar and the footer is. Navigation comes from <code>hugo.yaml</code>, the footer from <code>data/footer/en.yaml</code>, and every block in between from <code>data/home/en.yaml</code>.</p>
+</div>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>Does each language need its own file?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>A single-language site can use one <code>data/home.yaml</code>. This site is bilingual, so it uses <code>data/home/en.yaml</code> and <code>data/home/zh.yaml</code>.</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>A single-language site can use one <code>data/home.yaml</code>. This site is bilingual, so it uses <code>data/home/en.yaml</code> and <code>data/home/zh.yaml</code>.</p>
+</div>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>Can one section type appear more than once?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>Yes — give each entry a different <code>key</code>:</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>Yes — give each entry a different <code>key</code>:</p>
 <ul>
 <li><code>{ type: gallery, key: products }</code></li>
 <li><code>{ type: gallery, key: case_studies }</code></li>
 </ul>
 <p>The three logo walls on this page are one section type reading three different blocks.</p>
 </div>
+</div>
 </details>
 <details class="td-landing-faq">
 <summary><span>What happens when <code>url</code> is missing?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>The item renders as ordinary content — no empty link, no broken link. Two of the three cards above have no <code>url</code>.</p>
+<div class="td-landing-faq__answer"><div class="td-content"><p>The item renders as ordinary content — no empty link, no broken link. Two of the three cards above have no <code>url</code>.</p>
+</div>
 </div>
 </details>
 </div>
@@ -644,13 +636,13 @@ data-bs-theme-value="auto" checked>
 <h2 id="markdown-title">The escape hatch</h2>
 <p class="td-landing-section__description">When no predefined collection fits, write Markdown straight into the data file.</p>
 </header>
-<div class="td-landing-markdown"><p>This paragraph is a <code>body:</code> string in the same YAML file as everything above it. It takes paragraphs, <a href="https://gohugo.io/">links</a>, and lists:</p>
+<div class="td-landing-markdown"><div class="td-content"><p>This paragraph is a <code>body:</code> string in the same YAML file as everything above it. It takes paragraphs, <a href="https://gohugo.io/">links</a>, and lists:</p>
 <ul>
 <li>no custom template;</li>
 <li>ordinary Goldmark rendering;</li>
 <li>the same width and vertical rhythm as every other block.</li>
 </ul>
-</div>
+</div></div>
 </div>
 </section>
 <section id="principles" class="td-landing-section td-landing-principles" aria-labelledby="principles-title">
@@ -658,18 +650,15 @@ data-bs-theme-value="auto" checked>
 <p class="td-landing-section__eyebrow"><span>Principles</span><i aria-hidden="true"></i></p>
 <h2 id="principles-title">Predictable by design</h2>
 </header>
-<div class="td-landing-principle-grid" style="--td-columns: 3">
-<article>
+<div class="td-landing-principle-grid" style="--td-columns: 3"><article>
 <span>01</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
 <h3>Content first</h3><p>Most changes are plain text in a data file.</p>
-</article>
-<article>
+</article><article>
 <span>02</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-universal-access" aria-hidden="true"></i></div>
 <h3>Accessible defaults</h3><p>Semantic sections, guarded external links, and native FAQ disclosure controls.</p>
-</article>
-<article>
+</article><article>
 <span>03</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
 <h3>Backward compatible</h3><p>Home data without a <code>sections</code> list keeps the order it always had.</p>

@@ -216,14 +216,23 @@
       if (!root.contains(e.target)) close(false);
     }
     btn.addEventListener('click', function () {
-      if (pop.hidden) {
+      if (btn.getAttribute('aria-expanded') !== 'true') {
         open();
       } else {
         close(false);
       }
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !pop.hidden) close(true);
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        e.preventDefault();
+        e.stopPropagation();
+        close(true);
+      }
+    });
+    root.addEventListener('focusout', function (e) {
+      if (!pop.hidden && e.relatedTarget && !root.contains(e.relatedTarget)) {
+        close(false);
+      }
     });
   }
 
