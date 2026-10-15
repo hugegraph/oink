@@ -1,6 +1,6 @@
-{{- /* Scope the explicit tree by content identity, not published URL. The
-       same selection feeds the sidebar, pager and navigation.json, including
-       nested sidebar roots and sections with custom permalinks. */ -}}
+{{- /* Scope the explicit tree by content identity and navigation ownership,
+       not published URL. A manual may keep its files at the content root
+       while resolving their sidebar to the Docs section. */ -}}
 {{- $page := .page -}}
 {{- $root := .root -}}
 {{- $sections := slice -}}
@@ -19,9 +19,12 @@
     {{- $target := $page.Site.GetPage .page -}}
     {{- if not $target -}}
       {{- warnf "docs navigation: page %s was not found; skipping the entry" .page -}}
-    {{- else if or (eq $root $target) ($root.IsAncestor $target) -}}
+    {{- else if or (eq $root $target) ($root.IsAncestor $target)
+        (and (in (slice "docs" "book") $target.Type)
+          (eq (partial "shell/sidebar-root.html" $target) $root)) -}}
       {{- $sections = $sections | append . -}}
-    {{- else if $target.IsAncestor $root -}}
+    {{- else -}}
+      {{- /* Explicit parents need not be physical ancestors of a nested root. */ -}}
       {{- range partial "shell/docs-nav-sections.html" (dict "page" $page "root" $root "nodes" (.children | default (slice))) -}}
         {{- $sections = $sections | append . -}}
       {{- end -}}

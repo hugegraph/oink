@@ -1586,6 +1586,76 @@ menus:
     return errors
 
 
+def build_drawer_ownership(hugo: str) -> list[str]:
+    """Landing and 404 pages must not advertise an absent reading sidebar."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-drawers-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        (source / "content").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"baseURL: https://example.org/\ntitle: Drawer fixture\ntheme: {ROOT.name}\n"
+            "disableKinds: [RSS, sitemap, taxonomy, term]\n",
+            encoding="utf-8",
+        )
+        for route, kind, layout in [
+            ("_index", "book", "landing"),
+            ("book-landing", "book", "landing"),
+            ("docs-landing", "docs", "landing"),
+            ("chapter", "book", ""),
+        ]:
+            (source / "content" / f"{route}.md").write_text(
+                f"---\ntitle: {route}\ntype: {kind}\nlayout: {layout}\n"
+                + ("cascade:\n  type: docs\n" if route == "_index" else "")
+                +
+                "sections:\n  - type: markdown\n    content: Drawer fixture.\n---\n\nContent.\n",
+                encoding="utf-8",
+            )
+        result = run_hugo_process(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public"), "--panicOnWarning"],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        require(result.returncode == 0,
+                "drawer fixture failed: " + (result.stdout + result.stderr)[-800:], errors)
+        if result.returncode:
+            return errors
+        for route in ("", "book-landing/", "docs-landing/"):
+            html = (root / "public" / route / "index.html").read_text()
+            require("data-td-landing-menu-toggle" in html
+                    and "data-td-shell-drawer-open" not in html
+                    and 'id="td-shell-sidebar"' not in html,
+                    f"{route or 'home'} exposes a shell drawer outside its Landing layout", errors)
+        chapter = (root / "public/chapter/index.html").read_text()
+        require("data-td-shell-drawer-open" in chapter
+                and 'id="td-shell-sidebar"' in chapter
+                and "data-td-landing-menu-toggle" not in chapter,
+                "ordinary Book chapter lost its sole sidebar drawer", errors)
+        not_found = (root / "public/404.html").read_text()
+        require('class="td-404"' in not_found and "td-site-header" in not_found
+                and "td-shell-sidebar" not in not_found
+                and "data-td-shell-drawer-open" not in not_found,
+                "stock 404 inherited a nonexistent sidebar from the Docs cascade", errors)
+        (source / "layouts").mkdir()
+        (source / "layouts/index.html").write_text(
+            '{{ define "main" }}<h1>Custom homepage</h1>{{ end }}', encoding="utf-8",
+        )
+        (source / "content/_index.md").write_text("---\ntitle: Custom homepage\n---\n", encoding="utf-8")
+        custom = run_hugo_process(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public"), "--panicOnWarning"],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        require(custom.returncode == 0,
+                "custom homepage fixture failed: " + (custom.stdout + custom.stderr)[-800:], errors)
+        if custom.returncode == 0:
+            home = (root / "public/index.html").read_text()
+            require("Custom homepage</h1>" in home and "data-td-landing-menu-toggle" in home
+                    and "js/chunks/landing" in home,
+                    "custom homepage drawer omitted its Landing runtime", errors)
+    return errors
+
+
 def build_blog_index_forms(hugo: str) -> list[str]:
     """Compare the three published forms and the paged reader toggle."""
 
@@ -1969,7 +2039,7 @@ def main() -> int:
               + build_self_root_fixture(args.hugo)
               + build_root_menu_visibility(args.hugo)
               + build_featured_image_rejection(args.hugo)
-              + build_navbar_menu_columns(args.hugo)
+              + build_navbar_menu_columns(args.hugo) + build_drawer_ownership(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)
               + build_share_fixture(args.hugo))
     if errors:

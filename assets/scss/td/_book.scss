@@ -34,6 +34,14 @@
   max-width: none;
 }
 
+.td-book-content--normal .td-shell-layout--w-normal .td-shell-article {
+  max-width: var(--td-book-content-normal);
+}
+
+.td-book-content--wide .td-shell-layout--w-normal .td-shell-article {
+  max-width: none;
+}
+
 // The generic tree rule makes every child span flexible. Book numbers are an
 // atomic, right-aligned column; the following title owns the remaining row.
 body.td-book .td-shell-tree__link {
