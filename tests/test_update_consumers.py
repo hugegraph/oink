@@ -38,6 +38,54 @@ class ConsumerUpdates(unittest.TestCase):
         self.site(".hidden/site")
         self.assertEqual([str(site.resolve())], [x["site"] for x in updater.discover([self.root], [])])
 
+    def test_primary_nested_site_is_found_but_archive_site_is_excluded(self):
+        site = self.site("project/site")
+        (site / "hugo.yaml").write_text("title: Primary nested site\n")
+        archive = self.site("archive/site")
+        (archive / "hugo.yaml").write_text("title: Archive\n")
+        self.assertEqual([str(site.resolve())], [x["site"] for x in updater.discover([self.root], [])])
+        self.assertEqual([str(site.resolve())], [x["site"] for x in updater.discover([], [self.root / "project"])])
+
+    def test_classic_theme_is_reported_for_separate_update(self):
+        site = self.root / "classic"
+        theme = site / "themes/oink"
+        theme.mkdir(parents=True)
+        (theme / "go.mod").write_text("module github.com/pgsty/oink\n")
+        (site / "hugo.yaml").write_text("theme: oink\n")
+        with patch.object(updater, "hugo_config", return_value={"theme": ["oink"]}):
+            item = updater.inspect(site, explicit=True)
+            self.assertEqual("skipped", item["status"])
+            self.assertEqual("classic", item["kind"])
+            self.assertIn("separately", item["reason"])
+        with patch.object(updater, "hugo_config", return_value={"theme": ["other"]}):
+            self.assertIsNone(updater.inspect(site))
+
+    def test_explicit_project_with_go_application_resolves_nested_site(self):
+        site = self.site("application/site")
+        (site / "hugo.yaml").write_text("title: Application docs\n")
+        project = site.parent
+        (project / "go.mod").write_text("module example.org/application\n\ngo 1.27.0\n")
+        items = updater.discover([], [project, site])
+        self.assertEqual([str(site.resolve())], [item["site"] for item in items])
+        self.assertEqual("ready", items[0]["status"])
+        (project / "go.mod").write_text(
+            "module example.org/application\n// github.com/pgsty/oink is used only in site/\n")
+        self.assertEqual(str(site.resolve()), updater.discover([], [project])[0]["site"])
+        # An actual root consumer takes precedence over its nested site.
+        (project / "go.mod").write_text((site / "go.mod").read_text())
+        items = updater.discover([], [project])
+        self.assertEqual([str(project.resolve())], [item["site"] for item in items])
+        self.assertEqual("ready", items[0]["status"])
+
+    def test_explicit_resolution_error_is_reported_without_losing_other_sites(self):
+        site = self.site("broken/site")
+        (site / "hugo.yaml").write_text("title: Nested docs\n")
+        (site.parent / "go.mod").write_bytes(b"\xff")
+        good = self.site("good")
+        items = updater.discover([], [site.parent, good])
+        self.assertEqual(["failed", "ready"], [item["status"] for item in items])
+        self.assertIn("cannot resolve explicit site", items[0]["reason"])
+
     def test_inventory_reports_broken_root_and_module_and_continues(self):
         good = self.site("good")
         broken = self.site("broken")
@@ -60,6 +108,50 @@ class ConsumerUpdates(unittest.TestCase):
         items = updater.discover([], [missing])
         self.assertEqual(items[0]["status"], "failed")
         self.assertIn("explicit site", items[0]["reason"])
+
+    def test_source_only_site_requires_explicit_selection(self):
+        site = self.root / "source-only"
+        site.mkdir()
+        (site / "go.mod").write_text(
+            "module example.org/site\n\ngo 1.27.0\n\nrequire github.com/pgsty/oink v1.0.0\n")
+        self.assertEqual("skipped", updater.inspect(site)["status"])
+        self.assertEqual("ready", updater.inspect(site, explicit=True)["status"])
+
+    def appearance_page(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('<html data-td-preset="paper" data-td-site-preset="paper">'
+                        + ''.join(f'<input data-td-preset-value="{p}">' for p in
+                                  ("paper", "slate", "ink", "terminal")) + '</html>')
+
+    def test_appearance_checks_localized_pages_and_rejects_missing_controls(self):
+        self.appearance_page(self.root / "index.html")
+        self.appearance_page(self.root / "zh/index.html")
+        self.assertIn("zh/index.html", updater.check_appearance(self.root, {"languages": {"en": {}, "zh": {}}}))
+        (self.root / "zh/index.html").write_text('<html data-td-preset="paper" data-td-site-preset="paper"></html>')
+        with self.assertRaisesRegex(RuntimeError, "zh/index.html"):
+            updater.check_appearance(self.root, {"languages": {"zh": {}}})
+
+    def test_appearance_uses_docs_for_disabled_home_and_ignores_redirects(self):
+        self.appearance_page(self.root / "docs/index.html")
+        (self.root / "index.html").write_text('<html><meta http-equiv="refresh" content="0;url=/docs/"></html>')
+        self.assertIn("docs/index.html", updater.check_appearance(self.root, {"disablekinds": ["home"]}))
+        with self.assertRaisesRegex(RuntimeError, "no rendered entry pages"):
+            updater.check_appearance(self.root, {})
+
+    def test_retained_vendor_uses_the_resolved_graph(self):
+        site = self.site()
+        (site / "_vendor").mkdir()
+        (site / "_vendor/modules.txt").write_text("# github.com/pgsty/oink v0.8.0\n")
+        real_run = updater.run
+
+        for graph, status in (("site github.com/pgsty/oink@v1.0.0", "ready"),
+                              ("site github.com/pgsty/oink@v0.8.0+vendor", "blocked")):
+            def graph_run(path, *args):
+                return graph if args[0] == "hugo" else real_run(path, *args)
+
+            with patch.object(updater, "run", graph_run):
+                self.assertEqual(status, updater.inspect(site, version="v1.0.0")["status"])
+                self.assertEqual(status == "blocked", updater.uses_vendor(site, "hugo"))
 
     def test_dirty_content_is_preserved_but_dirty_pins_need_explicit_selection(self):
         site = self.site()

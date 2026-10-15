@@ -34,17 +34,14 @@
   "expandLevels" $expandLevels
   "overflow" $overflow
 -}}
-{{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
-{{- $tree := "shell/sidebar-tree.html" -}}
-{{- if and
-      (in (slice "docs" "book") .Type)
-      (ne $sidebarRoot .Site.Home)
-      (index $docsNav "sections")
-  -}}
-  {{- $tree = "shell/docs-sidebar-tree.html" -}}
+{{- $docsNavSections := slice -}}
+{{- if and (in (slice "docs" "book") .Type) (ne $sidebarRoot .Site.Home) -}}
+  {{- $docsNavSections = partialCached "shell/docs-nav-sections.html" (dict "page" . "root" $sidebarRoot) $sidebarRoot.RelPermalink .Site.Language.Lang -}}
 {{- end -}}
-{{- if and (isset $docsNav "sections") (not (index $docsNav "sections")) -}}
-  {{- warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
+{{- $args = merge $args (dict "sections" $docsNavSections) -}}
+{{- $tree := "shell/sidebar-tree.html" -}}
+{{- if $docsNavSections -}}
+  {{- $tree = "shell/docs-sidebar-tree.html" -}}
 {{- end -}}
 {{- if $cacheSidebar -}}
   {{- if eq $tree "shell/docs-sidebar-tree.html" -}}

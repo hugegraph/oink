@@ -37,8 +37,9 @@
 {{- if isset $s.Params "sidebar_root_link_self" -}}
   {{- if ne (printf "%T" $s.Params.sidebar_root_link_self) "bool" -}}
     {{- warnf "front matter sidebar_root_link_self must be a boolean at %s; using true" $s.Path -}}
+  {{- else -}}
+    {{- $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
   {{- end -}}
-  {{- $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
 {{- end -}}
 {{- if and $treeRoot (eq $s.Params.sidebar_root_for "self") (not $rootLinkSelf) -}}
   {{- with $s.Parent -}}

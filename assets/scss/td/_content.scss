@@ -86,18 +86,6 @@
     margin-bottom: 0.5rem;
   }
 
-  // Markdown links carry no class. Colour alone is thin affordance in running
-  // text, so they underline on hover/focus; component links (cards, pager,
-  // badges, buttons) keep their own treatment.
-  :where(p, li, dd, dt, td, th, blockquote, figcaption, .lead) a:not([class]) {
-    text-underline-offset: 0.16em;
-
-    &:hover,
-    &:focus-visible {
-      text-decoration: underline;
-    }
-  }
-
   img {
     @extend .img-fluid;
   }
@@ -246,10 +234,10 @@
       max-width: none;
     }
 
-    // Print and RSS get the same box without the viewport: the render hook
-    // marks it rather than leaving the behavior to a media query, so a feed or
-    // a consumer stylesheet sees the intent in the markup.
-    &--static {
+    // RSS is a plain static box. Print also carries the static-output marker,
+    // but its focusable on-screen viewport must still contain wide tables.
+    // The print media rule below expands every table only for paper output.
+    &--static:not([tabindex]) {
       max-width: none;
       overflow: visible;
       // A nested static viewport must not inherit an outer screen cell's rule.
@@ -452,12 +440,12 @@
   }
 
   &.td-is-submitted &__choice[aria-pressed='true'] {
-    color: var(--bs-primary);
+    color: var(--bs-link-color);
     opacity: 1;
   }
 
   &__reason[aria-pressed='true'] {
-    color: var(--bs-primary);
+    color: var(--bs-link-color);
     opacity: 1;
   }
 
@@ -493,6 +481,13 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+
+  a {
+    // The global link treatment removes decoration with !important. Metadata
+    // is inline prose and needs a visible distinction beyond link color.
+    text-decoration: underline !important;
+    text-underline-offset: 0.15em;
+  }
 }
 
 .td-page-meta__icon {

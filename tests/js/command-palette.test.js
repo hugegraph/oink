@@ -541,15 +541,31 @@ function setup({ controlledAnimationFrame = false } = {}) {
   slash.controller.close();
   global.document.querySelectorAll = originalQuerySelectorAll;
 
-  const originalQuerySelector = global.document.querySelector;
-  global.document.querySelector = (selector) => selector === 'dialog[open]'
-    ? new Element('dialog') : originalQuerySelector.call(global.document, selector);
-  for (const modifiers of [{ ctrlKey: true }, { metaKey: true }]) {
-    const ignored = pressKey(slash, { key: 'k', ...modifiers });
-    assert.equal(slash.controller.isOpen(), false, 'Palette opened under a native dialog');
-    assert.notEqual(ignored.defaultPrevented, true);
+  const nativeDialog = new Element('dialog');
+  let dialogs = [nativeDialog];
+  global.document.querySelectorAll = (selector) => selector === 'dialog[open]'
+    ? dialogs : originalQuerySelectorAll.call(global.document, selector);
+  const appearance = new Element('dialog');
+  appearance.classList.add('td-appearance__panel');
+  let modal = false;
+  appearance.matches = (selector) => selector === ':modal' && modal;
+  for (const input of [{ key: '/' }, { key: 'k', ctrlKey: true }, { key: 'k', metaKey: true }]) {
+    for (const open of [[nativeDialog], [appearance, nativeDialog]]) {
+      dialogs = open;
+      const ignored = pressKey(slash, input);
+      assert.equal(slash.controller.isOpen(), false, 'Palette opened under a native dialog');
+      assert.notEqual(ignored.defaultPrevented, true);
+    }
+    dialogs = [appearance];
+    modal = false;
+    pressKey(slash, input);
+    assert.equal(slash.controller.isOpen(), true, 'nonmodal Appearance blocked Palette');
+    slash.controller.close();
+    modal = true;
+    pressKey(slash, input);
+    assert.equal(slash.controller.isOpen(), false, 'modal Appearance lost shortcut ownership');
   }
-  global.document.querySelector = originalQuerySelector;
+  global.document.querySelectorAll = originalQuerySelectorAll;
 
   // A fading Palette is itself an ARIA dialog. It must not block its own
   // shortcut from reopening, and the shortcut must still close it normally.

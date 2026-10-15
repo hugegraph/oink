@@ -881,12 +881,12 @@
 
 // Below md the shell sidebar becomes a drawer; its toggle joins the icon row.
 @media (max-width: 767.98px) {
-  // Keep the content-generated menu on the physical center line. Equal outer
-  // tracks mean the larger search/menu cluster on the end edge cannot push
-  // these links to the right.
+  // Center the menu while both outer tracks have room. A longer menu must
+  // reserve the brand and utility controls' actual widths before distributing
+  // spare space, so its last link cannot hide underneath the search button.
   .td-site-header .td-site-nav {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
     column-gap: 4px;
   }
 
