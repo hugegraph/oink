@@ -147,8 +147,9 @@
   const setSource = () => {
     const source = new URL(sourceOf(active), location.href).href;
     if (image.src !== source) {
-      // The grid preview is usually cached: show it, stretched to the final
-      // box, until the original arrives. A failed original keeps the preview.
+      // The grid preview is usually cached: clear the previous image first so
+      // it cannot stretch to the new box while the original arrives.
+      image.removeAttribute('src');
       image.style.backgroundImage = `url(${JSON.stringify(links[active].dataset.tdExpoPoster)})`;
       image.src = source;
     }

@@ -7,6 +7,9 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Keep Expo anchors unique through hash/suffix collisions, validate explicit
+  metadata including false values, and clear stale images during viewer changes.
+  Separate album prose from image headings in Markdown and LLMSFULL.
 - Render the description once in single-page Print and load local KaTeX
   styles for mathematics included from section descendants.
 - Keep unnumbered block math with generic attributes out of Book numbering.

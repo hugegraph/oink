@@ -2,6 +2,7 @@
 """Exercise Expo resource/output contracts and rejected author inputs in a fresh site."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -85,6 +86,7 @@ resources:
         for output in [md,llms]:
             assert '/expo/album/images/small.png' in output and '![Small image]' in output
             assert 'data-td-expo' not in output and '<dialog' not in output
+            assert 'Album body.\n\n## ' in output, 'album prose must stay separate from image headings'
         assert 'img-small' in printed and 'data-td-expo-viewer' not in printed and 'js/chunks/expo' not in printed
         assert '/expo/album/images/small.png' in rss and 'data-td-expo-viewer' not in rss
         assert 'data-td-expo-viewer' not in (public/'index.html').read_text()
@@ -93,11 +95,28 @@ resources:
             result=build(extra);assert result.returncode!=0 and warning in result.stdout+result.stderr,(extra,result.stdout+result.stderr)
             front=original
         original=front
-        for params,warning in [('original: missing.jpg','must name a bundled image'),('id: "invalid id"','id must contain'),('caption: [bad]','must be a string'),('weight: nope','not a number')]:
+        for params,warning in [('original: missing.jpg','must name a bundled image'),('original: false','must name a bundled image'),('id: "invalid id"','id must contain'),('id: false','id must contain'),('caption: [bad]','must be a string'),('weight: nope','not a number')]:
             front='title: Invalid metadata\nresources:\n  - src: images/small.png\n    params: {'+params+'}\n'
             result=build();assert result.returncode!=0 and warning in result.stdout+result.stderr,(params,result.stdout+result.stderr)
         front='title: Fallback\n'
         result=build('expo: {mode: wrong}\n',strict=False);assert result.returncode==0,result.stdout+result.stderr
-        print('Expo: HTML, section root, localized labels, RTL arrow keys, GIF, metadata escaping, Print, Markdown, LLMSFULL, RSS, capability isolation and 7 invalid-input cases passed')
+        result=build('expo: {images: false}\n');assert result.returncode!=0 and 'expo.images' in result.stdout+result.stderr
+        front='title: Integer ID\nresources:\n  - src: images/small.png\n    params: {id: 101}\n'
+        result=build();assert result.returncode==0,result.stdout+result.stderr
+        assert 'id="img-101"' in (public/'expo/album/index.html').read_text()
+        # Authored IDs can occupy both a later filename hash and its suffixes.
+        # Development builds must still emit unique anchors; strict builds fail.
+        for name in ('a', 'b', 'c', 'd'):
+            (images/f'{name}.png').write_bytes(png(20,20))
+        hashed=hashlib.sha256(b'images/d.png').hexdigest()[:16]
+        front='title: Collisions\nresources:\n'
+        for name,ident in zip(('a','b','c','d'),(hashed,hashed+'-1',hashed+'-3',hashed)):
+            front+=f'  - src: images/{name}.png\n    params: {{id: "{ident}"}}\n'
+        result=build();assert result.returncode!=0 and 'duplicate image id' in result.stdout+result.stderr
+        result=build(strict=False);assert result.returncode==0,result.stdout+result.stderr
+        ids=re.findall(r'<figure\b[^>]*\bid="([^"]+)"', (public/'expo/album/index.html').read_text())
+        assert len(ids)==7 and len(set(ids))==len(ids),ids
+        assert f'img-{hashed}-2' in ids,ids
+        print('Expo: outputs, metadata, integer IDs, collision-safe fallback and invalid-input gates passed')
 
 if __name__=='__main__': main()
