@@ -609,7 +609,7 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
     require("td-table-scroll--static" in source["one_print"], "print Book table wrapper is not marked static", errors)
-    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', source["one_print"]) is None, "print Book table kept an interactive scroll viewport", errors)
+    require(re.search(r'td-table-scroll[^>]*tabindex="0"[^>]*role="region"', source["one_print"]) is not None, "Book Print preview lost its keyboard table scroll region", errors)
     for marker in (
         'id="fig-overview"',
         'id="tbl-baseline"',
@@ -675,10 +675,9 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["book_print"], f"whole-Book print did not localize {marker}", errors)
     for marker in ("td-pager", "data-td-pager-prev", "data-td-pager-next"):
         require(marker not in source["book_print"], f"whole-Book print retained interactive marker {marker}", errors)
-    # The table wrapper stays in print (the caption/matrix/figure selectors hang
-    # off it) but must be marked static; the focusable viewport must not survive.
+    # Static content stays keyboard-scrollable in the browser's Print preview.
     require("td-table-scroll--static" in source["book_print"], "whole-Book print table wrapper is not marked static", errors)
-    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', source["book_print"]) is None, "whole-Book print kept an interactive table scroll viewport", errors)
+    require(re.search(r'td-table-scroll[^>]*tabindex="0"[^>]*role="region"', source["book_print"]) is not None, "whole-Book Print preview lost its keyboard table scroll region", errors)
     return errors
 
 
@@ -883,6 +882,27 @@ def check_print_store_isolation(hugo: str) -> list[str]:
     """Plain and aggregate Print may render one Book page concurrently."""
 
     errors: list[str] = []
+
+    def check_aggregate_tabs(html: str, sections: range, label: str) -> None:
+        ids = re.findall(r'\sid="([^"]+)"', html)
+        require(len(ids) == len(set(ids)), f"{label} contains duplicate IDs", errors)
+        for section in sections:
+            for page in range(3):
+                chapter = re.search(
+                    rf'<section[^>]*id="(pg-[^"]+)"[^>]*data-td-book-page="/book/s{section}/p{page}"[^>]*>([\s\S]*?)</section>',
+                    html,
+                )
+                require(chapter is not None, f"{label} lost chapter {section}-{page}", errors)
+                if chapter is None:
+                    continue
+                prefix, content = chapter.groups()
+                anchor = f"probe-{section}-{page}-one"
+                require(f'id="{prefix}--{anchor}"' in content
+                        and f'href="#{prefix}--{anchor}"' in content
+                        and f'id="{anchor}"' not in content
+                        and f'--probe-{section}-{page}-2-one"' not in content,
+                        f"{label} tab link does not target its own chapter {section}-{page}", errors)
+
     with tempfile.TemporaryDirectory(prefix="oink-book-print-store-") as temp:
         source = Path(temp)
         write(
@@ -892,6 +912,10 @@ title: Book Print store fixture
 theme: {ROOT.name}
 defaultContentLanguage: en
 disableKinds: [home, RSS, sitemap, taxonomy, term]
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
 outputs:
   page: [HTML, print]
   section: [HTML, print]
@@ -929,6 +953,7 @@ params:
                     "## Topic {#topic}\n\n"
                     "{{< xref anchor=\"topic\" >}}Self{{< /xref >}}\n\n"
                     f"{{{{< xref page=\"/book/s{section}/p{target}\" anchor=\"topic\" >}}}}Cross{{{{< /xref >}}}}\n\n"
+                    f'<a href="#probe-{section}-{page}-one">Self tab</a>\n\n'
                     f"{{{{< tabs group=\"probe-{section}-{page}\" >}}}}\n"
                     "{{< tab label=\"One\" value=\"one\" >}}One{{< /tab >}}\n"
                     "{{< tab label=\"Two\" value=\"two\" >}}Two{{< /tab >}}\n"
@@ -954,6 +979,7 @@ params:
                             and f'href="/book/s{section}/p{(page + 1) % 3}/#topic"' in plain,
                             f"plain Print xref or heading semantics changed on page {section}-{page}", errors)
                     require(f'id="probe-{section}-{page}-one"' in plain
+                            and f'href="#probe-{section}-{page}-one"' in plain
                             and f'id="probe-{section}-{page}-2-one"' not in plain,
                             f"plain Print tab anchors changed on page {section}-{page}", errors)
 
@@ -964,10 +990,8 @@ params:
                 require('id="topic"' not in aggregate and 'href="/book/' not in aggregate
                         and re.search(r'id="pg-[^"]+--topic"', aggregate) is not None,
                         f"nested Book Print xref or heading semantics changed in section {section}", errors)
-                require(all(f'id="probe-{section}-{page}-one"' in aggregate
-                            and f'id="probe-{section}-{page}-2-one"' not in aggregate
-                            for page in range(3)),
-                        f"nested Book Print tab anchors changed in section {section}", errors)
+                check_aggregate_tabs(aggregate, range(section, section + 1),
+                                     f"nested Book Print section {section}")
 
             whole = (public / "_print/book/index.html").read_text()
             rendered.append(whole)
@@ -976,10 +1000,7 @@ params:
             require('id="topic"' not in whole and 'href="/book/' not in whole
                     and len(re.findall(r'id="pg-[^"]+--topic"', whole)) == 6,
                     "whole-Book Print xref or heading semantics changed", errors)
-            require(all(f'id="probe-{section}-{page}-one"' in whole
-                        and f'id="probe-{section}-{page}-2-one"' not in whole
-                        for section in range(2) for page in range(3)),
-                    "whole-Book Print tab anchors changed", errors)
+            check_aggregate_tabs(whole, range(2), "whole-Book Print")
             signature = tuple(rendered)
             require(baseline is None or signature == baseline,
                     f"Book Print stress output changed between repeated builds on run {run + 1}", errors)

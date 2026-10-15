@@ -45,7 +45,7 @@
   {{- end -}}
   {{- delimit $chunks "\n\n" | safeHTML -}}
 {{- else -}}
-  {{- $base := printf "td-tabs-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
+  {{- $base := printf "td-tabs-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") (partial "content/shortcode-ordinal.html" .) -}}
   {{- /* Peer sets of one group on the same page: the first keeps `<group>-<value>`
          (deep-link target), later ones get a `-2`, `-3` … suffix so ids stay unique.
          Plain and Book Print are separate documents and count independently. */ -}}

@@ -10,7 +10,7 @@ import json
 import re
 import subprocess
 import tempfile
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from test_site import fixture_config_args, run_hugo_process
 
@@ -765,6 +765,271 @@ def check_explicit_shell_overrides(hugo: str) -> list[str]:
     return errors
 
 
+def check_print_relative_links(hugo: str) -> list[str]:
+    """A relocated Print body resolves links from its source HTML URL."""
+    errors: list[str] = []
+
+    class QuotedAttributes(HTMLParser):
+        def __init__(self, source: str) -> None:
+            super().__init__()
+            self.links: dict[str, dict[str, str | None]] = {}
+            self.feed(source)
+
+        def handle_starttag(self, tag, attrs):
+            values = dict(attrs)
+            if tag == "a" and values.get("data-test-relative-link"):
+                self.links[values["data-test-relative-link"]] = values
+
+    def check_quoted_attributes(source: str, context: str, href: str) -> None:
+        links = QuotedAttributes(source).links
+        titles = {
+            "single": "Literal href='../two/'",
+            "double": 'Literal href="../two/"',
+            "bare": "Literal HREF = ../two/ > text",
+        }
+        require(set(links) == set(titles), f"{context} lost quoted-attribute probes", errors)
+        for key, title in titles.items():
+            require(links.get(key) == {
+                "data-test-relative-link": key, "title": title, "href": href,
+            }, f"{context} rewrote title text or damaged attributes for {key}: {links.get(key)}", errors)
+
+    with tempfile.TemporaryDirectory(prefix="oink-print-links-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        settings = config.read_text().replace(
+            "page: [HTML]", "page: [HTML, PRINT]"
+        ).replace("section: [HTML]", "section: [HTML, PRINT]") + """languages:
+  en: {locale: en-US}
+  zh: {locale: zh-CN}
+markup:
+  goldmark:
+    renderer: {unsafe: true}
+"""
+        body = """## Topic
+
+[sibling](../two/?mode=print&view=full#topic)
+[parent](../)
+[asset](files/report%20one.txt)
+[current-query](?mode=print&view=full#topic)
+[local](#topic)
+[root](/fixed/)
+[external](https://elsewhere.example/path/)
+[network](//cdn.example/path/)
+[email](mailto:reader@example.org)
+
+<a href='../two/'>single-quoted</a>
+<a href=../two/>unquoted</a>
+<a title="one > two" href="../">raw-parent</a>
+<a title="Literal href='../decoy/'" href="../two/">quoted-attribute</a>
+<a data-test-relative-link="single" title="Literal href='../two/'" href='../two/'>identical-single-quoted</a>
+<a data-test-relative-link="double" title='Literal href="../two/"' href="../two/">identical-double-quoted</a>
+<a data-test-relative-link="bare" title="Literal HREF = ../two/ > text" HREF = ../two/>identical-unquoted</a>
+<a href="#topic">raw-local</a>
+
+`<a href="../code/">literal</a>`
+"""
+        for kind in ("docs", "book", "blog", "expo"):
+            for suffix in (".md", ".zh.md"):
+                write_file(source / f"content/{kind}/_index{suffix}",
+                           f"---\ntitle: {kind}\ntype: {kind}\ncascade:\n  type: {kind}\n---\n")
+                write_file(source / f"content/{kind}/part/_index{suffix}",
+                           "---\ntitle: Part\n---\n")
+                write_file(source / f"content/{kind}/part/one{suffix}",
+                           "---\ntitle: One\n---\n" + body)
+                write_file(source / f"content/{kind}/part/two{suffix}",
+                           "---\ntitle: Two\n---\n\n## Topic\n")
+        for base_path in ("/", "/preview/"):
+            config.write_text(settings.replace("https://example.org/", f"https://example.org{base_path}"))
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return [f"Print relative-link fixture failed: {result.stdout}{result.stderr}"]
+            for language in ("", "zh/"):
+                for kind in ("docs", "book", "blog", "expo"):
+                    page_url = f"{base_path}{language}{kind}/part/one/"
+                    sibling_url = f"{base_path}{language}{kind}/part/two/"
+                    expected = {
+                        "sibling": sibling_url + "?mode=print&amp;view=full#topic",
+                        # Hugo's embedded hook resolves this source reference
+                        # before Print sees it. Preserve that canonical route.
+                        "parent": f"{base_path}{language}{kind}/",
+                        "raw-parent": f"{base_path}{language}{kind}/part/",
+                        "asset": page_url + "files/report%20one.txt",
+                        "current-query": page_url + "?mode=print&amp;view=full#topic",
+                        "root": "/fixed/",
+                        "external": "https://elsewhere.example/path/",
+                        "network": "//cdn.example/path/",
+                        "email": "mailto:reader@example.org",
+                        "single-quoted": sibling_url,
+                        "unquoted": sibling_url,
+                        "quoted-attribute": sibling_url,
+                    }
+                    for tail in ("", "part/", "part/one/"):
+                        relative = f"{language}_print/{kind}/{tail}index.html"
+                        output = (source / "public" / relative).read_text()
+                        check_quoted_attributes(output, f"{base_path} {relative}", sibling_url)
+                        for label, href in expected.items():
+                            require(f'href="{href}">{label}</a>' in output,
+                                    f"{base_path} {relative} misresolved {label}", errors)
+                        require('&lt;a href=&quot;../code/&quot;&gt;literal&lt;/a&gt;' in output,
+                                f"{relative} rewrote an escaped code example", errors)
+                        require('title="Literal href=\'../decoy/\'"' in output,
+                                f"{relative} mistook quoted text for a link attribute", errors)
+                        local = re.search(r'href=[\"\']#([^\"\']+)[\"\']>raw-local</a>', output)
+                        require(bool(local) and f'id="{local[1]}"' in output,
+                                f"{relative} broke the local heading link", errors)
+                    regular = (source / "public" / language / kind / "part/one/index.html").read_text()
+                    check_quoted_attributes(regular, f"{base_path} {language}{kind} HTML", "../two/")
+                    require('href="../two/?mode=print&amp;view=full#topic">sibling</a>' in regular,
+                            f"{base_path} {language}{kind} changed ordinary HTML links", errors)
+    return errors
+
+
+def check_print_encoded_fragments(hugo: str) -> list[str]:
+    """Aggregate links decode fragments once without changing URL ownership."""
+    errors: list[str] = []
+
+    class Anchors(HTMLParser):
+        def __init__(self, source: str) -> None:
+            super().__init__()
+            self.ids: set[str] = set()
+            self.links: dict[str, str] = {}
+            self.href: str | None = None
+            self.label = ""
+            self.feed(source)
+
+        def handle_starttag(self, tag, attrs):
+            values = dict(attrs)
+            if values.get("id"):
+                self.ids.add(values["id"])
+            if tag == "a":
+                self.href = values.get("href")
+                self.label = ""
+
+        def handle_data(self, data):
+            if self.href is not None:
+                self.label += data
+
+        def handle_endtag(self, tag):
+            if tag == "a" and self.href is not None:
+                self.links[self.label] = self.href
+                self.href = None
+
+    fragments = {
+        "markdown-chinese": "中文标题",
+        "encoded-chinese": "中文标题",
+        "encoded-ascii": "topic",
+        "encoded-explicit": "自定义",
+        "literal-plus": "a+b",
+        "encoded-plus": "a+b",
+        "encoded-once": "encoded%20id",
+        "self-path": "中文标题",
+        "legacy-local": "legacy",
+        "custom-heading": "custom",
+        "nested-heading": "nested-topic",
+        "nested-chinese": "嵌套中文",
+        "nested-plus": "nested+a+b",
+        "nested-once": "nested%20id",
+    }
+    with tempfile.TemporaryDirectory(prefix="oink-print-encoded-fragments-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        settings = config.read_text().replace("page: [HTML]", "page: [HTML, PRINT]").replace(
+            "section: [HTML]", "section: [HTML, PRINT]"
+        ) + """languages:
+  en: {locale: en-US}
+  zh: {locale: zh-CN}
+markup:
+  goldmark:
+    renderer: {unsafe: true}
+"""
+        for base in ("/", "/preview/"):
+            config.write_text(settings.replace("https://example.org/", f"https://example.org{base}"))
+            for kind in ("docs", "book"):
+                for suffix, lang in ((".md", ""), (".zh.md", "zh/")):
+                    write_file(source / f"content/{kind}/_index{suffix}",
+                               f"---\ntitle: {kind}\ntype: {kind}\ncascade:\n  type: {kind}\n---\n")
+                    for chapter in ("one", "two"):
+                        page_url = f"{base}{lang}{kind}/{chapter}/"
+                        body = f"""## 中文标题
+
+[markdown-chinese-{chapter}](#中文标题)
+<a href="#%E4%B8%AD%E6%96%87%E6%A0%87%E9%A2%98">encoded-chinese-{chapter}</a>
+<a href="#%74opic">encoded-ascii-{chapter}</a>
+<a href='#%e8%87%aa%e5%ae%9a%e4%b9%89'>encoded-explicit-{chapter}</a>
+<a href="#a+b">literal-plus-{chapter}</a>
+<a href=#a%2Bb>encoded-plus-{chapter}</a>
+<a href="#encoded%2520id">encoded-once-{chapter}</a>
+<a href="{page_url}#%E4%B8%AD%E6%96%87%E6%A0%87%E9%A2%98">self-path-{chapter}</a>
+<a href="{page_url}?mode=read#%74opic">queried-{chapter}</a>
+<a href="https://elsewhere.example{page_url}#%74opic">external-{chapter}</a>
+<a href="#%ZZ">malformed-{chapter}</a>
+<a href="#%6cegacy">legacy-local-{chapter}</a>
+<a href="#custom">custom-heading-{chapter}</a>
+<a href="#nested-topic">nested-heading-{chapter}</a>
+<a href="#%E5%B5%8C%E5%A5%97%E4%B8%AD%E6%96%87">nested-chinese-{chapter}</a>
+<a href="#nested%2Ba%2Bb">nested-plus-{chapter}</a>
+<a href="#nested%2520id">nested-once-{chapter}</a>
+<span id="legacy" data-td-print-local></span>
+<h2 DATA-TD-PRINT-LOCAL id="custom">Custom heading</h2>
+<span id="global-{chapter}" title="data-td-print-local"></span>
+<h2 id="global-heading-{chapter}">Authored global heading</h2>
+
+## Topic {{#topic}}
+## Explicit {{#自定义}}
+## Plus {{id="a+b"}}
+## Once {{id="encoded%20id"}}
+
+{{{{< tabs group="nested-heading" >}}}}
+{{{{< tab label="Example" value="example" >}}}}
+### Nested heading {{#nested-topic}}
+### Nested Chinese {{#嵌套中文}}
+### Nested plus {{id="nested+a+b"}}
+### Nested percent {{id="nested%20id"}}
+{{{{< /tab >}}}}
+{{{{< /tabs >}}}}
+"""
+                        write_file(source / f"content/{kind}/{chapter}{suffix}",
+                                   f"---\ntitle: {chapter}\n---\n" + body)
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return [f"Print encoded-fragment fixture failed: {result.stdout}{result.stderr}"]
+            for kind in ("docs", "book"):
+                for lang in ("", "zh/"):
+                    aggregate = Anchors((source / f"public/{lang}_print/{kind}/index.html").read_text())
+                    for chapter in ("one", "two"):
+                        page_url = f"{base}{lang}{kind}/{chapter}/"
+                        outputs = {
+                            "HTML": Anchors((source / f"public/{lang}{kind}/{chapter}/index.html").read_text()),
+                            "Print": Anchors((source / f"public/{lang}_print/{kind}/{chapter}/index.html").read_text()),
+                            "aggregate": aggregate,
+                        }
+                        for output, parsed in outputs.items():
+                            context = f"{base}{lang}{kind}/{chapter} {output}"
+                            require(f"global-{chapter}" in parsed.ids,
+                                    f"{context}: renamed an unmarked authored global ID", errors)
+                            require(f"global-heading-{chapter}" in parsed.ids,
+                                    f"{context}: renamed an unmarked authored global heading", errors)
+                            for label, anchor in fragments.items():
+                                href = parsed.links.get(f"{label}-{chapter}", "")
+                                target = unquote(urlsplit(href).fragment)
+                                require(target in parsed.ids, f"{context}: {label} misses {target!r}", errors)
+                                if output == "aggregate":
+                                    require(href.startswith("#pg-") and target.endswith("--" + anchor),
+                                            f"{context}: {label} escaped its source chapter", errors)
+                                else:
+                                    require(target == anchor, f"{context}: {label} changed ordinary ID", errors)
+                            for label, expected in {
+                                "queried": page_url + "?mode=read#%74opic",
+                                "external": "https://elsewhere.example" + page_url + "#%74opic",
+                                "malformed": "#%ZZ",
+                            }.items():
+                                require(parsed.links.get(f"{label}-{chapter}") == expected,
+                                        f"{context}: rewrote {label} URL", errors)
+    return errors
+
+
 def check_print_math_and_heading(hugo: str) -> list[str]:
     """Print must own its math flags even when formulas occur only in children."""
     errors: list[str] = []
@@ -1254,6 +1519,8 @@ def main() -> int:
         + check_invalid_eq_escape(args.hugo)
         + check_unnumbered_math_attributes(args.hugo)
         + check_print_math_and_heading(args.hugo)
+        + check_print_relative_links(args.hugo)
+        + check_print_encoded_fragments(args.hugo)
         + check_explicit_shell_overrides(args.hugo)
         + check_rss_pager_output(args.hugo)
         + check_pager_sources()

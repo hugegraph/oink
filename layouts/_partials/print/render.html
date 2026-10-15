@@ -63,7 +63,7 @@
 {{ end }}
 
 {{- $content := partialCached "print/page-content.html" (dict "page" .) .RelPermalink -}}
-{{- $content = partial "book/namespace-print-headings.html" (dict "page" . "content" $content.plain) -}}
+{{- $content = partial "book/namespace-print-headings.html" (dict "page" . "content" $content.plain "headings" $content.plainHeadings) -}}
 <div class="content">
       {{ $content }}
 </div>
