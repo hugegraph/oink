@@ -161,6 +161,7 @@
 
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
+    document.addEventListener('td:tab-shown', schedule);
     if (window.visualViewport) {
       window.visualViewport.addEventListener('scroll', schedule, {
         passive: true,

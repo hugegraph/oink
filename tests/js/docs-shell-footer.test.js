@@ -18,6 +18,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   const properties = new Map();
   const attrs = new Map();
   const listeners = new Map();
+  const documentListeners = new Map();
   const viewportListeners = new Map();
   const frames = new Map();
   const measurements = { top, reads: 0 };
@@ -52,7 +53,11 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
     },
     querySelectorAll() { return []; },
     getElementById() { return null; },
-    addEventListener() {},
+    addEventListener(name, callback) { documentListeners.set(name, callback); },
+    dispatchEvent(event) {
+      const callback = documentListeners.get(event.type);
+      if (callback) callback(event);
+    },
   };
   const window = {
     innerHeight: 1000,
@@ -89,7 +94,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   };
   flush();
   return {
-    window, measurements, listeners, viewportListeners, flush,
+    window, document, measurements, listeners, viewportListeners, flush,
     resize() { resize(); },
     offset() { return properties.get('--td-shell-footer-offset'); },
   };
@@ -111,6 +116,23 @@ for (const rails of [
     env.listeners.get('scroll')();
     env.flush();
     assert.equal(env.offset(), '0px');
+  });
+
+  test(`tab reflow refreshes the footer boundary without scrolling with ${JSON.stringify(rails)}`, () => {
+    const env = build({ ...rails, top: 670 });
+    assert.equal(env.offset(), '331px');
+    const reads = env.measurements.reads;
+
+    env.measurements.top = 1200;
+    env.document.dispatchEvent({ type: 'td:tab-shown' });
+    assert.equal(env.measurements.reads, reads);
+    env.flush();
+    assert.equal(env.offset(), '0px');
+
+    env.measurements.top = 670;
+    env.document.dispatchEvent({ type: 'td:tab-shown' });
+    env.flush();
+    assert.equal(env.offset(), '331px');
   });
 }
 
@@ -183,6 +205,7 @@ test('mixed observer, window and visual viewport events share one frame', () => 
   env.listeners.get('resize')();
   env.viewportListeners.get('scroll')();
   env.viewportListeners.get('resize')();
+  env.document.dispatchEvent({ type: 'td:tab-shown' });
   env.resize();
   assert.equal(env.measurements.reads, reads);
   env.flush();
