@@ -81,8 +81,8 @@ repository's internal fixtures.
 · [Live starter](https://pgsty.github.io/oink-starter/)
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
-For development and validation, use Git, Go 1.27 or newer, and Hugo Extended
-0.168.0 with [Dart Sass 1.105.2](https://github.com/sass/dart-sass/releases/tag/1.105.2)
+For development and validation, use Git, Go 1.27.2, and Hugo Extended
+0.168.0 or newer with [Dart Sass 1.105.2](https://github.com/sass/dart-sass/releases/tag/1.105.2)
 on `PATH` (the standalone distribution, not the npm package). The site does not require Node.js. To evaluate the neutral template locally:
 
 ```sh
@@ -212,16 +212,18 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | **Extended 0.168.0 or newer**; development, CI, and release tests use 0.168.0 |
+| Hugo | **Extended 0.168.0 or newer**; CI follows the latest stable release |
 | Dart Sass | Standalone 1.105.2 on `PATH`; no Node.js or npm dependency |
-| Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
+| Go | 1.27.0 minimum for Hugo Module resolution; current default 1.27.2, CI follows the latest stable release; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
-The Hugo baseline advances with stable releases. Update the pins and declared
-requirements together; older Hugo versions receive no compatibility testing
-or adaptation. Dated release and research records retain their original tool
-versions.
+CI automatically resolves stable Go and Hugo releases and records their actual
+versions. OINK 1.3.1 is validated with Go 1.27.2 and Hugo Extended 0.168.0;
+these are not exact-version locks. Update declared requirements and current
+documentation together when raising the minimum. Older Hugo versions receive
+no compatibility testing or adaptation. Dated release and research records
+retain their original tool versions.
 
 ## Community and releases
 
