@@ -750,6 +750,13 @@
 "url": "https://example.org/fixtures/release-assets-base/"
 },
 {
+"id": "/fixtures/table-layout-policy/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/table-layout-policy/index.md",
+"title": "Table layout policy",
+"url": "https://example.org/fixtures/table-layout-policy/"
+},
+{
 "description": "Pinned release facts remain visible without exposing download actions.",
 "id": "/fixtures/download-pending/",
 "kind": "page",

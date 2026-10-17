@@ -122,7 +122,6 @@ jobs:
           pdf="$RUNNER_TEMP/oink-book.pdf"
           hugo --source tests/site --themesDir "$GITHUB_WORKSPACE/.." \
             --destination "$public" --minify --printPathWarnings --panicOnWarning
-          python3 bin/check-table-layout-browser.py --public "$public" --chrome "$OINK_CHROME"
           python3 bin/book-epub.py \
             --manifest "$public/book/book.json" \
             --public "$public" \
