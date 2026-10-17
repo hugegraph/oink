@@ -62,10 +62,10 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.3.0 adds the Expo image-album shell and improves navigation, Landing,
-and aggregate Print output. Unreleased development now requires Hugo Extended
-0.168.0 and Dart Sass 1.105.2; v1.3.0 retains its original toolchain. See the
-[changelog](CHANGELOG.md) for the complete release notes.
+OINK 1.3.1 improves Markmap contrast, footer clearance, technical table widths,
+and optional FileTree comment wrapping. It requires Hugo Extended 0.168.0 and
+standalone Dart Sass 1.105.2. See the [changelog](CHANGELOG.md) for the fixes,
+upgrade requirements, and contributor credits.
 
 ## Start a site
 

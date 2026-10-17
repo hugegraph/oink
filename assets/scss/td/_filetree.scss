@@ -153,8 +153,7 @@
   display: grid;
   grid-template-columns: minmax(0, var(--td-filetree-split)) minmax(0, 1fr);
   align-items: center;
-  block-size: auto;
-  min-block-size: var(--td-filetree-row);
+  block-size: var(--td-filetree-row);
   padding-inline: var(--td-filetree-gutter);
   // Indent guides: one hairline per ancestor level, ending under the parent
   // entry's icon centre. Physical direction; the RTL block below flips it.
@@ -282,7 +281,7 @@
   color: var(--td-filetree-muted);
   font-size: 0.86em;
   gap: 0.75ch;
-  white-space: normal;
+  white-space: nowrap;
 }
 
 .td-filetree__hash {
@@ -292,11 +291,29 @@
 
 .td-filetree__comment-text {
   min-width: 0;
-  // Keep descriptions readable without hover, including unbroken identifiers.
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-// Narrow viewports: the comment drops under the name.
+// Authors can trade compact rows for complete comments; names keep ellipsis.
+.td-filetree--wrap {
+  .td-filetree__row {
+    block-size: auto;
+    min-block-size: var(--td-filetree-row);
+  }
+
+  .td-filetree__comment {
+    white-space: normal;
+  }
+
+  .td-filetree__comment-text {
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Narrow viewports: the comment drops under the name instead of truncating.
 @include media-breakpoint-down(sm) {
   .td-filetree__row {
     grid-template-columns: minmax(0, 1fr);
