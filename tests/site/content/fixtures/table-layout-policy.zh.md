@@ -34,7 +34,7 @@ type: docs
 | --- | --- | --- |
 | 东京 | 8080 | 图接口 |
 | 大阪 | 8686 | 元数据 |
-{#short-ordinary-table}
+{#short-prose-table}
 
 ## 显式宽度与已有修饰符
 
