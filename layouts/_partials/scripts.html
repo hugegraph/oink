@@ -261,7 +261,7 @@ window.markmap = {
 {{ end -}}
 
 {{ if and $interactiveOutput (.Page.Store.Get "hasRedoc") -}}
-  {{ $redocCSS := resources.Get "scss/redoc.scss" | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
+  {{ $redocCSS := resources.Get "scss/redoc.scss" | toCSS (dict "transpiler" "dartsass" "enableSourceMap" (not hugo.IsProduction)) -}}
   {{ if hugo.IsProduction }}{{ $redocCSS = $redocCSS | minify | fingerprint }}{{ end -}}
   <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
     {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>

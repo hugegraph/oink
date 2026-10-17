@@ -230,7 +230,7 @@
     padding-block: 0.5rem 2rem;
     scroll-margin-block-start: calc(var(--td-scroll-padding-top, 0px) + 1rem);
 
-    + & {
+    & + & {
       padding-block-start: 2rem;
       border-block-start: 1px solid var(--bs-border-color);
     }
