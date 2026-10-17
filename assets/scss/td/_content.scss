@@ -194,6 +194,36 @@
       margin-bottom: 0;
     }
 
+    @media screen {
+      // Structural guards must not raise the cost of consumer overrides.
+      &:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) {
+        // Preserve ordinary tables. Authors opt technical identifiers into a
+        // wider measure; the wrapper still contains any horizontal overflow.
+        width: max-content;
+        max-width: none;
+
+        > :where(thead, tbody, tfoot) > :where(tr) > :is(th, td) {
+          // Unlike anywhere, break-word keeps technical tokens in the
+          // intrinsic minimum width, with an escape hatch for very long ones.
+          overflow-wrap: break-word;
+          word-break: normal;
+
+          a,
+          code {
+            overflow-wrap: inherit;
+            word-break: inherit;
+          }
+        }
+
+        > :where(thead, tbody, tfoot) > :where(tr) > td {
+          // Bound prose's preferred measure instead of making a long
+          // description one enormous line. Auto layout may distribute extra
+          // space; matrix headers keep their explicit nowrap behavior.
+          max-width: 40ch;
+        }
+      }
+    }
+
     &--full {
       width: 100%;
       max-width: none;
@@ -205,6 +235,8 @@
     &--static:not([tabindex]) {
       max-width: none;
       overflow: visible;
+      // A nested static viewport must not inherit an outer screen cell's rule.
+      overflow-wrap: anywhere;
     }
   }
 }
