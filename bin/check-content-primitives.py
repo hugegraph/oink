@@ -44,6 +44,18 @@ def check_outputs(public: Path) -> list[str]:
     require(all(item.path.is_file() for item in chunks), "lists runtime chunk is missing", errors)
     lists_bundle = combined_source(public, lists)
 
+    # The explicit width marker survives HTML rendering; Markdown preserves
+    # authored GFM and its attribute lines. Actual cell sizes and scroll behavior are tested in the site.
+    for prefix in ("", "zh/"):
+        technical = (public / f"{prefix}fixtures/table-layout-policy/index.html").read_text()
+        technical_md = (public / f"{prefix}fixtures/table-layout-policy/index.md").read_text()
+        require('id="wide-technical-table"' in technical and 'class="td-table--wide"' in technical,
+                f"{prefix} technical table lost its explicit width marker", errors)
+        require('class="matrix full-width td-table--wide td-table--matrix"' in technical,
+                f"{prefix} wide marker displaced existing table modifiers", errors)
+        require("HG_PD_GRPC_HOST" in technical_md and "{#wide-technical-table .td-table--wide}" in technical_md and "<table" not in technical_md,
+                f"{prefix} technical table Markdown lost authored content or acquired HTML", errors)
+
     # --- Badge / Kbd / Fields shortcode / full-width table -------------------
     for marker in (
         'class="td-badge td-badge--warning">Beta</span>',
