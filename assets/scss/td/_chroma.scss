@@ -1,3 +1,5 @@
+@use "sass:meta";
+
 // Class-based syntax highlighting (Chroma).
 //
 // Requires `markup.highlight.noClasses: false`, which the theme sets in its
@@ -144,7 +146,7 @@
 
 @if $enable-dark-mode {
   [data-bs-theme='dark'] {
-    @import 'chroma/dark';
+    @include meta.load-css('chroma/dark');
 
     .chroma {
       --td-code-hl-bg: color-mix(
