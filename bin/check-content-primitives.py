@@ -10,7 +10,7 @@ forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix
 from __future__ import annotations
 
 import argparse
-from html import unescape
+from html import escape, unescape
 from pathlib import Path
 import re
 import tempfile
@@ -168,6 +168,26 @@ def check_outputs(public: Path) -> list[str]:
     print_trees = re.findall(r'<div class="td-filetree td-filetree--static"[\s\S]*?</ul></div></div>', print_page)
     require(any(">Site tree</p>" in tree and "<details" not in tree and tree.count("<li ") == 17 for tree in print_trees), "print FileTree is not the static, fully expanded tree", errors)
     require(print_trees and all("<details" not in tree for tree in print_trees), "print FileTree still uses <details>", errors)
+
+    # Keep full descriptions in the actual row text in every output, including
+    # CJK and unbroken tokens. Layout/resize checks live in the sibling site's
+    # FileTree browser suite; text presence alone cannot detect CSS clipping.
+    for language, suffix in (("", ""), ("zh/", ".zh")):
+        source = (FIXTURE / f"content/fixtures/filetree-comments{suffix}.md").read_text()
+        comments = re.findall(r" # (.+)$", source, re.MULTILINE)
+        comment_page = (public / language / "fixtures/filetree-comments/index.html").read_text()
+        comment_markdown = (public / language / "fixtures/filetree-comments/index.md").read_text()
+        comment_print = (public / language / "_print/fixtures/index.html").read_text()
+        rendered = re.findall(r'<span class="td-filetree__comment-text">([^<]*)</span>', comment_page)
+        require(len(comments) == 4 and rendered == [escape(text) for text in comments],
+                f"{language}FileTree long comments are missing from row text", errors)
+        require(comment_page.count('data-td-filetree-divider') == 2,
+                f"{language}FileTree long-comment fixtures lost their native dividers", errors)
+        for text in comments:
+            require(text in comment_markdown,
+                    f"{language}FileTree Markdown lost long comment {text}", errors)
+            require(f'<span class="td-filetree__comment-text">{escape(text)}</span>' in comment_print,
+                    f"{language}FileTree Print lost long comment {text}", errors)
 
     # --- Native list forms: cards / gallery + filetree fences (lists fixture) --
     for marker in (
