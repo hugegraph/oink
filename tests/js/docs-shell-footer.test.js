@@ -73,6 +73,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   if (visual) {
     window.visualViewport = {
       height: 800,
+      offsetTop: 0,
       addEventListener(name, callback) { viewportListeners.set(name, callback); },
     };
   }
@@ -157,16 +158,29 @@ test('scroll bursts share one measurement and a resized footer is observed', () 
   assert.equal(env.offset(), '0px');
 });
 
-test('the visual viewport owns offset when browser chrome changes its height', () => {
-  const env = build({ sidebar: false, visual: true });
-  env.measurements.top = 700;
-  env.viewportListeners.get('scroll')();
-  env.flush();
-  assert.equal(env.offset(), '101px');
-  env.window.visualViewport.height = 750;
+test('fixed rails use layout coordinates during pinch zoom and visual panning', () => {
+  const env = build({ sidebar: false, visual: true, top: 650 });
+  assert.equal(env.offset(), '351px');
+
+  env.window.visualViewport.height = 500;
   env.viewportListeners.get('resize')();
   env.flush();
-  assert.equal(env.offset(), '51px');
+  assert.equal(env.offset(), '351px');
+
+  env.window.visualViewport.offsetTop = 300;
+  env.viewportListeners.get('scroll')();
+  env.flush();
+  assert.equal(env.offset(), '351px');
+
+  env.window.innerHeight = 900;
+  env.listeners.get('resize')();
+  env.flush();
+  assert.equal(env.offset(), '251px');
+
+  env.measurements.top = 1200;
+  env.listeners.get('scroll')();
+  env.flush();
+  assert.equal(env.offset(), '0px');
 });
 
 for (const absent of [{ footer: false }, { sidebar: false, toc: false }]) {
@@ -210,5 +224,5 @@ test('mixed observer, window and visual viewport events share one frame', () => 
   assert.equal(env.measurements.reads, reads);
   env.flush();
   assert.equal(env.measurements.reads, reads + 1);
-  assert.equal(env.offset(), '101px');
+  assert.equal(env.offset(), '301px');
 });

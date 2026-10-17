@@ -145,12 +145,10 @@
 
     function update() {
       frame = 0;
-      var viewportHeight = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
+      // Fixed rails and footer bounds both use layout-viewport coordinates.
       var offset = Math.max(
         0,
-        viewportHeight - footer.getBoundingClientRect().top,
+        window.innerHeight - footer.getBoundingClientRect().top,
       );
       if (offset > 0) offset += 1;
       html.style.setProperty('--td-shell-footer-offset', offset + 'px');
