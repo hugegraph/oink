@@ -5,13 +5,17 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-10-17
+
+Readability repairs and an opt-in FileTree comment layout, with a refreshed
+Hugo and Sass toolchain.
+
 ### Changed
 
 - Advance the minimum and sole development, CI, and release-test baseline to
   Hugo Extended 0.168.0.
 - Refresh homepage and RSS output goldens for Hugo's generator-tag placement
   and automatic summaries that extend to preserve balanced HTML containers.
-
 - Compile main and ReDoc styles with standalone Dart Sass 1.105.2, preserving
   project-variable hooks and the separate Font Awesome stylesheet. Install
   Dart Sass on `PATH` before building. The four known Bootstrap/import-scope
@@ -28,6 +32,25 @@ All notable changes to OINK are documented here. The project follows
 - Add `.td-table--wide` for technical tables that need intact identifiers and
   bounded descriptions inside a horizontal scroll region. Ordinary tables,
   field lists, and static outputs retain their existing layout.
+
+- Add `wrap=true` to FileTree fences for complete long comments, including
+  unbroken identifiers. The default `wrap=false` preserves compact rows;
+  filenames, folding, divider controls, mobile stacking, and Print behavior
+  retain their existing contracts. Invalid values warn and fall back to false.
+
+### Contributors
+
+Thanks to [@imbajin](https://github.com/imbajin) for reporting and contributing
+these readability repairs, together with fixtures, tests, and bilingual docs:
+
+- [#48](https://github.com/pgsty/oink/pull/48): Markmap text colors across appearances.
+- [#50](https://github.com/pgsty/oink/pull/50): fixed TOC clearance above the footer.
+- [#52](https://github.com/pgsty/oink/pull/52): complete FileTree comments, integrated
+  behind the optional `wrap` parameter.
+- [#54](https://github.com/pgsty/oink/pull/54): readable technical table widths,
+  integrated through the explicit `.td-table--wide` modifier.
+- [Documentation #11](https://github.com/pgsty/oink.pgsty.com/pull/11): companion
+  design contracts and regression coverage.
 
 ## [1.3.0] — 2026-10-15
 
@@ -2291,7 +2314,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/pgsty/oink/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/pgsty/oink/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0

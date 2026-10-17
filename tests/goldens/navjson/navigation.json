@@ -726,6 +726,13 @@
 "url": "https://example.org/fixtures/download-demo/"
 },
 {
+"id": "/fixtures/filetree-comments/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/filetree-comments/index.md",
+"title": "File tree comments",
+"url": "https://example.org/fixtures/filetree-comments/"
+},
+{
 "description": "Regression fixtures for a static-first responsive image Gallery.",
 "id": "/fixtures/gallery/",
 "kind": "page",
