@@ -134,21 +134,21 @@
 
   /* --------------------------------------------------------- footerOffset */
 
-  // Shorten the fixed sidebar as the footer enters the viewport.
+  // Shorten fixed rails as the footer enters the viewport.
   function initFooterOffset() {
     var footer = document.querySelector('[data-td-shell-footer]');
-    var panel = document.querySelector('.td-shell-sidebar__panel');
+    var panel = document.querySelector(
+      '.td-shell-sidebar__panel, .td-shell-toc__panel',
+    );
     if (!footer || !panel) return;
     var frame = 0;
 
     function update() {
       frame = 0;
-      var viewportHeight = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
+      // Fixed rails and footer bounds both use layout-viewport coordinates.
       var offset = Math.max(
         0,
-        viewportHeight - footer.getBoundingClientRect().top,
+        window.innerHeight - footer.getBoundingClientRect().top,
       );
       if (offset > 0) offset += 1;
       html.style.setProperty('--td-shell-footer-offset', offset + 'px');
@@ -159,14 +159,21 @@
 
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
+    document.addEventListener('td:tab-shown', schedule);
     if (window.visualViewport) {
       window.visualViewport.addEventListener('scroll', schedule, {
         passive: true,
       });
       window.visualViewport.addEventListener('resize', schedule);
     }
-    if ('ResizeObserver' in window)
-      new ResizeObserver(schedule).observe(footer);
+    if ('ResizeObserver' in window) {
+      var observer = new ResizeObserver(schedule);
+      observer.observe(footer);
+      // Tabs, blog views and loaded media move the footer without resizing it.
+      // Observe normal-flow content; the fixed rails never size this element.
+      var main = document.getElementById('td-main-content');
+      if (main) observer.observe(main);
+    }
     update();
   }
 
