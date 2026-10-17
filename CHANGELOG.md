@@ -5,7 +5,7 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
-## [1.3.1] — 2026-10-17
+## [1.3.1] — 2026-10-18
 
 Readability repairs and an opt-in FileTree comment layout, with a refreshed
 Hugo and Sass toolchain.

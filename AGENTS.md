@@ -6,8 +6,8 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-The current release is `v1.3.0`, dated 2026-10-15 in `CHANGELOG.md`. The sibling
-site's `v1.3.0` Design contracts describe this release. Refresh Git state,
+The current release is `v1.3.1`, dated 2026-10-18 in `CHANGELOG.md`. The sibling
+site's `v1.3.1` Design contracts describe this release. Refresh Git state,
 public tags, and consumer pins before making claims about later releases or
 downstream adoption.
 
