@@ -94,17 +94,19 @@ make -C ../oink.pgsty.com dev
 
 ## Theme contracts
 
-- As of 2026-10-17, Hugo Extended 0.168.0 is the single development, CI, and
-  release-test baseline and the current minimum. Advance it with stable Hugo
-  releases; update CI pins, module/theme requirements, checkers, and current
-  bilingual documentation together. Do not run older-Hugo compatibility
+- As of 2026-10-17, the tested toolchain is Go 1.27.2 and Hugo Extended
+  0.168.0. CI automatically follows the latest stable Go and Hugo releases
+  and records the resolved versions. Hugo 0.168.0 remains the declared minimum,
+  not an exact-version lock. Update module/theme requirements, checkers, and
+  current bilingual documentation together when raising that minimum.
+  Do not run older-Hugo compatibility
   matrices, adapt code for old versions, or add compatibility shims unless the
   user explicitly requests it. Historical release/research records are not
   current support requirements.
 - SCSS builds use standalone Dart Sass 1.105.2 on `PATH`; CI pins the same
   distribution. Preserve the project-variable import hooks and strict warnings.
-- The module declares Go 1.27.0; CI pins Go 1.27.0. Record the actual local
-  tool versions when reporting validation.
+- The module declares Go 1.27.0 as its minimum; the current development default
+  is Go 1.27.2. Record the actual local tool versions when reporting validation.
 - Run checkers with `--panicOnWarning` when they build Hugo output. Ordinary
   editing may warn and fall back; publishing gates turn warnings into failures.
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.

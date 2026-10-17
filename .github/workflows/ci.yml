@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: 1.27.0
-  HUGO_VERSION: 0.168.0
+  GO_VERSION: stable
+  HUGO_VERSION: latest
   GOTOOLCHAIN: local
 
 jobs:
@@ -42,6 +42,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+          cache: false
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -61,6 +66,12 @@ jobs:
           echo "a530ee08d5792c80bdb9d9614b45fb58219c890cb42a280a80775f0af9c29582  $sass_archive" | sha256sum --check
           tar --extract --gzip --file "$sass_archive" --directory "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/dart-sass" >> "$GITHUB_PATH"
+
+      - name: Record build tool versions
+        run: |
+          go version
+          hugo version
+          sass --version
 
       - name: Install PDF inspection tools
         run: |
@@ -184,7 +195,7 @@ jobs:
   build:
     name: Hugo theme checks
     runs-on: ubuntu-latest
-    # CI intentionally uses one pinned Hugo toolchain. A run that reaches this
+    # CI follows the latest stable Hugo release. A run that reaches this
     # ceiling is hung infrastructure, and a cancelled six-hour job must never
     # again stand in for a release verdict.
     timeout-minutes: 60
@@ -197,6 +208,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
+          check-latest: true
           cache: false
       - uses: peaceiris/actions-hugo@v3
         with:
@@ -213,6 +225,12 @@ jobs:
           echo "a530ee08d5792c80bdb9d9614b45fb58219c890cb42a280a80775f0af9c29582  $sass_archive" | sha256sum --check
           tar --extract --gzip --file "$sass_archive" --directory "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/dart-sass" >> "$GITHUB_PATH"
+
+      - name: Record build tool versions
+        run: |
+          go version
+          hugo version
+          sass --version
 
       - name: Check translation key parity
         run: python3 bin/check-i18n.py
@@ -308,6 +326,8 @@ jobs:
           YAML
           printf -- '---\ntitle: Docs\n---\n\nSection.\n' > "$site/content/docs/_index.md"
           printf -- 'included text\n' > "$site/content/snippets/part.md"
+          # Keep Markdown code fences literal, not shell substitutions.
+          # shellcheck disable=SC2016
           printf -- '---\ntitle: Page\n---\n\n{{< include file="/snippets/part.md" >}}\n\n```filetree\n- a/\n  - b.txt\n```\n' > "$site/content/docs/page.md"
           HUGO_MODULE_REPLACEMENTS="github.com/pgsty/oink -> $GITHUB_WORKSPACE" \
             hugo --source "$site" --destination "$RUNNER_TEMP/oink-module-public" \

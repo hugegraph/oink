@@ -12,8 +12,9 @@ Hugo and Sass toolchain.
 
 ### Changed
 
-- Advance the minimum and sole development, CI, and release-test baseline to
-  Hugo Extended 0.168.0.
+- Advance the minimum to Hugo Extended 0.168.0. Validate this release with
+  Go 1.27.2 and Hugo Extended 0.168.0; CI follows the latest stable Go and Hugo
+  releases and records the versions used. The module's Go minimum remains 1.27.0.
 - Refresh homepage and RSS output goldens for Hugo's generator-tag placement
   and automatic summaries that extend to preserve balanced HTML containers.
 - Compile main and ReDoc styles with standalone Dart Sass 1.105.2, preserving
