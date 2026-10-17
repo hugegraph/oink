@@ -19,6 +19,16 @@ All notable changes to OINK are documented here. The project follows
 - Load the dark Chroma palette with Sass modules and correct the adjacent
   download-channel selector for Dart Sass.
 
+### Fixed
+
+- Keep Markmap node text readable across light/dark modes and visual presets,
+  while retaining dark text for print.
+- Keep the fixed right rail above the footer, including pages without a
+  sidebar and content reflows from tabs, blog view changes, and loaded media.
+- Add `.td-table--wide` for technical tables that need intact identifiers and
+  bounded descriptions inside a horizontal scroll region. Ordinary tables,
+  field lists, and static outputs retain their existing layout.
+
 ## [1.3.0] — 2026-10-15
 
 Resource-backed Expo albums with shared navigation, an original-image viewer,
