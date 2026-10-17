@@ -166,8 +166,14 @@
       });
       window.visualViewport.addEventListener('resize', schedule);
     }
-    if ('ResizeObserver' in window)
-      new ResizeObserver(schedule).observe(footer);
+    if ('ResizeObserver' in window) {
+      var observer = new ResizeObserver(schedule);
+      observer.observe(footer);
+      // Tabs, blog views and loaded media move the footer without resizing it.
+      // Observe normal-flow content; the fixed rails never size this element.
+      var main = document.getElementById('td-main-content');
+      if (main) observer.observe(main);
+    }
     update();
   }
 

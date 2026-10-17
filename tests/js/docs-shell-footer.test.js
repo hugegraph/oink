@@ -28,6 +28,8 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
       return { top: measurements.top };
     },
   };
+  const mainElement = {};
+  const observed = new Set();
   let resize;
   let frameID = 0;
   const html = {
@@ -52,7 +54,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
       return null;
     },
     querySelectorAll() { return []; },
-    getElementById() { return null; },
+    getElementById(id) { return id === 'td-main-content' ? mainElement : null; },
     addEventListener(name, callback) { documentListeners.set(name, callback); },
     dispatchEvent(event) {
       const callback = documentListeners.get(event.type);
@@ -82,7 +84,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
     document,
     ResizeObserver: class {
       constructor(callback) { resize = callback; }
-      observe(target) { assert.equal(target, footerElement); }
+      observe(target) { observed.add(target); }
     },
   };
   vm.runInNewContext(SOURCE, context);
@@ -96,7 +98,8 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   flush();
   return {
     window, document, measurements, listeners, viewportListeners, flush,
-    resize() { resize(); },
+    resize() { assert.ok(observed.has(footerElement)); resize(); },
+    reflow() { assert.ok(observed.has(mainElement)); resize(); },
     offset() { return properties.get('--td-shell-footer-offset'); },
   };
 }
@@ -225,4 +228,22 @@ test('mixed observer, window and visual viewport events share one frame', () => 
   env.flush();
   assert.equal(env.measurements.reads, reads + 1);
   assert.equal(env.offset(), '301px');
+});
+
+// Content can move the footer even when its own dimensions remain unchanged.
+test('main-content reflow clears and restores the offset without a scroll or tab event', () => {
+  const env = build({ sidebar: false, top: 670 });
+  const reads = env.measurements.reads;
+  assert.equal(env.offset(), '331px');
+  env.measurements.top = 3100;
+  env.reflow();
+  env.reflow();
+  assert.equal(env.measurements.reads, reads);
+  env.flush();
+  assert.equal(env.measurements.reads, reads + 1);
+  assert.equal(env.offset(), '0px');
+  env.measurements.top = 900;
+  env.reflow();
+  env.flush();
+  assert.equal(env.offset(), '101px');
 });
