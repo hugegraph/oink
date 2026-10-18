@@ -1,11 +1,8 @@
 {{ $scssMain := "scss/main.scss" -}}
-{{/* Bootstrap 5.3 and the public project-variable hooks still share Sass's
-     legacy import scope. Silence only their known language deprecations;
-     Sass @warn, invalid selectors, and Hugo diagnostics remain visible. */ -}}
-{{ $scss := resources.Get $scssMain | toCSS (dict
-      "transpiler" "dartsass"
-      "silenceDeprecations" (slice "import" "global-builtin" "color-functions" "if-function")
-      "enableSourceMap" (not hugo.IsProduction)) -}}
+{{/* Use Hugo Extended's built-in compiler; consumers need no external Sass
+     executable. Hugo 0.168 may report its upstream LibSass deprecation. */ -}}
+{{ $scss := resources.Get $scssMain
+      | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
 {{/* Concatenate Font Awesome's official compiled CSS into one stable vendor
      resource. Keep it separate from consumer SCSS so an ordinary theme or site
      style edit does not invalidate the icon distribution. The target remains

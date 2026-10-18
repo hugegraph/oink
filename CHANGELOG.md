@@ -5,6 +5,22 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [1.3.2] — 2026-10-18
+
+Restore the Hugo-only build promised to ordinary OINK consumers.
+
+### Fixed
+
+- Remove the mandatory Dart Sass dependency introduced in 1.3.1. Main and
+  ReDoc styles use Hugo Extended's built-in LibSass again; preserve project
+  variable/style hooks and the dark Chroma palette.
+- Restore Hugo Extended 0.166.0 as the minimum and default development/strict
+  CI version. Hugo 0.168.0 can build with its upstream LibSass deprecation
+  warning; no external compiler is required and no warnings are hidden.
+- Verify both compiler versions without Sass on `PATH`, including ReDoc and
+  consumer SCSS hooks. Keep all independent readability and FileTree fixes
+  from 1.3.1, including the corrected download-channel selector.
+
 ## [1.3.1] — 2026-10-18
 
 Readability repairs and an opt-in FileTree comment layout, with a refreshed

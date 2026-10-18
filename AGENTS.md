@@ -6,8 +6,8 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-The current release is `v1.3.1`, dated 2026-10-18 in `CHANGELOG.md`. The sibling
-site's `v1.3.1` Design contracts describe this release. Refresh Git state,
+The current release is `v1.3.2`, dated 2026-10-18 in `CHANGELOG.md`. The sibling
+site's `v1.3.2` Design contracts describe this release. Refresh Git state,
 public tags, and consumer pins before making claims about later releases or
 downstream adoption.
 
@@ -94,21 +94,20 @@ make -C ../oink.pgsty.com dev
 
 ## Theme contracts
 
-- As of 2026-10-17, the tested toolchain is Go 1.27.2 and Hugo Extended
-  0.168.0. CI automatically follows the latest stable Go and Hugo releases
-  and records the resolved versions. Hugo 0.168.0 remains the declared minimum,
-  not an exact-version lock. Update module/theme requirements, checkers, and
-  current bilingual documentation together when raising that minimum.
-  Do not run older-Hugo compatibility
-  matrices, adapt code for old versions, or add compatibility shims unless the
-  user explicitly requests it. Historical release/research records are not
-  current support requirements.
-- SCSS builds use standalone Dart Sass 1.105.2 on `PATH`; CI pins the same
-  distribution. Preserve the project-variable import hooks and strict warnings.
+- Hugo Extended 0.166.0 is the minimum and default development/strict CI
+  version. Keep this baseline pinned; do not automatically follow latest Hugo.
+  A focused Hugo 0.168.0 check accepts its known upstream LibSass deprecation
+  warning while rejecting other diagnostics. Ordinary 0.168.0 builds may warn.
+  Update requirements, checkers, and current bilingual contracts together.
+- SCSS uses Hugo Extended's built-in LibSass, including main and ReDoc styles.
+  Ordinary consumers must not install Dart Sass or another Sass executable.
+  Preserve project-variable/style hooks. Future Hugo upgrades must preserve
+  this dependency boundary; do not add compatibility shims for unrelated versions.
 - The module declares Go 1.27.0 as its minimum; the current development default
   is Go 1.27.2. Record the actual local tool versions when reporting validation.
-- Run checkers with `--panicOnWarning` when they build Hugo output. Ordinary
-  editing may warn and fall back; publishing gates turn warnings into failures.
+- Run default 0.166.0 checkers with `--panicOnWarning`. The focused 0.168.0
+  compatibility check permits only the upstream LibSass warning; theme warnings
+  remain failures. Ordinary editing may warn and fall back.
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.
 - Preserve pre-existing changes in this shared worktree and edit only the
   owning implementation, checker, and public Design contract for a change.
