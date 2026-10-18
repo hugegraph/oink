@@ -13,7 +13,7 @@
   <a href="https://oink.pgsty.com/"><img alt="Website" src="https://img.shields.io/badge/website-oink.pgsty.com-17385c?style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/pgsty/oink?display_name=tag&amp;sort=semver&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/pgsty/oink/ci.yml?branch=main&amp;label=CI&amp;style=flat-square"></a>
-  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.168.0 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.168.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
+  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.166.0 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.166.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/blob/main/LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
 </p>
 
@@ -41,7 +41,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 ## Why OINK
 
 - **One deterministic toolchain.** Resolve the Hugo Module once, then build and
-  preview with Hugo and the standalone Dart Sass compiler.
+  preview with Hugo Extended and its built-in Sass compiler.
 - **Complete publishing surfaces.** Docs, Blog, Book, Expo image albums, OpenAPI, releases,
   downloads, and data-driven landing pages share one navigation and visual
   system.
@@ -62,10 +62,10 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.3.1 improves Markmap contrast, footer clearance, technical table widths,
-and optional FileTree comment wrapping. It requires Hugo Extended 0.168.0 and
-standalone Dart Sass 1.105.2. See the [changelog](CHANGELOG.md) for the fixes,
-upgrade requirements, and contributor credits.
+OINK 1.3.2 restores builds with Hugo Extended alone: Dart Sass is no longer
+required. Hugo Extended 0.166.0 is the minimum and default validation version.
+The Markmap, footer, table, and FileTree fixes from 1.3.1 remain included.
+See the [changelog](CHANGELOG.md) for upgrade details and contributor credits.
 
 ## Start a site
 
@@ -82,8 +82,8 @@ repository's internal fixtures.
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
 For development and validation, use Git, Go 1.27.2, and Hugo Extended
-0.168.0 or newer with [Dart Sass 1.105.2](https://github.com/sass/dart-sass/releases/tag/1.105.2)
-on `PATH` (the standalone distribution, not the npm package). The site does not require Node.js. To evaluate the neutral template locally:
+0.166.0 or a newer release that retains built-in LibSass. No external Sass
+compiler or Node.js is required. To evaluate the neutral template locally:
 
 ```sh
 git clone https://github.com/pgsty/oink-starter.git
@@ -129,8 +129,8 @@ HTML, RSS, Print, Markdown, LLMS, LLMSFULL, and NAVJSON outputs the site needs;
 the [configuration reference](https://oink.pgsty.com/docs/customize/config/)
 documents their defaults and scope.
 
-For production, commit `go.mod` and `go.sum`, build with warnings promoted to
-errors, and inspect representative routes:
+For production, commit `go.mod` and `go.sum`. The default Hugo 0.166.0 release
+gate promotes warnings to errors; inspect representative routes after building:
 
 ```sh
 hugo --cleanDestinationDir --gc --minify --environment production \
@@ -212,18 +212,20 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | **Extended 0.168.0 or newer**; CI follows the latest stable release |
-| Dart Sass | Standalone 1.105.2 on `PATH`; no Node.js or npm dependency |
+| Hugo | **Extended 0.166.0 minimum**; default development and strict CI version 0.166.0 |
+| Sass | Built-in LibSass; no separately installed compiler |
 | Go | 1.27.0 minimum for Hugo Module resolution; current default 1.27.2, CI follows the latest stable release; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
-CI automatically resolves stable Go and Hugo releases and records their actual
-versions. OINK 1.3.1 is validated with Go 1.27.2 and Hugo Extended 0.168.0;
-these are not exact-version locks. Update declared requirements and current
-documentation together when raising the minimum. Older Hugo versions receive
-no compatibility testing or adaptation. Dated release and research records
-retain their original tool versions.
+CI follows stable Go releases and pins Hugo 0.166.0 for strict checks. A separate
+Hugo 0.168.0 check verifies builds without an external Sass executable and
+accepts only Hugo's known LibSass deprecation warning. Ordinary builds and
+previews on 0.168.0 remain supported; `--panicOnWarning` makes that upstream
+warning fatal, so use 0.166.0 for the strict gate. No warnings are hidden by the
+theme. Future Hugo releases that remove LibSass require a separate compatibility
+decision; upgrading must not add a mandatory Sass installation for consumers.
+Dated release and research records retain their original tool versions.
 
 ## Community and releases
 
