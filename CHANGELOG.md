@@ -2331,7 +2331,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/pgsty/oink/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/pgsty/oink/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/pgsty/oink/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/pgsty/oink/compare/v1.1.0...v1.2.0
