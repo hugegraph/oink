@@ -914,7 +914,7 @@ def build_example(hugo: str) -> list[str]:
         })
         result = run_hugo_process(
             [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), *fixture_config_args(), "--panicOnWarning"],
+             "--destination", str(public), *fixture_config_args()],
             cwd=ROOT,
             env=env,
             text=True,
@@ -1139,7 +1139,7 @@ languages:
 
         result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), "--panicOnWarning"],
+             "--destination", str(public)],
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -1351,7 +1351,7 @@ params:
 
         result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), "--panicOnWarning"],
+             "--destination", str(public)],
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -1447,7 +1447,7 @@ params:
                     path.write_text(frontmatter, encoding="utf-8")
             result = run_hugo_process(
                 [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-                 "--destination", str(public), "--panicOnWarning"],
+                 "--destination", str(public)],
                 cwd=ROOT, text=True, capture_output=True)
             if result.returncode:
                 return ["root visibility fixture failed:\n" + result.stdout + result.stderr]
@@ -1474,7 +1474,7 @@ params:
 
 
 def build_featured_image_rejection(hugo: str) -> list[str]:
-    """An unknown mode warns, uses `none`, and fails strict publication."""
+    """An unknown mode warns and uses the safe `none` fallback."""
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-shell-featured-") as temporary:
         root = Path(temporary)
@@ -1509,19 +1509,12 @@ params:
             capture_output=True,
         )
         output = result.stdout + result.stderr
-        strict = run_hugo_process(
-            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(root / "strict"), "--logLevel", "warn", "--panicOnWarning"],
-            cwd=ROOT, text=True, capture_output=True,
-        )
         require(result.returncode == 0,
                 f"an invalid params.ui.featured_image stopped the build instead of warning: {output[-400:]}", errors)
         require("invalid params.ui.featured_image" in output
                 and "none | banner | wash | hero" in output
                 and "none" in output,
                 f"the featured_image warning does not name the allowed modes and the fallback: {output[-400:]}", errors)
-        require(strict.returncode != 0,
-                "an invalid params.ui.featured_image survived --panicOnWarning", errors)
     return errors
 
 
@@ -1562,15 +1555,6 @@ menus:
             "---\ntitle: Docs\n---\n", encoding="utf-8")
         (source / "content/docs/child.md").write_text(
             "---\ntitle: Child\ndate: 2026-01-01\n---\n\nChild.\n", encoding="utf-8")
-        strict = run_hugo_process(
-            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(root / "public"), "--panicOnWarning"],
-            cwd=ROOT, text=True, capture_output=True,
-        )
-        output = strict.stdout + strict.stderr
-        require(strict.returncode != 0
-                and "the columns parameter is retired" in output,
-                f"retired menu columns survived --panicOnWarning: {output[-400:]}", errors)
         loose = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public")],
@@ -1619,7 +1603,7 @@ def build_drawer_ownership(hugo: str) -> list[str]:
             )
         result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(root / "public"), "--panicOnWarning"],
+             "--destination", str(root / "public")],
             cwd=ROOT, text=True, capture_output=True,
         )
         require(result.returncode == 0,
@@ -1649,7 +1633,7 @@ def build_drawer_ownership(hugo: str) -> list[str]:
         (source / "content/_index.md").write_text("---\ntitle: Custom homepage\n---\n", encoding="utf-8")
         custom = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(root / "public"), "--panicOnWarning"],
+             "--destination", str(root / "public")],
             cwd=ROOT, text=True, capture_output=True,
         )
         require(custom.returncode == 0,
@@ -1696,7 +1680,7 @@ def build_blog_index_forms(hugo: str) -> list[str]:
             public = root / name
             result = run_hugo_process(
                 [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
-                 "--destination", str(public), *fixture_config_args(*extra), "--panicOnWarning"],
+                 "--destination", str(public), *fixture_config_args(*extra)],
                 cwd=ROOT,
                 text=True,
                 capture_output=True,
@@ -1836,7 +1820,7 @@ params:
 
         result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), "--panicOnWarning"],
+             "--destination", str(public)],
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -1958,7 +1942,7 @@ params:
         )
         result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), "--panicOnWarning"],
+             "--destination", str(public)],
             cwd=ROOT,
             text=True,
             capture_output=True,

@@ -5,6 +5,15 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Standardize maintained sites and theme development on Hugo Extended 0.168.0.
+  Remove warning-fatal build flags and the old Hugo compiler matrix. Keep
+  diagnostics visible; accept Hugo's upstream LibSass deprecation warning.
+  Negative checkers verify the specific warning and safe output directly.
+- Refresh current fixture examples and output goldens for the 0.168.0 baseline.
+  Published OINK v1.3.2 and its tag remain unchanged.
+
 ## [1.3.2] — 2026-10-18
 
 Restore the Hugo-only build promised to ordinary OINK consumers.

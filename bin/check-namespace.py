@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Freeze the theme's public naming surface.
 
-Over a fresh strict regression fixture by default, or an existing build passed
+Over a fresh regression fixture by default, or an existing build passed
 explicitly with ``--public``:
 
   1. every class the theme generates starts with `td-`;

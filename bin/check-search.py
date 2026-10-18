@@ -12,6 +12,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from test_site import theme_warnings
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_SCRIPT = ROOT / "bin" / "check-navigation-contract.py"
@@ -148,7 +150,7 @@ def main() -> int:
                 output = workspace / f"public-{deployment}"
                 helper.copy_fixture_site(site, "flat", True, subpath=subpath)
                 log = helper.run_hugo(site, output, workspace / "cache")
-                warnings = [line for line in log.splitlines() if "WARN" in line]
+                warnings = theme_warnings(log)
                 require(
                     warnings and all("invalid search_boost" in line for line in warnings),
                     f"{deployment} build did not emit only invalid-boost warnings",

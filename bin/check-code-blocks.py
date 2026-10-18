@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Enhanced Code Block output, tabs, and strict author-contract failures."""
+"""Validate Enhanced Code Block output, tabs, and author diagnostics and safe fallbacks."""
 
 from __future__ import annotations
 
@@ -532,20 +532,6 @@ INVALID_CASES = (
     ("tab-unknown", '{{< tabs >}}{{< tab label="A" lang="sh" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter"),
 )
 
-# One strict canary per warning family; every case below still proves its own
-# diagnostic and safe ordinary-build output.
-STRICT_INVALID_CANARIES = {
-    "filename-title",            # code option validation
-    "duplicate-code-ids",        # page-scoped ID registry
-    "reserved-data",             # shared attribute policy
-    "tab-group-without-value",   # adjacent-fence tab metadata
-    "eg-caption-without-num",    # numbered example fence
-    "tabs-positional",           # tabs container parameters
-    "tabs-empty",                # tabs child structure
-    "tab-outside",               # tab parent requirement
-    "tab-missing-label",         # tab parameters
-}
-
 
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
@@ -565,10 +551,6 @@ def check_invalid_cases(hugo: str) -> list[str]:
                 errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
             if not (destination / "docs/invalid/index.html").is_file():
                 errors.append(f"invalid case {name} emitted no safe page output")
-            if name in STRICT_INVALID_CANARIES:
-                strict = run_hugo_process(command + ["--panicOnWarning"], cwd=ROOT, capture_output=True, text=True, check=False)
-                if strict.returncode == 0:
-                    errors.append(f"invalid case {name} survived --panicOnWarning")
     return errors
 
 

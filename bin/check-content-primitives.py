@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate everyday content primitive output and strict author failures.
+"""Validate everyday content primitive output and author diagnostics and safe fallbacks.
 
 Covers Badge, Kbd, Fields (shortcode and `{.fields}` table), the native list
 forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix`,
@@ -813,11 +813,6 @@ def check_invalid_cases(hugo: str) -> list[str]:
         require(param_page.is_file(), "param map lost its safe output", errors)
         if param_page.is_file():
             require("fixture_map" not in param_page.read_text(), "param map value reached the rendered page", errors)
-        strict = run_hugo_process(
-            [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
-            cwd=ROOT, capture_output=True, text=True, check=False,
-        )
-        require(strict.returncode != 0, "batched invalid cases survived --panicOnWarning", errors)
 
     for name, body, expected in INVALID_CASES:
         if name not in UNBATCHED_INVALID_CASES:
@@ -837,11 +832,6 @@ def check_invalid_cases(hugo: str) -> list[str]:
             require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
             page = temp_path / "public/docs/invalid/index.html"
             require(page.is_file() == (result.returncode == 0), f"invalid case {name} left partial output", errors)
-            strict = run_hugo_process(
-                [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
-                cwd=ROOT, capture_output=True, text=True, check=False,
-            )
-            require(strict.returncode != 0, f"invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

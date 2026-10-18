@@ -13,7 +13,7 @@
   <a href="https://oink.pgsty.com/"><img alt="Website" src="https://img.shields.io/badge/website-oink.pgsty.com-17385c?style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/pgsty/oink?display_name=tag&amp;sort=semver&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/pgsty/oink/ci.yml?branch=main&amp;label=CI&amp;style=flat-square"></a>
-  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.166.0 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.166.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
+  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.168.0 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.168.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/blob/main/LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
 </p>
 
@@ -63,7 +63,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   machine-readable outputs are tested as separate contracts.
 
 OINK 1.3.2 restores builds with Hugo Extended alone: Dart Sass is no longer
-required. Hugo Extended 0.166.0 is the minimum and default validation version.
+required. Hugo Extended 0.168.0 is the minimum and default validation version.
 The Markmap, footer, table, and FileTree fixes from 1.3.1 remain included.
 See the [changelog](CHANGELOG.md) for upgrade details and contributor credits.
 
@@ -82,7 +82,7 @@ repository's internal fixtures.
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
 For development and validation, use Git, Go 1.27.2, and Hugo Extended
-0.166.0 or a newer release that retains built-in LibSass. No external Sass
+0.168.0 or a newer release that retains built-in LibSass. No external Sass
 compiler or Node.js is required. To evaluate the neutral template locally:
 
 ```sh
@@ -93,7 +93,7 @@ hugo server
 
 Open <http://localhost:1313/>. Replace the site identity, home-page data, and
 sample content in that order; the starter already pins a tested OINK release
-and includes a warning-strict production build.
+and includes a production build.
 
 ### Add OINK to an existing Hugo site
 
@@ -129,12 +129,12 @@ HTML, RSS, Print, Markdown, LLMS, LLMSFULL, and NAVJSON outputs the site needs;
 the [configuration reference](https://oink.pgsty.com/docs/customize/config/)
 documents their defaults and scope.
 
-For production, commit `go.mod` and `go.sum`. The default Hugo 0.166.0 release
+For production, commit `go.mod` and `go.sum`. The default Hugo 0.168.0 release
 gate promotes warnings to errors; inspect representative routes after building:
 
 ```sh
 hugo --cleanDestinationDir --gc --minify --environment production \
-  --printPathWarnings --panicOnWarning
+  --printPathWarnings
 ```
 
 See [Get started](https://oink.pgsty.com/docs/start/) for repository structure,
@@ -212,19 +212,19 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | **Extended 0.166.0 minimum**; default development and strict CI version 0.166.0 |
+| Hugo | **Extended 0.168.0 minimum**; default development and CI version 0.168.0 |
 | Sass | Built-in LibSass; no separately installed compiler |
 | Go | 1.27.0 minimum for Hugo Module resolution; current default 1.27.2, CI follows the latest stable release; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
-CI follows stable Go releases and pins Hugo 0.166.0 for strict checks. A separate
-Hugo 0.168.0 check verifies builds without an external Sass executable and
-accepts only Hugo's known LibSass deprecation warning. Ordinary builds and
-previews on 0.168.0 remain supported; `--panicOnWarning` makes that upstream
-warning fatal, so use 0.166.0 for the strict gate. No warnings are hidden by the
-theme. Future Hugo releases that remove LibSass require a separate compatibility
-decision; upgrading must not add a mandatory Sass installation for consumers.
+CI follows stable Go releases and pins Hugo Extended 0.168.0. Development,
+preview, checks, release, and deployment use this same Hugo baseline. Do not
+enable `--panicOnWarning` or `HUGO_PANICONWARNING`. Keep warnings visible and
+review them; Hugo's upstream LibSass deprecation warning is accepted. Focused
+checks verify theme diagnostics and safe fallbacks directly. Future Hugo
+releases that remove LibSass require a separate compatibility decision;
+upgrading must preserve builds without an external Sass installation.
 Dated release and research records retain their original tool versions.
 
 ## Community and releases
