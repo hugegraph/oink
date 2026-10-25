@@ -27,7 +27,8 @@ params:
   # page_width, this changes content rather than the surrounding shell.
   reading_width: normal
   # Diagram runtimes are off until a site opts in. `markmap: true` renders
-  # ```markmap fences; plantuml and drawio also require their server URLs.
+  # ```markmap fences. PlantUML renders locally unless svg_image_url is set;
+  # only Draw.io requires a server URL.
   markmap: false
   plantuml:
     enable: false

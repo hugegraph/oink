@@ -60,7 +60,7 @@
           "default": "normal"
         },
         "markmap": {
-          "description": "Diagram runtimes are off until a site opts in. `markmap: true` renders ```markmap fences; plantuml and drawio also require their server URLs.",
+          "description": "Diagram runtimes are off until a site opts in. `markmap: true` renders ```markmap fences. PlantUML renders locally unless svg_image_url is set; only Draw.io requires a server URL.",
           "type": "boolean",
           "default": false
         },

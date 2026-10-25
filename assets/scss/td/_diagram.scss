@@ -1,4 +1,4 @@
-// Browser-rendered diagrams (currently Mermaid) and the viewport that lets a
+// Browser-rendered diagrams and the viewport that lets a
 // reader look at one properly.
 //
 // The fence used to reuse the code block's `<pre>`, which gave a diagram a
@@ -7,10 +7,35 @@
 // against the start edge with the remaining third of a bordered box empty
 // beside it.
 
-.td-diagram {
+.td-diagram,
+.td-plantuml {
   position: relative;
   margin-block: $spacer;
   margin-inline: 0;
+}
+
+.td-plantuml > pre[hidden] {
+  display: none;
+}
+
+.td-plantuml__image {
+  overflow: auto;
+  > img {
+    display: block;
+    max-width: none;
+    margin-inline: auto;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--bs-link-color);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .td-plantuml__image > img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .td-diagram__stage {

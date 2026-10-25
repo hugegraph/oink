@@ -7,6 +7,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Render PlantUML locally with the pinned MIT `@plantuml/core` 1.2026.9
+  engine and Viz.js 3.24.0. Enabling PlantUML without a server now uses the
+  two bundled browser assets only on pages with diagrams; consumers need no
+  Java, Graphviz, npm install or rendering service. Preserve explicit server
+  configurations, source text on failure, and follow the reader's color mode.
+  Fix double escaping of arrows, quotes and ampersands in PlantUML fences.
 - Add opt-in divided card lists (`.td-cards-list`, `cards variant="list"`),
   compact steps (`.td-steps-compact`, `steps variant="compact"`), and single-line
   command strips (`.td-code-command`). Unsupported command layouts warn and

@@ -688,7 +688,8 @@ def check_diagram_endpoints(hugo: str) -> list[str]:
             html = page.read_text() if page.exists() else ""
             require('language-plantuml' in html, f"diagram {name} lost PlantUML source", errors)
             for marker in ("js/chunks/plantuml-", "js/chunks/drawio", 'id="td-drawio-config"'):
-                require((marker in html) == enabled,
+                expected = enabled or (name == "missing" and marker == "js/chunks/plantuml-")
+                require((marker in html) == expected,
                         f"diagram {name}: runtime marker {marker!r} enabled={enabled}", errors)
             if enabled:
                 require(not theme_warnings(log), f"valid diagram {name} warned: {log[-600:]}", errors)
@@ -696,8 +697,10 @@ def check_diagram_endpoints(hugo: str) -> list[str]:
                 require(any(value in path.read_text() for path in chunks),
                         f"diagram {name} did not receive the validated endpoint", errors)
             else:
-                require(warning in log and "params.plantuml" in log and "params.drawio" in log,
-                        f"diagram {name} did not name both invalid endpoints: {log[-600:]}", errors)
+                require(warning in log and "params.drawio" in log,
+                        f"diagram {name} did not name invalid Draw.io endpoint: {log[-600:]}", errors)
+                require(("params.plantuml" in log) == (name != "missing"),
+                        f"diagram {name} did not distinguish local PlantUML from invalid endpoint: {log[-600:]}", errors)
     return errors
 
 

@@ -158,6 +158,13 @@ Interactive features remain opt-in where they express site policy. The theme
 provides the implementation; the consuming site decides which outputs,
 analytics, comments, feedback, assistant links, and image behavior to enable.
 
+In the unreleased development version, `params.plantuml: true` renders UML in
+the browser with two bundled scripts, loaded only on pages with PlantUML
+fences. No Java, Graphviz executable, npm installation, CDN or rendering
+service is needed. Explicit server endpoints remain supported. See the
+[PlantUML guide](https://oink.pgsty.com/docs/components/plantuml/) for supported
+inputs and fallback behavior; published v1.3.2 still requires an endpoint.
+
 ## Live sites
 
 OINK is exercised by fifteen real sites, from a two-page utility to large

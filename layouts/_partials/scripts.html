@@ -110,14 +110,15 @@ window.markmap = {
 
 {{ $plantumlSVGURL := "" -}}
 {{ $plantumlSVG := false -}}
+{{ $plantumlServer := false -}}
 {{ if reflect.IsMap .Site.Params.plantuml -}}
-  {{ $plantumlSVGURL = index .Site.Params.plantuml "svg_image_url" | default "" -}}
+  {{ if isset .Site.Params.plantuml "svg_image_url" -}}
+    {{ $plantumlSVGURL = index .Site.Params.plantuml "svg_image_url" -}}
+    {{ $plantumlServer = or (ne (printf "%T" $plantumlSVGURL) "string") (ne $plantumlSVGURL "") -}}
+  {{ end -}}
   {{ $plantumlSVG = eq (index .Site.Params.plantuml "svg") true -}}
 {{ end -}}
-{{ if and $plantumlEnabled (not $plantumlSVGURL) -}}
-  {{ warnf "params.plantuml.enable requires an explicit params.plantuml.svg_image_url; the theme does not default to a public PlantUML service, so PlantUML stays off" -}}{{ $plantumlEnabled = false -}}
-{{ end -}}
-{{ if $plantumlEnabled -}}
+{{ if and $plantumlEnabled $plantumlServer -}}
   {{ $endpoint := partial "content/url.html" (dict "label" "params.plantuml" "parameter" "svg_image_url" "position" "site configuration" "value" $plantumlSVGURL "kind" "image") -}}
   {{ $plantumlEnabled = $endpoint.valid -}}
   {{ $plantumlSVGURL = $endpoint.href -}}
@@ -175,7 +176,9 @@ window.markmap = {
 {{/* Optional first-party runtimes publish as stable capability chunks. Page
      flags choose script tags; they never create a new concatenation identity. */ -}}
 {{ $jsChunks := slice -}}
-{{ if $hasPlantuml -}}
+{{ if and $hasPlantuml (not $plantumlServer) -}}
+  {{ partial "scripts/plantuml.html" . -}}
+{{ else if $hasPlantuml -}}
   {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
   {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
   {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate (printf "js/generated/plantuml-%s.js" .Site.Language.Lang) (dict "server" $plantumlSVGURL "svg" $plantumlSVG) -}}
