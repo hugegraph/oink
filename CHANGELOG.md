@@ -5,6 +5,16 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Add `blog_index: gallery` as the fourth blog index view. Linked post covers
+  use Expo's row geometry with wall, seamless, and masonry card modes, a size
+  slider, and reader preferences independent of albums. Preserve date order,
+  pagination, and external article links across the four views.
+- Keep gallery titles available through keyboard focus, visible touch captions,
+  missing-image placeholders, and a no-JavaScript grid. Resize and image-load
+  handling preserve usable spacing, including captions beneath narrow tiles.
+
 ### Changed
 
 - Standardize maintained sites and theme development on Hugo Extended 0.168.0.

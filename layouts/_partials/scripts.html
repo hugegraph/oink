@@ -334,6 +334,9 @@ window.markmap = {
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/authored-a11y.js" "members" (slice (resources.Get "js/authored-a11y.js"))) -}}
 {{ end -}}
 
+{{ if and $interactiveOutput (.Store.Get "hasBlogGallery") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/blog-gallery.js" "members" (slice (resources.Get "js/expo-geometry.js") (resources.Get "js/blog-gallery.js"))) -}}
+{{ end -}}
 {{ if and $interactiveOutput (.Store.Get "hasExpo") -}}
   {{ partial "expo/viewer.html" . }}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/expo.js" "members" (slice (resources.Get "js/expo-geometry.js") (resources.Get "js/expo.js"))) -}}
