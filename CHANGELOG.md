@@ -7,6 +7,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Upgrade local search with mixed CJK/English terms, literal technical
+  identifiers, complete-match and phrase ranking, real section anchors and
+  context, and one result per page. Add an accessible current-section filter
+  to the existing palette, with explicit partial-match states. Preserve
+  index scopes, exclusions, keyword/page weights, commands and IME behavior.
 - Render PlantUML locally with the pinned MIT `@plantuml/core` 1.2026.9
   engine and Viz.js 3.24.0. Enabling PlantUML without a server now uses the
   two bundled browser assets only on pages with diagrams; consumers need no

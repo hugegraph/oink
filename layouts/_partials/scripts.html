@@ -292,7 +292,7 @@ window.markmap = {
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/swagger-init.js" "members" (slice (resources.Get "js/swagger-init.js"))) -}}
 {{ end -}}
 
-{{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}
+{{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch .Section }}{{ end -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}

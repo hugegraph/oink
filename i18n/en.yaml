@@ -15,6 +15,10 @@ callout_details: Details
 ui_pager_prev: Previous
 ui_pager_next: Next
 ui_search: Search…
+ui_search_scope: Search in
+ui_search_scope_all: All sections
+ui_search_partial: 'Partial match: {matched}/{total} terms'
+ui_search_partial_results: No page matches every term; showing partial matches
 ui_search_empty: No results found
 ui_search_loading: Loading search index…
 ui_search_results: '{count} results found'
