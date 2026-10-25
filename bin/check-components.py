@@ -287,6 +287,69 @@ def check_data_fences(hugo: str) -> list[str]:
     return errors
 
 
+def check_presentation_variants(hugo: str) -> list[str]:
+    """Opt-in presentation must preserve content, list semantics, and fallback."""
+    errors: list[str] = []
+    body = '''---
+title: Presentation
+---
+
+- [Native resource](/docs/)
+{.cards .td-cards-list}
+
+3. Native third step
+1. Native fourth step
+{.steps .td-steps-compact}
+
+{{< cards variant="list" >}}
+{{< card title="Full resource" link="/docs/" >}}Full description.{{< /card >}}
+{{< /cards >}}
+
+{{% steps variant="compact" %}}
+### Compact heading {#compact-heading}
+
+Compact body.
+{{% /steps %}}
+
+{{< cards variant=42 >}}
+{{< card title="Fallback resource" >}}Fallback card body.{{< /card >}}
+{{< /cards >}}
+
+{{% steps variant="invalid" %}}
+### Fallback heading {#fallback-heading}
+
+Fallback step body.
+{{% /steps %}}
+'''
+    result, destination, temp = build_site(hugo, {
+        "docs/_index.md": "---\ntitle: Docs\n---\n",
+        "docs/presentation.md": body,
+    }, prefix="oink-component-presentation-")
+    with temp:
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, f"presentation build failed: {output}", errors)
+        if result.returncode:
+            return errors
+        for diagnostic in ("variant must be list", "variant must be compact"):
+            require(diagnostic in output, f"missing {diagnostic}", errors)
+        html = (destination / "docs/presentation/index.html").read_text()
+        for marker in ('<ul class="cards td-cards-list">', '<ol start="3" class="steps td-steps-compact">',
+                       'class="td-content-cards td-content-cards--auto td-cards-list"',
+                       'class="td-steps td-max-width-on-larger-screens td-steps-compact"',
+                       'class="td-content-cards td-content-cards--auto"',
+                       'class="td-steps td-max-width-on-larger-screens"',
+                       '<h3 id="compact-heading">', '<h3 id="fallback-heading">'):
+            require(marker in html, f"presentation lost {marker}", errors)
+        for filename in ("index.html", "index.md", "index.xml"):
+            rendered = (destination / f"docs/presentation/{filename}").read_text()
+            for text in ("Native resource", "Native third step", "Full description.", "Compact body.", "Fallback card body.", "Fallback step body."):
+                require(text in rendered, f"{filename} lost {text}", errors)
+        markdown = (destination / "docs/presentation/index.md").read_text()
+        require('<div' not in markdown and '{{<' not in markdown and '{{%' not in markdown,
+                "presentation wrappers leaked into Markdown", errors)
+    return errors
+
+
 def check_steps_container(hugo: str) -> list[str]:
     """`{{% steps %}}` must render Markdown even when the body hugs the tags."""
     errors: list[str] = []
@@ -682,7 +745,8 @@ def check_template_contracts() -> list[str]:
     config = (ROOT / "hugo.yaml").read_text()
     require("oink:" not in config, "theme hugo.yaml declares a params.oink tree", errors)
     for removed in ("filetree", "gallery", "carousel", "tabpane", "readfile", "imgproc"):
-        require(removed not in config.lower(), f"theme hugo.yaml still configures the removed {removed} feature", errors)
+        require(re.search(r"(?m)^\s*" + re.escape(removed) + r"\s*:", config.lower()) is None,
+                f"theme hugo.yaml still configures the removed {removed} feature", errors)
     return errors
 
 
@@ -704,6 +768,7 @@ def main() -> int:
         + check_callout_matrix(args.hugo)
         + check_data_fences(args.hugo)
         + check_steps_container(args.hugo)
+        + check_presentation_variants(args.hugo)
         + check_openapi(args.hugo)
         + check_media_output_states(args.hugo)
         + check_empty_tabs(args.hugo)

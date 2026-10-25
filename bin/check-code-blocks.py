@@ -89,6 +89,58 @@ def temp_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: s
     return result, destination, temp
 
 
+def check_command_presentation(hugo: str) -> list[str]:
+    errors: list[str] = []
+    body = '''---
+title: Commands
+---
+
+```bash {class="td-code-command td-code-command" id="command" wrap=true}
+echo command-source
+```
+
+```bash {class="custom\ttd-code-command td-code-command td-code-command-extra" id="multiline"}
+echo first-source
+echo second-source
+```
+
+```bash {class="td-code-command" id="numbered" lineNos=inline}
+echo numbered-source
+```
+
+```bash {class="td-code-command" id="collapsed" collapse=1}
+echo collapsed-source
+```
+'''
+    for numbered_default in (False, True):
+        result, destination, temp = temp_build(hugo, {
+            "docs/_index.md": "---\ntitle: Docs\n---\n",
+            "docs/commands.md": body,
+        }, prefix="oink-command-presentation-", extra_config=("markup:\n  highlight:\n    lineNos: true\n" if numbered_default else ""))
+        with temp:
+            output = result.stdout + result.stderr
+            require(result.returncode == 0, f"command build failed: {output}", errors)
+            if result.returncode:
+                continue
+            require("td-code-command requires one line" in output, "command fallback diagnostic missing", errors)
+            html = (destination / "docs/commands/index.html").read_text()
+            for name in ("command", "multiline", "numbered", "collapsed"):
+                match = re.search(r'<div class="([^"]+)" id="' + name + '"', html)
+                require(match is not None, f"command block {name} disappeared", errors)
+                if match:
+                    expected = name == "command" and not numbered_default
+                    require(("td-code-command" in match[1].split()) == expected,
+                            f"wrong command fallback for {name}, default numbers={numbered_default}", errors)
+                    if name == "multiline":
+                        require("custom" in match[1].split() and "td-code-command-extra" in match[1].split(),
+                                "command fallback removed unrelated author classes", errors)
+            for filename in ("index.html", "index.md"):
+                rendered = (destination / f"docs/commands/{filename}").read_text()
+                for source in ("command-source", "first-source", "second-source", "numbered-source", "collapsed-source"):
+                    require(source in rendered, f"{filename} lost {source}", errors)
+    return errors
+
+
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
     code_html = (public / "fixtures/code-blocks/index.html").read_text()
@@ -569,6 +621,7 @@ def main() -> int:
 
     errors = (
         check_outputs(public)
+        + check_command_presentation(args.hugo)
         + check_template_contracts()
         + check_generic_rss_output(args.hugo)
         + check_nested_render_ids(args.hugo)

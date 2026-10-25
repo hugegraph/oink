@@ -7,6 +7,10 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add opt-in divided card lists (`.td-cards-list`, `cards variant="list"`),
+  compact steps (`.td-steps-compact`, `steps variant="compact"`), and single-line
+  command strips (`.td-code-command`). Unsupported command layouts warn and
+  retain the regular block without changing source text or output content.
 - Add `blog_index: gallery` as the fourth blog index view. Linked post covers
   use Expo's row geometry with wall, seamless, and masonry card modes, a size
   slider, and reader preferences independent of albums. Preserve date order,
@@ -17,6 +21,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Refine Cards, disclosures, Tabs, code controls, tables, Fields, badges,
+  steps, Landing actions, and shell rows across all four visual presets.
+  Share surface and spacing rules, keep labels fixed during press feedback,
+  reserve localized copy-feedback width, and enlarge touch controls. Preserve
+  Paper/Slate rounding and Ink/Terminal flat geometry without new JavaScript
+  or dependencies.
 - Standardize maintained sites and theme development on Hugo Extended 0.168.0.
   Remove warning-fatal build flags and the old Hugo compiler matrix. Keep
   diagnostics visible; accept Hugo's upstream LibSass deprecation warning.

@@ -218,6 +218,12 @@ html[data-td-preset-switching] *::after {
     border-end-start-radius: 0;
     border-start-end-radius: 8px;
     border-end-end-radius: 8px;
+
+    &--details {
+      border: 1px solid var(--bs-border-color);
+      border-radius: var(--td-code-radius);
+      background: var(--td-brand-elev);
+    }
   }
 
   // Landing keeps its structure; the blueprint grid and glow are Slate's.
