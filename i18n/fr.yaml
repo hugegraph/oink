@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Zoomer"
 ui_diagram_zoom_out: "Dézoomer"
 ui_diagram_zoom_reset: "Réinitialiser l'affichage"
 ui_diagram_error: "Le schéma n'a pas pu être affiché"
+ui_diagram_fit: Ajuster à la fenêtre
+ui_diagram_download: Télécharger le SVG
+ui_diagram_download_started: Téléchargement du SVG demandé
+ui_diagram_download_error: Impossible de télécharger le SVG
 ui_print_page: "Imprimer cette page"
 ui_sidebar_expand_section: "Développer la section"
 ui_sidebar_collapse_section: "Réduire la section"

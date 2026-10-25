@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "জুম ইন"
 ui_diagram_zoom_out: "জুম আউট"
 ui_diagram_zoom_reset: "দৃশ্য রিসেট করুন"
 ui_diagram_error: "ডায়াগ্রাম প্রদর্শন করা যায়নি"
+ui_diagram_fit: উইন্ডোর মাপে দেখান
+ui_diagram_download: SVG ডাউনলোড করুন
+ui_diagram_download_started: SVG ডাউনলোডের অনুরোধ করা হয়েছে
+ui_diagram_download_error: SVG ডাউনলোড করা যায়নি
 ui_print_page: "এই পৃষ্ঠা মুদ্রণ করুন"
 ui_sidebar_expand_section: "বিভাগ প্রসারিত করুন"
 ui_sidebar_collapse_section: "বিভাগ সংকুচিত করুন"

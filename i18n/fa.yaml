@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "بزرگنمایی"
 ui_diagram_zoom_out: "کوچکنمایی"
 ui_diagram_zoom_reset: "بازنشانی نمایش"
 ui_diagram_error: "نمودار قابل نمایش نیست"
+ui_diagram_fit: اندازهٔ پنجره
+ui_diagram_download: دریافت SVG
+ui_diagram_download_started: درخواست دریافت SVG ارسال شد
+ui_diagram_download_error: دریافت SVG ممکن نشد
 ui_print_page: "چاپ این صفحه"
 ui_sidebar_expand_section: "باز کردن بخش"
 ui_sidebar_collapse_section: "بستن بخش"

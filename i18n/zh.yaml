@@ -241,6 +241,10 @@ ui_diagram_zoom_in: 放大
 ui_diagram_zoom_out: 缩小
 ui_diagram_zoom_reset: 复位视图
 ui_diagram_error: 图表无法渲染
+ui_diagram_fit: 适应窗口
+ui_diagram_download: 下载 SVG
+ui_diagram_download_started: 已发起 SVG 下载
+ui_diagram_download_error: 无法下载 SVG
 
 # Expo icon tooltips and accessible names.
 ui_expo_layout: "图片布局"

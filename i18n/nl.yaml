@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Inzoomen"
 ui_diagram_zoom_out: "Uitzoomen"
 ui_diagram_zoom_reset: "Weergave resetten"
 ui_diagram_error: "Het diagram kon niet worden weergegeven"
+ui_diagram_fit: Aan venster aanpassen
+ui_diagram_download: SVG downloaden
+ui_diagram_download_started: SVG-download aangevraagd
+ui_diagram_download_error: SVG kon niet worden gedownload
 ui_print_page: "Druk deze pagina af"
 ui_sidebar_expand_section: "Sectie uitvouwen"
 ui_sidebar_collapse_section: "Sectie inklappen"

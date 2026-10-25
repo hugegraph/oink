@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Yakınlaştır"
 ui_diagram_zoom_out: "Uzaklaştır"
 ui_diagram_zoom_reset: "Görünümü sıfırla"
 ui_diagram_error: "Şema görüntülenemedi"
+ui_diagram_fit: Pencereye sığdır
+ui_diagram_download: SVG indir
+ui_diagram_download_started: SVG indirmesi istendi
+ui_diagram_download_error: SVG indirilemedi
 ui_print_page: "Bu sayfayı yazdır"
 ui_sidebar_expand_section: "Bölümü aç"
 ui_sidebar_collapse_section: "Bölümü kapat"

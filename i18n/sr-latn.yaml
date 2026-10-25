@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Uvećaj"
 ui_diagram_zoom_out: "Umanji"
 ui_diagram_zoom_reset: "Resetuj prikaz"
 ui_diagram_error: "Dijagram nije mogao biti prikazan"
+ui_diagram_fit: Uklopi u prozor
+ui_diagram_download: Preuzmi SVG
+ui_diagram_download_started: Zatraženo je preuzimanje SVG-a
+ui_diagram_download_error: Nije moguće preuzeti SVG
 ui_print_page: "Štampaj ovu stranicu"
 ui_sidebar_expand_section: "Proširi sekciju"
 ui_sidebar_collapse_section: "Skupi sekciju"

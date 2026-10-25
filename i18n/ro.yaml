@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Mărește"
 ui_diagram_zoom_out: "Micșorează"
 ui_diagram_zoom_reset: "Resetează vizualizarea"
 ui_diagram_error: "Diagrama nu a putut fi redată"
+ui_diagram_fit: Potrivire în fereastră
+ui_diagram_download: Descarcă SVG
+ui_diagram_download_started: Descărcarea SVG a fost solicitată
+ui_diagram_download_error: Nu s-a putut descărca SVG
 ui_print_page: "Imprimă această pagină"
 ui_sidebar_expand_section: "Extinde secțiunea"
 ui_sidebar_collapse_section: "Restrânge secțiunea"

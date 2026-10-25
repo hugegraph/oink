@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Lähenda"
 ui_diagram_zoom_out: "Eemalda"
 ui_diagram_zoom_reset: "Lähtesta vaade"
 ui_diagram_error: "Diagrammi ei õnnestunud kuvada"
+ui_diagram_fit: Mahuta aknasse
+ui_diagram_download: Laadi SVG alla
+ui_diagram_download_started: SVG allalaadimine taotletud
+ui_diagram_download_error: SVG allalaadimine ebaõnnestus
 ui_print_page: "Prindi see leht"
 ui_sidebar_expand_section: "Laienda jaotis"
 ui_sidebar_collapse_section: "Ahenda jaotis"

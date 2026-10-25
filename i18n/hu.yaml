@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Nagyítás"
 ui_diagram_zoom_out: "Kicsinyítés"
 ui_diagram_zoom_reset: "Nézet visszaállítása"
 ui_diagram_error: "A diagram nem jeleníthető meg"
+ui_diagram_fit: Ablakhoz igazítás
+ui_diagram_download: SVG letöltése
+ui_diagram_download_started: SVG-letöltés kérve
+ui_diagram_download_error: Az SVG letöltése sikertelen
 ui_print_page: "Oldal nyomtatása"
 ui_sidebar_expand_section: "Szakasz kibontása"
 ui_sidebar_collapse_section: "Szakasz összecsukása"

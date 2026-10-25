@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Vergrößern"
 ui_diagram_zoom_out: "Verkleinern"
 ui_diagram_zoom_reset: "Ansicht zurücksetzen"
 ui_diagram_error: "Das Diagramm konnte nicht gerendert werden"
+ui_diagram_fit: An Fenster anpassen
+ui_diagram_download: SVG herunterladen
+ui_diagram_download_started: SVG-Download angefordert
+ui_diagram_download_error: SVG konnte nicht heruntergeladen werden
 ui_print_page: "Diese Seite drucken"
 ui_sidebar_expand_section: "Abschnitt erweitern"
 ui_sidebar_collapse_section: "Abschnitt einklappen"

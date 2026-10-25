@@ -127,6 +127,10 @@ ui_diagram_zoom_in: "확대"
 ui_diagram_zoom_out: "축소"
 ui_diagram_zoom_reset: "보기 재설정"
 ui_diagram_error: "다이어그램을 렌더링할 수 없습니다"
+ui_diagram_fit: 창에 맞추기
+ui_diagram_download: SVG 다운로드
+ui_diagram_download_started: SVG 다운로드를 요청했습니다
+ui_diagram_download_error: SVG를 다운로드하지 못했습니다
 ui_print_page: "이 페이지 인쇄"
 ui_sidebar_expand_section: "섹션 확장"
 ui_sidebar_collapse_section: "섹션 축소"

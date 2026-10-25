@@ -12,6 +12,11 @@ All notable changes to OINK are documented here. The project follows
   context, and one result per page. Add an accessible current-section filter
   to the existing palette, with explicit partial-match states. Preserve
   index scopes, exclusions, keyword/page weights, commands and IME behavior.
+- Share Mermaid and local PlantUML reading controls: pan/zoom, fit, original
+  source viewing/copy and standalone SVG download, with keyboard/touch access
+  and failure feedback. Defer engines and serial rendering until diagrams
+  approach the viewport; retain readable source for early browser printing.
+  Keep PlantUML Blob-image isolation and the existing pinned local engines.
 - Render PlantUML locally with the pinned MIT `@plantuml/core` 1.2026.9
   engine and Viz.js 3.24.0. Enabling PlantUML without a server now uses the
   two bundled browser assets only on pages with diagrams; consumers need no

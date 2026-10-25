@@ -245,6 +245,10 @@ ui_diagram_zoom_in: 放大
 ui_diagram_zoom_out: 縮小
 ui_diagram_zoom_reset: 重設檢視
 ui_diagram_error: 圖表無法呈現
+ui_diagram_fit: 符合視窗大小
+ui_diagram_download: 下載 SVG
+ui_diagram_download_started: 已開始下載 SVG
+ui_diagram_download_error: 無法下載 SVG
 
 # Expo icon tooltips and accessible names.
 ui_expo_layout: "圖片佈局"

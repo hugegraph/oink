@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Увеличи"
 ui_diagram_zoom_out: "Намали"
 ui_diagram_zoom_reset: "Възстанови изгледа"
 ui_diagram_error: "Диаграмата не може да бъде показана"
+ui_diagram_fit: Побиране в прозореца
+ui_diagram_download: Изтегляне на SVG
+ui_diagram_download_started: Заявено е изтегляне на SVG
+ui_diagram_download_error: SVG не може да се изтегли
 ui_print_page: "Печат на тази страница"
 ui_sidebar_expand_section: "Разшири секцията"
 ui_sidebar_collapse_section: "Свий секцията"

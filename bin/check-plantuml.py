@@ -71,7 +71,13 @@ def main() -> int:
                     original = ROOT / 'assets/third_party/plantuml' / ('viz-global.js' if asset.name.startswith('viz-global.') else 'plantuml.js')
                     if asset.read_bytes() != original.read_bytes():
                         errors.append(f'{name}: precompiled engine was transformed')
+            if ('data-td-diagram-zoom-dialog' in page) != local:
+                errors.append(f'{name}: shared local viewer selection is wrong')
+            if local and ('/sub/js/chunks/diagram.' not in page):
+                errors.append(f'{name}: shared scheduler is missing')
             plain = (output / 'docs/plain/index.html').read_text()
+            if 'js/chunks/diagram.' in plain:
+                errors.append(f'{name}: plain page loads the diagram scheduler')
             if 'js/chunks/plantuml-' in plain:
                 errors.append(f'{name}: plain page loads PlantUML')
             print_page = (output / '_print/docs/diagram/index.html').read_text()

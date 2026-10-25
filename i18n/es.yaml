@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Acercar"
 ui_diagram_zoom_out: "Alejar"
 ui_diagram_zoom_reset: "Restablecer vista"
 ui_diagram_error: "No se pudo renderizar el diagrama"
+ui_diagram_fit: Ajustar a la ventana
+ui_diagram_download: Descargar SVG
+ui_diagram_download_started: Descarga de SVG solicitada
+ui_diagram_download_error: No se pudo descargar el SVG
 ui_print_page: "Imprimir esta página"
 ui_sidebar_expand_section: "Expandir sección"
 ui_sidebar_collapse_section: "Contraer sección"

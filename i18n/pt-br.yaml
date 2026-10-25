@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Ampliar"
 ui_diagram_zoom_out: "Reduzir"
 ui_diagram_zoom_reset: "Redefinir visualização"
 ui_diagram_error: "O diagrama não pôde ser renderizado"
+ui_diagram_fit: Ajustar à janela
+ui_diagram_download: Baixar SVG
+ui_diagram_download_started: Download do SVG solicitado
+ui_diagram_download_error: Não foi possível baixar o SVG
 ui_print_page: "Imprimir esta página"
 ui_sidebar_expand_section: "Expandir seção"
 ui_sidebar_collapse_section: "Colapsar seção"

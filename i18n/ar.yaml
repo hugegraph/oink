@@ -132,6 +132,10 @@ ui_diagram_zoom_in: "تكبير"
 ui_diagram_zoom_out: "تصغير"
 ui_diagram_zoom_reset: "إعادة تعيين العرض"
 ui_diagram_error: "تعذر عرض الرسم التوضيحي"
+ui_diagram_fit: ملاءمة النافذة
+ui_diagram_download: تنزيل SVG
+ui_diagram_download_started: تم طلب تنزيل SVG
+ui_diagram_download_error: تعذر تنزيل SVG
 ui_print_page: "طباعة هذه الصفحة"
 ui_sidebar_expand_section: "توسيع القسم"
 ui_sidebar_collapse_section: "طي القسم"

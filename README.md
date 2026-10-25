@@ -223,7 +223,7 @@ assuming drop-in compatibility.
 | Sass | Built-in LibSass; no separately installed compiler |
 | Go | 1.27.3 minimum for Hugo Module resolution; current default 1.27.3, CI pins 1.27.3; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
+| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
 
 CI pins Go 1.27.3 and Hugo Extended 0.168.0. Development,
 preview, checks, release, and deployment use this same Hugo baseline. Do not

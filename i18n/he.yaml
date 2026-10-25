@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "הגדלה"
 ui_diagram_zoom_out: "הקטנה"
 ui_diagram_zoom_reset: "אפס תצוגה"
 ui_diagram_error: "לא ניתן להציג את הדיאגרמה"
+ui_diagram_fit: התאמה לחלון
+ui_diagram_download: הורדת SVG
+ui_diagram_download_started: נשלחה בקשה להורדת SVG
+ui_diagram_download_error: לא ניתן להוריד את ה-SVG
 ui_print_page: "הדפס עמוד זה"
 ui_sidebar_expand_section: "הרחב פרק"
 ui_sidebar_collapse_section: "כווץ פרק"

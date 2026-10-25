@@ -129,6 +129,10 @@ ui_diagram_zoom_in: "Zoom avanti"
 ui_diagram_zoom_out: "Zoom indietro"
 ui_diagram_zoom_reset: "Ripristina visualizzazione"
 ui_diagram_error: "Impossibile visualizzare il diagramma"
+ui_diagram_fit: Adatta alla finestra
+ui_diagram_download: Scarica SVG
+ui_diagram_download_started: Download SVG richiesto
+ui_diagram_download_error: Impossibile scaricare SVG
 ui_print_page: "Stampa questa pagina"
 ui_sidebar_expand_section: "Espandi sezione"
 ui_sidebar_collapse_section: "Comprimi sezione"

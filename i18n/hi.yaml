@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "जूम इन"
 ui_diagram_zoom_out: "जूम आउट"
 ui_diagram_zoom_reset: "दृश्य रीसेट करें"
 ui_diagram_error: "चित्र को प्रदर्शित नहीं किया जा सका"
+ui_diagram_fit: विंडो में फ़िट करें
+ui_diagram_download: SVG डाउनलोड करें
+ui_diagram_download_started: SVG डाउनलोड का अनुरोध किया गया
+ui_diagram_download_error: SVG डाउनलोड नहीं हो सका
 ui_print_page: "इस पृष्ठ को प्रिंट करें"
 ui_sidebar_expand_section: "खंड विस्तारित करें"
 ui_sidebar_collapse_section: "खंड संक्षिप्त करें"

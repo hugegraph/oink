@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Zooma in"
 ui_diagram_zoom_out: "Zooma ut"
 ui_diagram_zoom_reset: "Återställ vy"
 ui_diagram_error: "Diagrammet kunde inte renderas"
+ui_diagram_fit: Anpassa till fönstret
+ui_diagram_download: Hämta SVG
+ui_diagram_download_started: SVG-hämtning begärd
+ui_diagram_download_error: Det gick inte att hämta SVG
 ui_print_page: "Skriv ut denna sida"
 ui_sidebar_expand_section: "Expandera avsnitt"
 ui_sidebar_collapse_section: "Dölj avsnitt"

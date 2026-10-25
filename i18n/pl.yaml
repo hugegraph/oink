@@ -130,6 +130,10 @@ ui_diagram_zoom_in: "Powiększ"
 ui_diagram_zoom_out: "Pomniejsz"
 ui_diagram_zoom_reset: "Resetuj widok"
 ui_diagram_error: "Diagram nie mógł zostać wyrenderowany"
+ui_diagram_fit: Dopasuj do okna
+ui_diagram_download: Pobierz SVG
+ui_diagram_download_started: Zażądano pobrania SVG
+ui_diagram_download_error: Nie udało się pobrać SVG
 ui_print_page: "Drukuj tę stronę"
 ui_sidebar_expand_section: "Rozwiń sekcję"
 ui_sidebar_collapse_section: "Zwiń sekcję"

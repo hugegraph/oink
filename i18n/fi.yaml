@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Lähennä"
 ui_diagram_zoom_out: "Loitonna"
 ui_diagram_zoom_reset: "Palauta näkymä"
 ui_diagram_error: "Kaaviota ei voitu renderöidä"
+ui_diagram_fit: Sovita ikkunaan
+ui_diagram_download: Lataa SVG
+ui_diagram_download_started: SVG-latausta pyydetty
+ui_diagram_download_error: SVG:n lataaminen epäonnistui
 ui_print_page: "Tulosta tämä sivu"
 ui_sidebar_expand_section: "Laajenna osio"
 ui_sidebar_collapse_section: "Tiivistä osio"

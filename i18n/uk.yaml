@@ -130,6 +130,10 @@ ui_diagram_zoom_in: "Збільшити"
 ui_diagram_zoom_out: "Зменшити"
 ui_diagram_zoom_reset: "Скинути перегляд"
 ui_diagram_error: "Діаграму не вдалося відобразити"
+ui_diagram_fit: Умістити у вікно
+ui_diagram_download: Завантажити SVG
+ui_diagram_download_started: Запитано завантаження SVG
+ui_diagram_download_error: Не вдалося завантажити SVG
 ui_print_page: "Друкувати цю сторінку"
 ui_sidebar_expand_section: "Розгорнути розділ"
 ui_sidebar_collapse_section: "Згорнути розділ"

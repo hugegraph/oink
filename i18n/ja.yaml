@@ -127,6 +127,10 @@ ui_diagram_zoom_in: "拡大"
 ui_diagram_zoom_out: "縮小"
 ui_diagram_zoom_reset: "表示をリセット"
 ui_diagram_error: "図のレンダリングに失敗しました"
+ui_diagram_fit: ウィンドウに合わせる
+ui_diagram_download: SVG をダウンロード
+ui_diagram_download_started: SVG のダウンロードを開始しました
+ui_diagram_download_error: SVG をダウンロードできませんでした
 ui_print_page: "このページを印刷"
 ui_sidebar_expand_section: "セクションを展開"
 ui_sidebar_collapse_section: "セクションを折りたたみ"

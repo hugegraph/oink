@@ -229,6 +229,10 @@ def check_data_fences(hugo: str) -> list[str]:
             'class="td-asset-list site-assets" data-td-asset-list aria-label="Checksums" data-fixture="assets">',
             '<figure class="td-diagram td-diagram--mermaid" data-td-diagram>',
             '<div class="td-diagram__stage" data-td-diagram-stage></div>',
+            '<pre class="td-mermaid-source" tabindex="0"><code class="language-mermaid">graph TD; A--&gt;B;</code></pre>',
+            'data-td-mermaid-config',
+            'data-td-diagram-source-toggle',
+            'data-td-diagram-download',
             '<script type="application/json" data-td-diagram-source>"graph TD; A--\\u003eB;"</script>',
             'data-td-diagram-expand aria-haspopup="dialog"',
         ):

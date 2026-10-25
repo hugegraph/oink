@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Agrandir"
 ui_diagram_zoom_out: "Redusir"
 ui_diagram_zoom_reset: "Reiniciar la vista"
 ui_diagram_error: "Lo diagrama a pas pogut èsser visualizat"
+ui_diagram_fit: Ajustar a la fenèstra
+ui_diagram_download: Telecargar lo SVG
+ui_diagram_download_started: Telecargament del SVG demandat
+ui_diagram_download_error: Impossible de telecargar lo SVG
 ui_print_page: "Imprimir aquesta pagina"
 ui_sidebar_expand_section: "Agrandir la seccion"
 ui_sidebar_collapse_section: "Replegar la seccion"

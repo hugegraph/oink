@@ -130,6 +130,10 @@ ui_diagram_zoom_in: "Увеличить"
 ui_diagram_zoom_out: "Уменьшить"
 ui_diagram_zoom_reset: "Сбросить вид"
 ui_diagram_error: "Диаграмма не может быть отображена"
+ui_diagram_fit: Вписать в окно
+ui_diagram_download: Скачать SVG
+ui_diagram_download_started: Запрошено скачивание SVG
+ui_diagram_download_error: Не удалось скачать SVG
 ui_print_page: "Распечатать эту страницу"
 ui_sidebar_expand_section: "Развернуть раздел"
 ui_sidebar_collapse_section: "Свернуть раздел"

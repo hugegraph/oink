@@ -129,6 +129,10 @@ ui_diagram_zoom_in: Zoom in
 ui_diagram_zoom_out: Zoom out
 ui_diagram_zoom_reset: Reset view
 ui_diagram_error: The diagram could not be rendered
+ui_diagram_fit: Fit to window
+ui_diagram_download: Download SVG
+ui_diagram_download_started: SVG download requested
+ui_diagram_download_error: Could not download SVG
 ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section

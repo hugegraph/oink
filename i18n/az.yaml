@@ -128,6 +128,10 @@ ui_diagram_zoom_in: "Yaxınlaşdır"
 ui_diagram_zoom_out: "Uzaqlaşdır"
 ui_diagram_zoom_reset: "Baxışı sıfırla"
 ui_diagram_error: "Diaqram göstərilə bilmədi"
+ui_diagram_fit: Pəncərəyə sığdır
+ui_diagram_download: SVG endir
+ui_diagram_download_started: SVG endirməsi istəndi
+ui_diagram_download_error: SVG endirilə bilmədi
 ui_print_page: "Bu səhifəni çap et"
 ui_sidebar_expand_section: "Bölməni genişləndir"
 ui_sidebar_collapse_section: "Bölməni daralt"
