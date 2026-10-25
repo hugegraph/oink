@@ -81,7 +81,7 @@ repository's internal fixtures.
 · [Live starter](https://pgsty.github.io/oink-starter/)
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
-For development and validation, use Git, Go 1.27.2, and Hugo Extended
+For development and validation, use Git, Go 1.27.3, and Hugo Extended
 0.168.0 or a newer release that retains built-in LibSass. No external Sass
 compiler or Node.js is required. To evaluate the neutral template locally:
 
@@ -221,11 +221,11 @@ assuming drop-in compatibility.
 | --- | --- |
 | Hugo | **Extended 0.168.0 minimum**; default development and CI version 0.168.0 |
 | Sass | Built-in LibSass; no separately installed compiler |
-| Go | 1.27.0 minimum for Hugo Module resolution; current default 1.27.2, CI follows the latest stable release; not needed when using an offline archive or submodule |
+| Go | 1.27.3 minimum for Hugo Module resolution; current default 1.27.3, CI pins 1.27.3; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 218-message schema, including CLDR plural forms, with no English placeholder blocks |
 
-CI follows stable Go releases and pins Hugo Extended 0.168.0. Development,
+CI pins Go 1.27.3 and Hugo Extended 0.168.0. Development,
 preview, checks, release, and deployment use this same Hugo baseline. Do not
 enable `--panicOnWarning` or `HUGO_PANICONWARNING`. Keep warnings visible and
 review them; Hugo's upstream LibSass deprecation warning is accepted. Focused

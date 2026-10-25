@@ -102,8 +102,8 @@ make -C ../oink.pgsty.com dev
   Ordinary consumers must not install Dart Sass or another Sass executable.
   Preserve project-variable/style hooks. Future Hugo upgrades must preserve
   this dependency boundary; do not add compatibility shims for unrelated versions.
-- The module declares Go 1.27.0 as its minimum; the current development default
-  is Go 1.27.2. Record the actual local tool versions when reporting validation.
+- The module declares Go 1.27.3 as its minimum; the current development default
+  is Go 1.27.3. Record the actual local tool versions when reporting validation.
 - Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING` in any build,
   checker, preview, or CI job. Review diagnostics and verify their owning
   output contracts. Invalid-input tests check warnings and safe fallback
