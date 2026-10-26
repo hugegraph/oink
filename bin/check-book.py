@@ -1310,7 +1310,7 @@ def check_sources() -> list[str]:
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
         "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),
-        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--normal", "&--eg"),
+        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--normal", "&--eg", "flex-wrap: wrap", "overflow-wrap: anywhere"),
         "assets/scss/td/_contributors.scss": ("auto-fill", "forced-colors", "@media print"),
     }
     for relative, markers in source_markers.items():

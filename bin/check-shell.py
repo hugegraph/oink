@@ -163,6 +163,9 @@ def check_sources() -> list[str]:
             and "td-shell-topline--actions-only" in docs_layout
             and "td-shell-topline--actions-only" in blog_layout,
             "breadcrumb-free roots no longer lift their title while pinning actions", errors)
+    require("flex-wrap: wrap" in page_context_styles and "overflow-wrap: anywhere" in page_context_styles
+            and "max-width: calc(100vw - 2rem)" in page_context_styles,
+            "page context must reflow long breadcrumbs and keep the action menu within the viewport", errors)
     search_index = sidebar_panel.index('class="td-shell-iconbtn td-shell-sidebar__search"')
     collapse_index = sidebar_panel.index('class="td-shell-iconbtn td-shell-sidebar__collapse"')
     require(search_index < collapse_index,
