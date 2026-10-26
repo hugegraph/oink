@@ -178,7 +178,9 @@
     printing = true;
     entries.forEach(entry => {
       entry.printOpen = entry.details.open;
-      if (!entry.result) entry.details.open = true;
+      // Dark Mermaid colors assume a dark canvas. Source is ready synchronously
+      // and remains legible even when the browser omits print backgrounds.
+      if (!entry.result || (entry.kind === 'mermaid' && entry.theme === 'dark')) entry.details.open = true;
     });
   }
   function endPrint() {

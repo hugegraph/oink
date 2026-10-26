@@ -738,6 +738,15 @@ def check_template_contracts() -> list[str]:
         for marker in markers:
             require(marker in source, f"{name} lacks {marker}", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
+    diagram = (ROOT / "assets/js/diagram.js").read_text()
+    diagram_styles = (ROOT / "assets/scss/td/_diagram.scss").read_text()
+    require("entry.printOpen" in diagram and "entry.kind === 'mermaid' && entry.theme === 'dark'" in diagram
+            and 'data-td-diagram-theme="dark"' in diagram_styles and "color: #111 !important" in diagram_styles,
+            "browser print must provide readable dark Mermaid source and restore its disclosure state", errors)
+    require("target.offsetWidth ||" not in runtime and "width: '100%'" in runtime,
+            "Infographic must retain container-relative width rather than a mount-time pixel width", errors)
+    require("event.node.style.backgroundColor || '#fff'" in runtime,
+            "Infographic must keep authored backgrounds ahead of its neutral canvas fallback", errors)
     require("$fn:" in runtime and "OinkEchartsFunctions" in runtime, "ECharts callback bridge ($fn: / OinkEchartsFunctions) changed", errors)
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("or $hasAsciinema $hasEcharts $hasInfographic" in scripts, "scripts.html no longer loads content-components.js for data fences", errors)

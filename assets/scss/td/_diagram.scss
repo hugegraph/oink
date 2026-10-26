@@ -286,7 +286,20 @@
   .td-diagram__expand, .td-diagram__action, .td-diagram__status,
   .td-diagram__source > summary { display: none !important; }
   .td-diagram[data-td-diagram-rendered="true"] > .td-diagram__source { display: none !important; }
-  .td-diagram__source > pre { display: block !important; max-block-size: none; overflow: visible; white-space: pre-wrap; }
+  .td-diagram--mermaid[data-td-diagram-theme="dark"] {
+    > .td-diagram__stage { display: none !important; }
+    > .td-diagram__source { display: block !important; }
+  }
+  .td-content .td-diagram__source > pre {
+    display: block !important;
+    max-block-size: none;
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #fff !important;
+    color: #111 !important;
+    > code { background: transparent !important; color: inherit !important; }
+  }
   .td-diagram__source::details-content { content-visibility: visible !important; }
   .td-diagram__stage { overflow: visible; }
 }
