@@ -1,7 +1,7 @@
 {{- $page := .page -}}
 {{- $config := partial "shell/blog-gallery-config.html" $page -}}
 {{- $page.Store.Set "hasBlogGallery" true -}}
-<section class="td-blog-gallery" data-td-blog-form="gallery" data-td-blog-gallery data-mode="{{ $config.mode }}" data-size="{{ $config.size }}" aria-label="{{ $page.Title }}">
+<section class="td-blog-gallery" data-td-blog-form="gallery" data-td-blog-gallery data-td-mode="{{ $config.mode }}" data-td-size="{{ $config.size }}" aria-label="{{ $page.Title }}">
   <div class="td-expo-toolbar" data-gallery-controls hidden>
     <fieldset class="td-expo-modes">
       <legend class="visually-hidden">{{ T "ui_expo_layout" }}</legend>

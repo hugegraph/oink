@@ -1741,11 +1741,11 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         gallery_pattern = r'<a class="td-blog-gallery__link" href="([^"]+)"'
         require(re.findall(gallery_pattern, gallery) == row_links,
                 "gallery changed the page selection or its ordering", errors)
-        require('data-mode="seamless" data-size="280"' in gallery
+        require('data-td-mode="seamless" data-td-size="280"' in gallery
                 and 'js/chunks/blog-gallery.' in gallery
                 and 'data-td-expo-viewer' not in gallery,
                 "gallery lost its settings/runtime or gained a photo viewer", errors)
-        require('data-mode="wall" data-size="240"' in rendered["invalid-gallery"],
+        require('data-td-mode="wall" data-td-size="240"' in rendered["invalid-gallery"],
                 "invalid gallery settings did not use safe defaults", errors)
         require('td-blog-posts-list__item' not in gallery and 'class="td-content-cards td-blog-cards"' not in gallery,
                 "standalone gallery leaked another form", errors)

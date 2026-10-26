@@ -3,7 +3,7 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## [Unreleased]
+## [1.4.0] — 2026-10-26
 
 ### Added
 
@@ -54,11 +54,17 @@ All notable changes to OINK are documented here. The project follows
   Remove warning-fatal build flags and the old Hugo compiler matrix. Keep
   diagnostics visible; accept Hugo's upstream LibSass deprecation warning.
   Negative checkers verify the specific warning and safe output directly.
+- Pin the module minimum and development/CI toolchain to Go 1.27.3.
 - Refresh current fixture examples and output goldens for the 0.168.0 baseline.
-  Published OINK v1.3.2 and its tag remain unchanged.
 
 ### Fixed
 
+- Reveal nested tabs when following a fragment link and keep equations and
+  page-context controls within narrow reading columns.
+- Keep diagrams readable after resizing and printing, including Markmap fit
+  controls and independent Infographic surfaces.
+- Keep clipboard fallback usable inside active dialogs.
+- Remove decorative heading tails from the Paper preset.
 - Align native table captions with column labels, add vertical padding inside
   the table frame, and keep long captions clear of the corner expand action.
 
@@ -2388,7 +2394,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.3.2...HEAD
+[1.4.0]: https://github.com/pgsty/oink/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/pgsty/oink/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/pgsty/oink/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/pgsty/oink/compare/v1.2.0...v1.3.0

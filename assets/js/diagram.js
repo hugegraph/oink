@@ -9,7 +9,7 @@
   let queue = Promise.resolve();
   let printing = false;
   let frame = 0;
-  const mode = () => document.documentElement.dataset.bsTheme === 'dark' ? 'dark' : 'light';
+  const mode = () => document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
   const hasBox = block => {
     const rect = block.getBoundingClientRect();
     return block.getClientRects().length > 0 && rect.width > 0 && rect.height > 0 &&
@@ -20,8 +20,8 @@
     return hasBox(block) && rect.bottom >= -320 && rect.top <= innerHeight + 320;
   };
   const state = (entry, value) => {
-    entry.block.dataset.tdDiagramState = value;
-    if (entry.kind === 'plantuml') entry.block.dataset.tdPlantumlState = value;
+    entry.block.setAttribute('data-td-diagram-state', value);
+    if (entry.kind === 'plantuml') entry.block.setAttribute('data-td-plantuml-state', value);
   };
   function copy(source, status) {
     status.textContent = '';
@@ -81,7 +81,7 @@
         entry.requested = null;
         entry.block.dataset.tdDiagramRendered = 'true';
         entry.block.dataset.tdDiagramTheme = theme;
-        if (entry.kind === 'plantuml') entry.block.dataset.tdPlantumlTheme = theme;
+        if (entry.kind === 'plantuml') entry.block.setAttribute('data-td-plantuml-theme', theme);
         if (!previous && !entry.sourceTouched) entry.details.open = false;
         state(entry, 'rendered');
         if (openEntry === entry && dialog.open) paint(entry, true);

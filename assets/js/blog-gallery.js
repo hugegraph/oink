@@ -10,8 +10,8 @@
     const modes = [...controls.querySelectorAll('[data-gallery-mode]')];
     const slider = controls.querySelector('[data-gallery-size]');
     const hover = matchMedia('(hover: hover) and (pointer: fine)');
-    let mode = gallery.dataset.mode;
-    let size = Number(gallery.dataset.size);
+    let mode = gallery.dataset.tdMode;
+    let size = Number(gallery.dataset.tdSize);
     try {
       const saved = localStorage.getItem('td-blog-gallery-mode');
       const savedSize = Number(localStorage.getItem('td-blog-gallery-size'));
@@ -23,8 +23,8 @@
     };
     const ratio = item => {
       const img = item.querySelector('img');
-      return (Number(item.dataset.width) || img?.naturalWidth || 4)
-        / (Number(item.dataset.height) || img?.naturalHeight || 3);
+      return (Number(item.dataset.tdWidth) || img?.naturalWidth || 4)
+        / (Number(item.dataset.tdHeight) || img?.naturalHeight || 3);
     };
     const place = (item, x, y, width, height) => {
       Object.assign(item.style, { insetInlineStart: `${x}px`, top: `${y}px`, width: `${width}px` });
@@ -32,7 +32,7 @@
     };
     let frame;
     const layout = () => {
-      gallery.dataset.mode = mode;
+      gallery.dataset.tdMode = mode;
       modes.forEach(input => { input.checked = input.value === mode; });
       slider.value = String(size);
       const width = grid.clientWidth;

@@ -12,7 +12,7 @@
     {{- $src = $preview.RelPermalink -}}
   {{- end -}}
 {{- end -}}
-<article class="td-blog-gallery__item{{ if not $src }} is-missing{{ end }}" data-gallery-item data-width="{{ $image.width }}" data-height="{{ $image.height }}">
+<article class="td-blog-gallery__item{{ if not $src }} is-missing{{ end }}" data-gallery-item data-td-width="{{ $image.width }}" data-td-height="{{ $image.height }}">
   <a class="td-blog-gallery__link" href="{{ $link }}" aria-label="{{ .Title }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
     <span class="td-blog-gallery__media">
       <span class="td-blog-gallery__placeholder" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>

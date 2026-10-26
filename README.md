@@ -62,10 +62,10 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.3.2 restores builds with Hugo Extended alone: Dart Sass is no longer
-required. Hugo Extended 0.168.0 is the minimum and default validation version.
-The Markmap, footer, table, and FileTree fixes from 1.3.1 remain included.
-See the [changelog](CHANGELOG.md) for upgrade details and contributor credits.
+OINK 1.4.0 keeps the Hugo-only build boundary and adds local PlantUML rendering,
+unified diagram reading, richer local search, an opt-in table reader, and a
+fourth blog gallery layout. Hugo Extended 0.168.0 is the minimum and default
+validation version. See the [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
 
@@ -129,8 +129,8 @@ HTML, RSS, Print, Markdown, LLMS, LLMSFULL, and NAVJSON outputs the site needs;
 the [configuration reference](https://oink.pgsty.com/docs/customize/config/)
 documents their defaults and scope.
 
-For production, commit `go.mod` and `go.sum`. The default Hugo 0.168.0 release
-gate promotes warnings to errors; inspect representative routes after building:
+For production, commit `go.mod` and `go.sum`. Keep warnings visible and inspect
+representative routes after building:
 
 ```sh
 hugo --cleanDestinationDir --gc --minify --environment production \
@@ -158,12 +158,11 @@ Interactive features remain opt-in where they express site policy. The theme
 provides the implementation; the consuming site decides which outputs,
 analytics, comments, feedback, assistant links, and image behavior to enable.
 
-In the unreleased development version, `params.plantuml: true` renders UML in
-the browser with two bundled scripts, loaded only on pages with PlantUML
-fences. No Java, Graphviz executable, npm installation, CDN or rendering
-service is needed. Explicit server endpoints remain supported. See the
-[PlantUML guide](https://oink.pgsty.com/docs/components/plantuml/) for supported
-inputs and fallback behavior; published v1.3.2 still requires an endpoint.
+In OINK 1.4.0, `params.plantuml: true` renders UML in the browser with two
+bundled scripts, loaded only on pages with PlantUML fences. No Java, Graphviz
+executable, npm installation, CDN or rendering service is needed. Explicit
+server endpoints remain supported. See the [PlantUML guide](https://oink.pgsty.com/docs/components/plantuml/)
+for supported inputs and fallback behavior.
 
 ## Live sites
 
