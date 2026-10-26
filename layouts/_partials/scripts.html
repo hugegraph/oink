@@ -33,6 +33,7 @@
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 {{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
+{{ $hasTableReader := and $interactiveOutput (.Page.Store.Get "hasTableReader" | default false) -}}
 {{ $hasMermaid := and $interactiveOutput (.Page.Store.Get "hasmermaid" | default false) -}}
 {{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
@@ -176,6 +177,10 @@ window.markmap = {
 {{/* Optional first-party runtimes publish as stable capability chunks. Page
      flags choose script tags; they never create a new concatenation identity. */ -}}
 {{ $jsChunks := slice -}}
+{{ if $hasTableReader -}}
+  {{ partial "content/table-reader.html" . -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/table-reader.js" "members" (slice (resources.Get "js/table-reader.js"))) -}}
+{{ end -}}
 {{ if or $hasMermaid (and $hasPlantuml (not $plantumlServer)) -}}
   {{ partial "content/diagram-zoom-dialog.html" . -}}
   {{ partialCached "script-resource.html" (dict "target" "js/chunks/diagram.js" "members" (slice (resources.Get "js/diagram.js"))) "js/chunks/diagram.js" -}}

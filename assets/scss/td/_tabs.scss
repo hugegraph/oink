@@ -95,6 +95,7 @@
 
     // Embedded blocks fill the panel edge to edge.
     > .td-code:only-child,
+    > .td-table-frame:only-child,
     > .td-table-scroll:only-child,
     > .td-fields:only-child {
       margin: -1rem -1.1rem;
@@ -108,7 +109,8 @@
       box-shadow: none;
     }
 
-    > .td-table-scroll:only-child > table {
+    > .td-table-scroll:only-child > table,
+    > .td-table-frame:only-child > .td-table-scroll > table {
       border-block-start: 0;
     }
   }

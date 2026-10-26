@@ -226,6 +226,9 @@ comments_noscript_link: View discussions on GitHub.
 ui_open_in_prompt_label: Ask about this page
 ui_view_history: View edit history
 ui_table_scroll: "Scrollable table"
+ui_table_expand: "Expand table"
+ui_table_reader: "Table reader"
+ui_table_reader_scroll: "Table content, scroll horizontally and vertically"
 ui_filetree_divider: "Resize the file tree comment column"
 book_figure: Figure
 book_table: Table

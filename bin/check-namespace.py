@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # Author-facing markers: an author types these, so they stay unprefixed.
 # oink.pgsty.com/docs/design/components/ owns the public marker namespace.
 AUTHOR_MARKERS = {
-    "steps", "cards", "fields", "matrix", "full-width", "wide", "no-step-marker",
+    "steps", "cards", "fields", "matrix", "full-width", "wide", "expand", "no-step-marker",
 }
 
 # Site-owned markers used only by the self-contained regression fixture. They

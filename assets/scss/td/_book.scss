@@ -180,7 +180,8 @@ body.td-book .td-shell-tree__link {
       margin-inline: auto;
     }
 
-    > .td-book-figure__body > .td-table-scroll {
+    > .td-book-figure__body > .td-table-scroll,
+    > .td-book-figure__body > .td-table-frame {
       margin-block-end: 0;
     }
 

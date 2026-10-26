@@ -59,7 +59,7 @@ DEFAULT_EXCLUDES: dict[str, list[str]] = {
     "pigsty.cc": ["content/ext/**"],
 }
 
-THEME_MARKER_RE = re.compile(r"\.(?:steps|cards|fields|matrix|full-width|wide)\b")
+THEME_MARKER_RE = re.compile(r"\.(?:steps|cards|fields|matrix|full-width|wide|expand)\b")
 
 FRONT_MATTER_RE = re.compile(r"\A(---|\+\+\+)\s*\n.*?\n\1\s*\n", re.S)
 # One shortcode tag. Group 1: notation, 2: closing slash, 3: name, 4: rest.

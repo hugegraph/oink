@@ -7,6 +7,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add explicit `.expand` table reading, independent of `.wide`: a direct corner
+  action appears on desktop hover/focus and stays visible on touch. A native
+  dialog preserves the original table, text size, links and selection, and
+  restores reading position and focus on close. No-JS and static outputs keep
+  complete inline tables; browser printing restores an open table first.
 - Add `.wide` as the author-facing marker for technical table layout, preserving
   the existing styling and compatibility with `.td-table--wide`.
 - Upgrade local search with mixed CJK/English terms, literal technical

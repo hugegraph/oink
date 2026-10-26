@@ -697,6 +697,70 @@ def check_table_family(hugo: str) -> list[str]:
     return errors
 
 
+def check_table_reader(hugo: str) -> list[str]:
+    """Explicit opt-in, class composition, localization and static degradation."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-table-reader-") as temp:
+        site = Path(temp)
+        content = site / "content/docs"
+        content.mkdir(parents=True)
+        attributes = (
+            '{#reader-alone .expand}',
+            '{#reader-wide .wide .expand}',
+            '{#reader-classes class="wide expand"}',
+            '{#reader-matrix .matrix .full-width .expand caption="Matrix caption"}',
+            '{#reader-numbered .expand num="7-1" caption="Numbered caption"}',
+            '{#reader-tab .expand tab="Table tab"}',
+        )
+        for suffix in ("", ".zh"):
+            (content / f"_index{suffix}.md").write_text("---\ntitle: Reader fixtures\n---\n")
+            (content / f"reader{suffix}.md").write_text(
+                "---\ntitle: Table reader\noutputs: [HTML, markdown, print]\n---\n\n"
+                + "\n".join(TABLE + attrs + "\n" for attrs in attributes)
+            )
+            (content / f"plain{suffix}.md").write_text("---\ntitle: Plain table\n---\n\n" + TABLE + "{.wide}\n")
+            (content / f"fields{suffix}.md").write_text("---\ntitle: Field list\n---\n\n" + TABLE + "{.fields .expand}\n")
+        destination = site / "public"
+        result = run_hugo_process(
+            [hugo, "--source", str(FIXTURE), "--themesDir", str(ROOT.parent),
+             "--contentDir", str(site / "content"), "--destination", str(destination), "--logLevel", "warn"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        if result.returncode:
+            return [f"table reader fixture failed: {result.stdout}{result.stderr}"]
+        require(".fields cannot be combined with .expand" in result.stdout + result.stderr,
+                "fields/expand conflict did not warn", errors)
+        for prefix, label in (("", "Expand table"), ("zh/", "展开表格")):
+            html = (destination / f"{prefix}docs/reader/index.html").read_text()
+            require(html.count('data-td-table-expand>') == len(attributes), "reader opt-ins lost wrappers", errors)
+            require(html.count('data-td-table-reader aria-labelledby=') == 1 and label in html,
+                    f"{prefix} reader lost its single localized dialog", errors)
+            require('<table id="reader-wide" class="wide expand td-table--wide">' in html
+                    and '<table id="reader-classes" class="wide expand td-table--wide">' in html,
+                    "multiple classes changed table sizing/reader semantics", errors)
+            require('scope="row"' in html and 'Numbered caption' in html and 'data-td-tab="Table tab"' in html,
+                    "reader displaced matrix, numbered or tab semantics", errors)
+            chunks = [item for item in referenced_chunks(destination, html) if item.name == "table-reader"]
+            require(len(chunks) == 1 and chunks[0].path.is_file(), "reader runtime missing or duplicated", errors)
+            for name in ("plain", "fields"):
+                plain = (destination / f"{prefix}docs/{name}/index.html").read_text()
+                require("data-td-table-reader" not in plain and "js/chunks/table-reader" not in plain,
+                        f"{name} table loaded the reader without an eligible opt-in", errors)
+            markdown = (destination / f"{prefix}docs/reader/index.md").read_text()
+            require(all(attrs in markdown for attrs in attributes), "Markdown lost authored reader classes", errors)
+            static_outputs = (
+                (destination / f"{prefix}_print/docs/reader/index.html").read_text(),
+                unescape((destination / f"{prefix}docs/index.xml").read_text()),
+                markdown,
+            )
+            for output in static_outputs:
+                require("reader-wide" in output and "Numbered caption" in output,
+                        "reader static output lost content", errors)
+                require("data-td-table-reader" not in output and "data-td-table-expand" not in output
+                        and "js/chunks/table-reader" not in output, "reader leaked into static output", errors)
+    return errors
+
+
 INVALID_CASES = (
     ("badge-no-params", '{{< badge >}}\n', "requires parameter text"),
     ("badge-missing-text", '{{< badge tone="info" >}}\n', "requires parameter text"),
@@ -958,6 +1022,7 @@ def main() -> int:
         + check_generic_rss_output(args.hugo)
         + check_rss_summary_contract(args.hugo)
         + check_table_family(args.hugo)
+        + check_table_reader(args.hugo)
         + check_invalid_cases(args.hugo)
         + check_template_contracts()
     )
