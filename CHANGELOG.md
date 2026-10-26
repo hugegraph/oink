@@ -57,6 +57,11 @@ All notable changes to OINK are documented here. The project follows
 - Refresh current fixture examples and output goldens for the 0.168.0 baseline.
   Published OINK v1.3.2 and its tag remain unchanged.
 
+### Fixed
+
+- Align native table captions with column labels, add vertical padding inside
+  the table frame, and keep long captions clear of the corner expand action.
+
 ## [1.3.2] — 2026-10-18
 
 Restore the Hugo-only build promised to ordinary OINK consumers.
