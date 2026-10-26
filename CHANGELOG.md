@@ -7,6 +7,8 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add `.wide` as the author-facing marker for technical table layout, preserving
+  the existing styling and compatibility with `.td-table--wide`.
 - Upgrade local search with mixed CJK/English terms, literal technical
   identifiers, complete-match and phrase ranking, real section anchors and
   context, and one result per page. Add an accessible current-section filter

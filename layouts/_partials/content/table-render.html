@@ -149,6 +149,9 @@
 {{- /* Author classes stay on <table> (markers included) so site CSS keyed on
        e.g. table.full-width keeps working; the wrapper carries the modifiers. */ -}}
 {{- $tableClasses := $classes -}}
+{{- /* Keep the short author marker and map it to the existing style class.
+       Direct use of td-table--wide remains supported, including both forms. */ -}}
+{{- if and (in $classes "wide") (not (in $classes "td-table--wide")) }}{{ $tableClasses = $tableClasses | append "td-table--wide" }}{{ end -}}
 {{- if $isMatrix }}{{ $tableClasses = $tableClasses | append "td-table--matrix" }}{{ end -}}
 {{- $table := printf "%s" (partial "content/table-body.html" (dict
   "thead" .THead "tbody" .TBody "matrix" $isMatrix "format" $format

@@ -49,11 +49,14 @@ def check_outputs(public: Path) -> list[str]:
     for prefix in ("", "zh/"):
         technical = (public / f"{prefix}fixtures/table-layout-policy/index.html").read_text()
         technical_md = (public / f"{prefix}fixtures/table-layout-policy/index.md").read_text()
-        require('id="wide-technical-table"' in technical and 'class="td-table--wide"' in technical,
-                f"{prefix} technical table lost its explicit width marker", errors)
-        require('class="matrix full-width td-table--wide td-table--matrix"' in technical,
+        require('<table id="wide-technical-table" class="wide td-table--wide">' in technical,
+                f"{prefix} technical table lost its short width marker or style class", errors)
+        require('<table id="configuration-keys-table" class="td-table--wide">' in technical,
+                f"{prefix} technical table lost legacy width-marker compatibility", errors)
+        require('class="matrix full-width wide td-table--wide td-table--matrix"' in technical,
                 f"{prefix} wide marker displaced existing table modifiers", errors)
-        require("HG_PD_GRPC_HOST" in technical_md and "{#wide-technical-table .td-table--wide}" in technical_md and "<table" not in technical_md,
+        require("HG_PD_GRPC_HOST" in technical_md and "{#wide-technical-table .wide}" in technical_md
+                and "{#configuration-keys-table .td-table--wide}" in technical_md and "<table" not in technical_md,
                 f"{prefix} technical table Markdown lost authored content or acquired HTML", errors)
 
     # --- Badge / Kbd / Fields shortcode / full-width table -------------------
@@ -593,7 +596,9 @@ def check_table_family(hugo: str) -> list[str]:
             "## Site classes pass through, data-* and aria-* survive, on* is dropped\n\n"
             + TABLE + '{.ext-table .stretch-last data-fixture="kept" aria-describedby="note" onclick="alert(1)"}\n\n'
             "## Fields with a class and a generic attribute\n\n"
-            + TABLE + '{.fields .site-fields data-fixture="fields"}\n\n'
+            + TABLE + '{.fields .wide .site-fields data-fixture="fields"}\n\n'
+            "## Short and legacy width markers can coexist\n\n"
+            + TABLE + '{#wide-both .wide .td-table--wide}\n\n'
             "## Orphan attribute line (blank line in between) is not applied\n\n"
             + TABLE + "\n{.matrix}\n\n"
             "## Include\n\n"
@@ -674,7 +679,8 @@ def check_table_family(hugo: str) -> list[str]:
         html = (destination / "docs/family/index.html").read_text(encoding="utf-8")
         for marker in (
             '<table class="ext-table stretch-last" aria-describedby="note" data-fixture="kept">',
-            '<div class="td-fields site-fields" data-fixture="fields">',
+            '<div class="td-fields wide site-fields" data-fixture="fields">',
+            '<table id="wide-both" class="wide td-table--wide">',
             "Included <strong>Markdown</strong> snippet.",
             '<span class="nt">included</span><span class="p">:</span>',  # the yaml include, highlighted
             "Value 42 inline.",
@@ -687,7 +693,7 @@ def check_table_family(hugo: str) -> list[str]:
         errors += check_field_scopes(parity)
         require(html.count('data-td-language="yaml"') == 2 and 'data-td-language="js"' in html, "include code=true did not highlight the included files", errors)
         require("td-table--matrix" not in html and "<p>{.matrix}</p>" not in html, "an orphan attribute line was applied or printed", errors)
-        require(html.count("<table") == 2, "table family fixture rendered a wrong number of tables", errors)
+        require(html.count("<table") == 3, "table family fixture rendered a wrong number of tables", errors)
     return errors
 
 
